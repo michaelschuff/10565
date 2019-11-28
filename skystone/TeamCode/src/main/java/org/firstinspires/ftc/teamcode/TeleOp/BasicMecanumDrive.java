@@ -32,11 +32,11 @@ public class BasicMecanumDrive extends OpMode {
     public void loop() {
         x = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
+        x = x * Math.abs(x);
+        y = y * Math.abs(y);
 
         rotation = gamepad1.right_stick_x;
 
-        x = x * Math.abs(x);
-        y = y * Math.abs(y);
 
         motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
 
