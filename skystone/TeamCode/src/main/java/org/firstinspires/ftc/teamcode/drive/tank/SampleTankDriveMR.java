@@ -46,14 +46,14 @@ public class SampleTankDriveMR extends SampleTankDriveBase {
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
         // add/remove motors depending on your robot (e.g., 6WD)
-        DcMotor leftFront = hardwareMap.dcMotor.get("leftFront");
-        DcMotor leftRear = hardwareMap.dcMotor.get("leftRear");
-        DcMotor rightRear = hardwareMap.dcMotor.get("rightRear");
-        DcMotor rightFront = hardwareMap.dcMotor.get("rightFront");
+        DcMotor fl = hardwareMap.dcMotor.get("fl");
+        DcMotor bl = hardwareMap.dcMotor.get("bl");
+        DcMotor br = hardwareMap.dcMotor.get("br");
+        DcMotor fr = hardwareMap.dcMotor.get("fr");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
-        leftMotors = Arrays.asList(leftFront, leftRear);
-        rightMotors = Arrays.asList(rightFront, rightRear);
+        motors = Arrays.asList(fl, bl, br, fr);
+        leftMotors = Arrays.asList(fl, bl);
+        rightMotors = Arrays.asList(fr, br);
 
         for (DcMotor motor : motors) {
             if (RUN_USING_ENCODER) {

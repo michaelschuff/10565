@@ -31,9 +31,11 @@ import org.openftc.revextensions2.RevBulkData;
  */
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
-    private ExpansionHubMotor leftFront, leftRear, rightRear, rightFront;
+    private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
+
+    public boolean isIntakeRunning = false;
 
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
         super();
@@ -49,12 +51,15 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         BNO055IMUUtil.remapAxes(imu, AxesOrder.ZYX, AxesSigns.NPN);
 
-        leftFront = hardwareMap.get(ExpansionHubMotor.class, "leftFront");
-        leftRear = hardwareMap.get(ExpansionHubMotor.class, "leftRear");
-        rightRear = hardwareMap.get(ExpansionHubMotor.class, "rightRear");
-        rightFront = hardwareMap.get(ExpansionHubMotor.class, "rightFront");
+        fl = hardwareMap.get(ExpansionHubMotor.class, "fl");
+        bl = hardwareMap.get(ExpansionHubMotor.class, "bl");
+        br = hardwareMap.get(ExpansionHubMotor.class, "br");
+        fr = hardwareMap.get(ExpansionHubMotor.class, "fr");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        lIntake = hardwareMap.get(ExpansionHubMotor.class, "lIntake");
+        rIntake = hardwareMap.get(ExpansionHubMotor.class, "rIntake");
+
+        motors = Arrays.asList(fl, bl, br, fr);
 
         for (ExpansionHubMotor motor : motors) {
             if (RUN_USING_ENCODER) {
@@ -67,8 +72,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
             setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
 
-        leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftRear.setDirection(DcMotorSimple.Direction.REVERSE);
+        fl.setDirection(DcMotorSimple.Direction.REVERSE);
+        bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        lIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap));
@@ -76,7 +82,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode) {
-        PIDFCoefficients coefficients = leftFront.getPIDFCoefficients(runMode);
+        PIDFCoefficients coefficients = fl.getPIDFCoefficients(runMode);
         return new PIDCoefficients(coefficients.p, coefficients.i, coefficients.d);
     }
 
@@ -122,14 +128,25 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+        fl.setPower(v);
+        bl.setPower(v1);
+        br.setPower(v2);
+        fr.setPower(v3);
     }
 
     @Override
     public double getRawExternalHeading() {
         return imu.getAngularOrientation().firstAngle;
+    }
+
+    public void ToggleIntake() {
+        isIntakeRunning = !isIntakeRunning;
+        if (isIntakeRunning) {
+            lIntake.setPower(1);
+            rIntake.setPower(1);
+        } else {
+            lIntake.setPower(0);
+            rIntake.setPower(0);
+        }
     }
 }

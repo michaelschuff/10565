@@ -36,16 +36,13 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
     public static double WHEEL_RADIUS = 0.944882; // in
     public static double GEAR_RATIO = 38.0 / 30.0; // output (wheel) speed / input (encoder) speed
 
-    public static double LATERAL_DISTANCE = 15; // in; distance between the left and right wheels
-    public static double FORWARD_OFFSET = -4; // in; offset of the lateral wheel
-
     private DcMotor leftEncoder, frontEncoder;
     private BNO055IMU imu;
 
     public TwoWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
-                new Pose2d(FORWARD_OFFSET, LATERAL_DISTANCE / 2, 0), // left
-                new Pose2d(FORWARD_OFFSET, 0, Math.toRadians(90)) // front
+                new Pose2d(-3.625, 7.66191, 0), // left
+                new Pose2d(-0.9375, -0.137795, Math.toRadians(90)) // front
         ));
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");

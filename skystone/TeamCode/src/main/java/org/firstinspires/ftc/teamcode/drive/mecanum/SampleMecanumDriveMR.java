@@ -31,7 +31,7 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
      */
     private static final int MOTOR_WRITE_DELAY = 20;
 
-    private DcMotor leftFront, leftRear, rightRear, rightFront;
+    private DcMotor fl, bl, br, fr;
     private List<DcMotor> motors;
     private BNO055IMU imu;
 
@@ -48,12 +48,12 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
         // upward (normal to the floor) using a command like the following:
         // BNO055IMUUtil.remapAxes(imu, AxesOrder.XYZ, AxesSigns.NPN);
 
-        leftFront = hardwareMap.dcMotor.get("leftFront");
-        leftRear = hardwareMap.dcMotor.get("leftRear");
-        rightRear = hardwareMap.dcMotor.get("rightRear");
-        rightFront = hardwareMap.dcMotor.get("rightFront");
+        fl = hardwareMap.dcMotor.get("fl");
+        bl = hardwareMap.dcMotor.get("bl");
+        br = hardwareMap.dcMotor.get("br");
+        fr = hardwareMap.dcMotor.get("fr");
 
-        motors = Arrays.asList(leftFront, leftRear, rightRear, rightFront);
+        motors = Arrays.asList(fl, bl, br, fr);
 
         for (DcMotor motor : motors) {
             if (RUN_USING_ENCODER) {
@@ -74,8 +74,8 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
 
     @Override
     public PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode) {
-        ModernRoboticsUsbDcMotorController controller = (ModernRoboticsUsbDcMotorController) leftFront.getController();
-        DifferentialControlLoopCoefficients coefficients = controller.getDifferentialControlLoopCoefficients(leftFront.getPortNumber());
+        ModernRoboticsUsbDcMotorController controller = (ModernRoboticsUsbDcMotorController) fl.getController();
+        DifferentialControlLoopCoefficients coefficients = controller.getDifferentialControlLoopCoefficients(fl.getPortNumber());
         return new PIDCoefficients(coefficients.p, coefficients.i, coefficients.d);
     }
 
@@ -101,10 +101,10 @@ public class SampleMecanumDriveMR extends SampleMecanumDriveBase {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        leftFront.setPower(v);
-        leftRear.setPower(v1);
-        rightRear.setPower(v2);
-        rightFront.setPower(v3);
+        fl.setPower(v);
+        bl.setPower(v1);
+        br.setPower(v2);
+        fr.setPower(v3);
 
         try {
             Thread.sleep(MOTOR_WRITE_DELAY);
