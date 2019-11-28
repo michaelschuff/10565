@@ -56,8 +56,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         br = hardwareMap.get(ExpansionHubMotor.class, "br");
         fr = hardwareMap.get(ExpansionHubMotor.class, "fr");
 
-        lIntake = hardwareMap.get(ExpansionHubMotor.class, "lIntake");
-        rIntake = hardwareMap.get(ExpansionHubMotor.class, "rIntake");
+        lIntake = hardwareMap.get(ExpansionHubMotor.class, "leftIntake");
+        rIntake = hardwareMap.get(ExpansionHubMotor.class, "rightIntake");
 
         motors = Arrays.asList(fl, bl, br, fr);
 
@@ -67,6 +67,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
             }
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+        lIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
 
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
