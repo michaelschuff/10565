@@ -20,16 +20,13 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
  */
 @TeleOp(group = "drive")
 public class LocalizationTest extends LinearOpMode {
-    private DcMotor leftEncoder, frontEncoder;
+
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
         SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap);
-
-        leftEncoder = hardwareMap.dcMotor.get("leftIntake");
-        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
 
         waitForStart();
 

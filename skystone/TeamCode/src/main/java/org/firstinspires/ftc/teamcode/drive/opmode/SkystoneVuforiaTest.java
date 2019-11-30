@@ -31,7 +31,6 @@ public class SkystoneVuforiaTest extends LinearOpMode {
             } catch (Exception e) {
 
             }
-
         }
 
 

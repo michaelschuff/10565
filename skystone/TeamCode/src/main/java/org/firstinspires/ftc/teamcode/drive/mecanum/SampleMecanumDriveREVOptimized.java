@@ -6,6 +6,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksTo
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.getMotorVelocityF;
 
 import android.support.annotation.NonNull;
+
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -29,11 +31,13 @@ import org.openftc.revextensions2.RevBulkData;
  * Optimized mecanum drive implementation for REV ExHs. The time savings may significantly improve
  * trajectory following performance with moderate additional complexity.
  */
+@Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
+
 
     public boolean isIntakeRunning = false;
 
@@ -67,6 +71,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
             }
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
+
         lIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -78,7 +83,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         lIntake.setDirection(DcMotorSimple.Direction.REVERSE);
-
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap));
     }
