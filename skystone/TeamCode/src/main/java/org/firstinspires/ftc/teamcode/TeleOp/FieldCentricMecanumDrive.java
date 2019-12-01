@@ -1,45 +1,69 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 
+import java.io.File;
+import java.util.Scanner;
+
+import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase.HEADING_PID;
+
 @TeleOp(group = "Basic Drivetrain")
 public class FieldCentricMecanumDrive extends OpMode {
+    private SampleMecanumDriveREVOptimized drive;
 
-    SampleMecanumDriveREVOptimized drive;
-    BNO055IMU imu;
-    double[] motorPowers = new double[]{0, 0, 0, 0};
-    double x, y, rotation, maxPower, theta, magnitude;
+    private double[] motorPowers = new double[]{0, 0, 0, 0};
+    private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection;
+    private Double absoluteRotation;
+
+    private PIDFController absoluteRotationPIDController;
 
     @Override
     public void init() {
+        try {
+            File file = new File("../Data/StartingDirection.txt");
+            Scanner sc = new Scanner(file);
+            startingDirection = Math.toRadians(Integer.parseInt(sc.nextLine()));
+            sc.close();
+        } catch (Exception e){
+
+        }
+
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
-        imu.initialize(parameters);
+
+        absoluteRotationPIDController = new PIDFController(HEADING_PID);
+        absoluteRotationPIDController.setInputBounds(0.0, 2.0 * Math.PI);
+        absoluteRotationPIDController.setOutputBounds(-1.0, 1.0);
+        absoluteRotationPIDController.setTargetPosition(startingDirection);
     }
 
     @Override
     public void loop() {
-        x = gamepad1.left_stick_x;
+        tempx = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
+        theta = Math.toRadians(90) - startingDirection - drive.getRawExternalHeading();
+        cos = Math.cos(theta);
+        sin = Math.sin(theta);
+        x = tempx * cos - y * sin;
+        y = tempx * sin + y * cos;
+        x = x * Math.abs(x);
+        y = y * Math.abs(y);
 
-        theta = Math.atan2(y, x);
-        magnitude = Math.sqrt(y * y + x * x);
 
-        theta -= imu.getAngularOrientation().firstAngle;
-
-        y = magnitude * Math.sin(theta);
-        x = magnitude * Math.cos(theta);
-
+        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
         rotation = gamepad1.right_stick_x;
-
+        if (absoluteRotation != null) {
+            absoluteRotation = absoluteRotationPIDController.update(absoluteRotation);
+            if (Math.abs(absoluteRotation + rotation) > 1.0) {
+                rotation = (absoluteRotation + rotation) / Math.max(Math.abs(absoluteRotation), Math.abs(rotation));
+            } else {
+                rotation += absoluteRotation;
+            }
+        }
         x = x * Math.abs(x);
         y = y * Math.abs(y);
 
@@ -51,6 +75,13 @@ public class FieldCentricMecanumDrive extends OpMode {
         } else {
             drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
         }
+    }
+
+    private Double getDPadAngle(int x, int y) {
+        if (!(x == 0 && y == 0)) {
+            return Math.atan2(y, x);
+        }
+        return null;
     }
 
     private double GetMaxAbsMotorPower() {
