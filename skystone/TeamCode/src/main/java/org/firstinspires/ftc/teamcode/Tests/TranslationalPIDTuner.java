@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.Tests;
+package org.firstinspires.ftc.teamcode.Tests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -8,8 +8,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-
-import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase.HEADING_PID;
+import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase.TRANSLATIONAL_PID;
 
 @Config
 @Autonomous(group = "Tests")
@@ -20,8 +19,10 @@ public class TranslationalPIDTuner extends LinearOpMode {
     private PIDFController horizontalPIDController;
     private PIDFController verticalPIDController;
 
-    private double x, y;
+    private double x = 0, y = 0;
     public static double targetX = 0, targetY = 0;
+
+    public static double maxPower = .25;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -30,11 +31,11 @@ public class TranslationalPIDTuner extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
 
-        horizontalPIDController = new PIDFController(HEADING_PID);
-        horizontalPIDController.setOutputBounds(-1.0, 1.0);
+        horizontalPIDController = new PIDFController(TRANSLATIONAL_PID);
+        horizontalPIDController.setOutputBounds(-maxPower, maxPower);
 
-        verticalPIDController = new PIDFController(HEADING_PID);
-        verticalPIDController.setOutputBounds(-1.0, 1.0);
+        verticalPIDController = new PIDFController(TRANSLATIONAL_PID);
+        verticalPIDController.setOutputBounds(-maxPower, maxPower);
 
         if (isStopRequested()) return;
 
@@ -42,20 +43,22 @@ public class TranslationalPIDTuner extends LinearOpMode {
             horizontalPIDController.setTargetPosition(targetX);
             verticalPIDController.setTargetPosition(targetY);
 
-            x = horizontalPIDController.update(drive.getPoseEstimate().getX());
-            y = horizontalPIDController.update(drive.getPoseEstimate().getY());
+            drive.updatePoseEstimate();
+            x = horizontalPIDController.update(drive.getLocalizer().getPoseEstimate().getX());
+            y = verticalPIDController.update(drive.getLocalizer().getPoseEstimate().getY());
 
-            drive.setMotorPowers(y + x, y - x, y + x, y - x);
+            drive.setMotorPowers(x - y, x + y, x - y, x + y);
+
 
             telemetry.addData("x output: ", x);
-            telemetry.addData("x target: ", horizontalPIDController.getTargetPosition());
-            telemetry.addData("x position: ", targetX);
-            telemetry.addData("x error: ", horizontalPIDController.getTargetPosition() - targetX);
+            telemetry.addData("x target: ", targetX);
+            telemetry.addData("x position: ", drive.getPoseEstimate().getX());
+            telemetry.addData("x error: ", targetX - drive.getPoseEstimate().getX());
 
             telemetry.addData("y output: ", y);
             telemetry.addData("y target: ", verticalPIDController.getTargetPosition());
-            telemetry.addData("y position: ", targetY);
-            telemetry.addData("y error: ", verticalPIDController.getTargetPosition() - targetY);
+            telemetry.addData("y position: ", drive.getPoseEstimate().getY());
+            telemetry.addData("y error: ", targetY - drive.getPoseEstimate().getY());
             telemetry.update();
         }
     }

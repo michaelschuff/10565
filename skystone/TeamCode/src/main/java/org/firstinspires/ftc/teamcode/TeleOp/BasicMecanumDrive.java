@@ -1,15 +1,9 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREV;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @TeleOp(group = "Basic Drivetrain")
 public class BasicMecanumDrive extends OpMode {
@@ -26,10 +20,11 @@ public class BasicMecanumDrive extends OpMode {
 
     @Override
     public void start() {
-
+        drive.ToggleIntake();
     }
     @Override
     public void loop() {
+
         x = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
         x = x * Math.abs(x);

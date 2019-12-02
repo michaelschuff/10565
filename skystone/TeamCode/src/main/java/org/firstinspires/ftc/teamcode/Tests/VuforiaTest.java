@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.drive.Tests;
+package org.firstinspires.ftc.teamcode.Tests;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 @Autonomous(group = "Tests")
-public class SkystoneVuforiaTest extends LinearOpMode {
+public class VuforiaTest extends LinearOpMode {
     VuforiaLib_Skystone camera;
     VectorF fieldPosition;
 

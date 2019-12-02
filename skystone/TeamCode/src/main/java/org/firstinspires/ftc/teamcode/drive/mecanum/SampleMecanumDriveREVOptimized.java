@@ -38,6 +38,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
+    public static double intakepower = -.5;
+
 
     public boolean isIntakeRunning = false;
 
@@ -149,8 +151,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     public void ToggleIntake() {
         isIntakeRunning = !isIntakeRunning;
         if (isIntakeRunning) {
-            lIntake.setPower(1);
-            rIntake.setPower(1);
+            lIntake.setPower(intakepower);
+            rIntake.setPower(intakepower);
         } else {
             lIntake.setPower(0);
             rIntake.setPower(0);

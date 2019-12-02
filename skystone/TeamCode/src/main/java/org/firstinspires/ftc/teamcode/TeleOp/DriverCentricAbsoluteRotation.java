@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
-import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -11,8 +10,6 @@ import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBas
 import java.io.File;
 import java.util.Scanner;
 
-
-@Config
 @TeleOp(group = "Basic Drivetrain")
 public class DriverCentricAbsoluteRotation extends OpMode {
     private SampleMecanumDriveREVOptimized drive;
@@ -52,11 +49,12 @@ public class DriverCentricAbsoluteRotation extends OpMode {
         cos = Math.cos(theta);
         sin = Math.sin(theta);
         absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
-        rotation = gamepad1.right_stick_x;
+        telemetry.addData("dpadval", absoluteRotation);
+        rotation = Math.atan2(-gamepad1.right_stick_y, gamepad1.right_stick_x);
         if (absoluteRotation != null) {
             absoluteRotation = absoluteRotationPIDController.update(absoluteRotation);
             if (Math.abs(absoluteRotation + rotation) > 1.0) {
-                rotation = (absoluteRotation + rotation) / Math.max(Math.abs(absoluteRotation), Math.abs(rotation));
+                rotation = (absoluteRotation + rotation) / (Math.abs(absoluteRotation) + Math.abs(rotation));
             } else {
                 rotation += absoluteRotation;
             }
