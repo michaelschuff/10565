@@ -14,6 +14,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.PIDFCoefficients;
+import com.qualcomm.robotcore.hardware.Servo;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,14 +36,18 @@ import org.openftc.revextensions2.RevBulkData;
 @Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
-    private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
+    public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
+    private Servo intake, bFoundation, fFoundation;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
-    public static double intakepower = -.5;
+    //idle servo positions
+    private static final double bFoundation1 = 0, fFoundation1 = 0, intake1 = 0;
 
+    //activated servo positions
+    private static final double bFoundation2 = 0, fFoundation2 = 0, intake2 = 0 ;
 
-    public boolean isIntakeRunning = false;
+    private boolean isFoundationGrabbed = false;
 
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
         super();
@@ -66,6 +72,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         rIntake = hardwareMap.get(ExpansionHubMotor.class, "rightIntake");
 
         motors = Arrays.asList(fl, bl, br, fr);
+
+        intake = hardwareMap.get(Servo.class, "intake");
+        bFoundation = hardwareMap.get(Servo.class, "bFoundation");
+        fFoundation = hardwareMap.get(Servo.class, "fFoundation");
 
         for (ExpansionHubMotor motor : motors) {
             if (RUN_USING_ENCODER) {
@@ -148,14 +158,23 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         return imu.getAngularOrientation().firstAngle;
     }
 
-    public void ToggleIntake() {
-        isIntakeRunning = !isIntakeRunning;
-        if (isIntakeRunning) {
-            lIntake.setPower(intakepower);
-            rIntake.setPower(intakepower);
+    public void setIntakePower(double intakePower) {
+        lIntake.setPower(intakePower);
+        rIntake.setPower(intakePower);
+    }
+
+    public void releaseIntake() {
+        intake.setPosition(intake2);
+    }
+
+    public void toggleFoundation() {
+        isFoundationGrabbed = !isFoundationGrabbed;
+        if (isFoundationGrabbed) {
+            fFoundation.setPosition(fFoundation2);
+            bFoundation.setPosition(bFoundation2);
         } else {
-            lIntake.setPower(0);
-            rIntake.setPower(0);
+            fFoundation.setPosition(fFoundation1);
+            bFoundation.setPosition(bFoundation1);
         }
     }
 }

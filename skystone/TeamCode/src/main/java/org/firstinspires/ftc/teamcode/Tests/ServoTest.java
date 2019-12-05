@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 @Config
 @Autonomous(group = "Tests")
-public class ServoTesting extends LinearOpMode {
+public class ServoTest extends LinearOpMode {
     private Servo TestServo;
-    
+
     public static double value = 0;
     public static String ConfigName = "testServo";
 
