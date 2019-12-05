@@ -10,13 +10,13 @@ import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 @Config
 @Autonomous(group = "Auto")
-public class BlueSkystones extends LinearOpMode {
+public class RedSkystones extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private float skystonePosition = 0;
     public static double sideways = 20;
     public static double forwards = 36;
-    public static double angle = -45;
+    public static double angle = -135;
     public static double secondforward = .125;
     public static double skybridge = 55;
     //tilesize = 22.875
@@ -49,7 +49,7 @@ public class BlueSkystones extends LinearOpMode {
 
             if (c > 10000) {
                 drive.followTrajectorySync(drive.trajectoryBuilder()
-                        .back(4)
+                        .forward(4)
                         .build());
                 c = 0;
             }
@@ -58,7 +58,7 @@ public class BlueSkystones extends LinearOpMode {
         telemetry.update();
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .back(skystonePosition)
+                .forward(skystonePosition)
                 .build()
         );
 
@@ -66,12 +66,11 @@ public class BlueSkystones extends LinearOpMode {
 
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .strafeRight(sideways)
+                .strafeLeft(sideways)
                 .build());
 
         //drive.ToggleIntake();
-        //TODO: Toggle Intake
-
+        //TODO: Toggle intake
         drive.setMotorPowers(secondforward, secondforward, secondforward, secondforward);
         sleep(3000);
         drive.setMotorPowers(0, 0, 0, 0);
