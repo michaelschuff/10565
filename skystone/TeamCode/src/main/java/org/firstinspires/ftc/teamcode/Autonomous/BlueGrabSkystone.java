@@ -14,10 +14,7 @@ public class BlueGrabSkystone extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private float skystonePosition = 0;
-    public static double sideways = 20;
-    public static double forwards = 36;
-    public static double angle = -45;
-    public static double secondforward = .125;
+
     //tilesize = 22.875
     //meshsize = .75
 
@@ -31,9 +28,10 @@ public class BlueGrabSkystone extends LinearOpMode {
         camera.start();
 
         waitForStart();
+        drive.releaseIntake();
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .strafeRight(forwards)
+                .strafeRight(36)
                 .build());
 
         int c = 0;
@@ -53,25 +51,23 @@ public class BlueGrabSkystone extends LinearOpMode {
                 c = 0;
             }
         }
-        telemetry.addData("skystone", skystonePosition);
-        telemetry.update();
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
                 .back(skystonePosition)
                 .build()
         );
 
-        drive.turnSync(Math.toRadians(angle));
+        drive.turnSync(Math.toRadians(-45));
 
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .strafeRight(sideways)
+                .strafeRight(20)
                 .build());
 
-        drive.ToggleIntake();
+        drive.setIntakePower(-.5);
 
-        drive.setMotorPowers(secondforward, secondforward, secondforward, secondforward);
-        sleep(3000);
+        drive.setMotorPowers(.125, .125, .125, .125);
+        sleep(2000);
         drive.setMotorPowers(0, 0, 0, 0);
 
 
