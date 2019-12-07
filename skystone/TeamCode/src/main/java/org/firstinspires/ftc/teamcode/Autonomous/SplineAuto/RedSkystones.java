@@ -16,7 +16,7 @@ public class RedSkystones extends LinearOpMode {
     private float skystonePosition = 0;
     public static double sideways = 20;
     public static double forwards = 36;
-    public static double angle = -135;
+    public static double angle = -45;
     public static double secondforward = .125;
     public static double skybridge = 55;
     //tilesize = 22.875
@@ -66,7 +66,7 @@ public class RedSkystones extends LinearOpMode {
 
 
         drive.followTrajectorySync(drive.trajectoryBuilder()
-                .strafeLeft(sideways)
+                .strafeRight(sideways)
                 .build());
 
         //drive.ToggleIntake();
