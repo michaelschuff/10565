@@ -52,7 +52,7 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
 
         BNO055IMUUtil.remapAxes(imu, AxesOrder.ZYX, AxesSigns.NPN);
 
-        leftEncoder = hardwareMap.dcMotor.get("leftIntake");
+        leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
         frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
     }
 

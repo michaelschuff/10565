@@ -3,23 +3,34 @@ package org.firstinspires.ftc.teamcode.Autonomous;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.util.TaskThread;
+import org.firstinspires.ftc.teamcode.util.ThreadLinearOpMode;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 @Config
 @Autonomous(group = "Auto")
-public class BlueGrabSkystone extends LinearOpMode {
+public class BlueGrabSkystone extends ThreadLinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
-    private float skystonePosition = 0;
+    private Float skystonePosition = null;
 
-    //tilesize = 22.875
-    //meshsize = .75
+
 
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void runMainOpMode() {
+        registerThread(new TaskThread(new TaskThread.Actions() {
+            @Override
+            public void loop() {
+                camera.loop(true);
+                try {
+                    skystonePosition = camera.getFieldPosition().get(1) / 25.4f;
+                } catch (Exception e) {
+
+                }
+            }
+        }));
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(-31.5,61.5,0));
 
@@ -34,21 +45,14 @@ public class BlueGrabSkystone extends LinearOpMode {
                 .strafeRight(36)
                 .build());
 
-        int c = 0;
         while (!isStopRequested()) {
-            camera.loop(true);
-            try {
-                skystonePosition = camera.getFieldPosition().get(1) / 25.4f;
-                break;
-            } catch (Exception e) {
-                c++;
-            }
 
-            if (c > 10000) {
+            if (skystonePosition == null) {
                 drive.followTrajectorySync(drive.trajectoryBuilder()
                         .back(2)
                         .build());
-                c = 0;
+            } else {
+                break;
             }
         }
 
@@ -64,7 +68,7 @@ public class BlueGrabSkystone extends LinearOpMode {
                 .strafeRight(20)
                 .build());
 
-        drive.setIntakePower(-.5);
+        drive.setIntakePower(.5);
 
         drive.setMotorPowers(.125, .125, .125, .125);
         sleep(2000);

@@ -4,10 +4,13 @@ import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.util.TaskThread;
+import org.firstinspires.ftc.teamcode.util.ThreadOpMode;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -17,32 +20,32 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @TeleOp(group = "Tests")
-public class LocalizationTest extends LinearOpMode {
-
+public class LocalizationTest extends OpMode {
+    SampleMecanumDriveBase drive;
     @Override
-    public void runOpMode() throws InterruptedException {
+    public void init() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
 
-        SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
-        waitForStart();
+    }
 
-        while (!isStopRequested()) {
-            drive.setDrivePower(new Pose2d(
-                    -gamepad1.left_stick_y,
-                    -gamepad1.left_stick_x,
-                    -gamepad1.right_stick_x
-            ));
+    @Override
+    public void loop() {
+        drive.setDrivePower(new Pose2d(
+                -gamepad1.left_stick_y,
+                -gamepad1.left_stick_x,
+                -gamepad1.right_stick_x
+        ));
 
-            drive.updatePoseEstimate();
+        Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
+        telemetry.addData("x", poseEstimate.getX());
+        telemetry.addData("y", poseEstimate.getY());
+        telemetry.addData("heading", poseEstimate.getHeading());
 
-            Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
-            telemetry.addData("x", poseEstimate.getX());
-            telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", poseEstimate.getHeading());
+        telemetry.update();
 
-            telemetry.update();
-        }
+        drive.updatePoseEstimate();
     }
 }

@@ -94,7 +94,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
-        lIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        rIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap));
     }
