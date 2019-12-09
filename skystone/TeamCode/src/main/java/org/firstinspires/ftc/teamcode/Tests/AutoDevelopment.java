@@ -27,29 +27,34 @@ public class AutoDevelopment extends ThreadLinearOpMode {
     private ArrayList<Double> turnValues;
     private String[] stringCommands;
 
-    public static String trajectories = "";
+    public static String trajectories = "forward 10";
     public static Pose2d startingPosition = new Pose2d(0, 0, 0);
 
 
     @Override
     public void runMainOpMode() {
-        camera = new VuforiaLib_Skystone();
-        camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
-        camera.start();
+        commands = new ArrayList<Trajectory>();
+        waitIndicies = new ArrayList<Integer>();
+        turnIndicies = new ArrayList<Integer>();
+        waitTimes = new ArrayList<Integer>();
+        turnValues = new ArrayList<Double>();
+//        camera = new VuforiaLib_Skystone();
+//        camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
+//        camera.start();
         registerThread(new TaskThread(new TaskThread.Actions() {
             @Override
             public void loop() {
-                camera.loop(true);
-                try {
-                    VuMarkPosition = camera.getFieldPosition();
-                } catch (Exception e) {
-
-                }
+//                camera.loop(true);
+//                try {
+//                    VuMarkPosition = camera.getFieldPosition();
+//                } catch (Exception e) {
+//
+//                }
             }
         }));
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
-        drive.setPoseEstimate(startingPosition);
+//        drive.setPoseEstimate(startingPosition);
         /*  splineTo x y h
             strafeTo x y
             strafeRight y
@@ -70,42 +75,50 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                             .build()
                     );
                     trajectoryCount++;
+                    break;
                 case "strafeTo":
                     commands.add(drive.trajectoryBuilder()
                             .strafeTo(new Vector2d(Double.parseDouble(stringCommands[i + 1]), Double.parseDouble(stringCommands[i + 2])))
                             .build()
                     );
                     trajectoryCount++;
+                    break;
                 case "strafeRight":
                     commands.add(drive.trajectoryBuilder()
                             .strafeRight(Double.parseDouble(stringCommands[i + 1]))
                             .build()
                     );
                     trajectoryCount++;
+                    break;
                 case "forward":
                     commands.add(drive.trajectoryBuilder()
                             .forward(Double.parseDouble(stringCommands[i + 1]))
                             .build()
                     );
                     trajectoryCount++;
+                    break;
                 case "strafeLeft":
                     commands.add(drive.trajectoryBuilder()
                             .strafeLeft(Double.parseDouble(stringCommands[i + 1]))
                             .build()
                     );
                     trajectoryCount++;
+                    break;
                 case "backward":
                     commands.add(drive.trajectoryBuilder()
                             .back(Double.parseDouble(stringCommands[i + 1]))
                             .build()
                     );
                     trajectoryCount++;
+                    break;
                 case "turn":
                     turnValues.add(Double.parseDouble(stringCommands[i + 1]));
                     turnIndicies.add(trajectoryCount);
+                    break;
                 case "wait":
                     waitTimes.add(Integer.parseInt(stringCommands[i + 1]));
                     waitIndicies.add(trajectoryCount);
+                    break;
                 case "reverse":
                     i++;
                     trajectoryCount++;
@@ -117,6 +130,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "strafeTo":
                             commands.add(drive.trajectoryBuilder()
                                     .reverse()
@@ -124,6 +138,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "strafeRight":
                             commands.add(drive.trajectoryBuilder()
                                     .reverse()
@@ -131,6 +146,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "forward":
                             commands.add(drive.trajectoryBuilder()
                                     .reverse()
@@ -138,6 +154,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "strafeLeft":
                             commands.add(drive.trajectoryBuilder()
                                     .reverse()
@@ -145,6 +162,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "backward":
                             commands.add(drive.trajectoryBuilder()
                                     .reverse()
@@ -152,13 +170,19 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "turn":
                             turnValues.add(Double.parseDouble(stringCommands[i + 1]));
                             turnIndicies.add(trajectoryCount);
+                            break;
                         case "wait":
                             waitTimes.add(Integer.parseInt(stringCommands[i + 1]));
                             waitIndicies.add(trajectoryCount);
+                            break;
+                        default:
+                            break;
                     }
+                    break;
                 case "setReversed":
                     i++;
                     trajectoryCount++;
@@ -170,6 +194,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "strafeTo":
                             commands.add(drive.trajectoryBuilder()
                                     .setReversed(Boolean.parseBoolean(stringCommands[i + 1]))
@@ -177,6 +202,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "strafeRight":
                             commands.add(drive.trajectoryBuilder()
                                     .setReversed(Boolean.parseBoolean(stringCommands[i + 1]))
@@ -184,6 +210,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "forward":
                             commands.add(drive.trajectoryBuilder()
                                     .setReversed(Boolean.parseBoolean(stringCommands[i + 1]))
@@ -191,6 +218,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "strafeLeft":
                             commands.add(drive.trajectoryBuilder()
                                     .setReversed(Boolean.parseBoolean(stringCommands[i + 1]))
@@ -198,6 +226,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "backward":
                             commands.add(drive.trajectoryBuilder()
                                     .setReversed(Boolean.parseBoolean(stringCommands[i + 1]))
@@ -205,13 +234,21 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                                     .build()
                             );
                             trajectoryCount++;
+                            break;
                         case "turn":
                             turnValues.add(Double.parseDouble(stringCommands[i + 1]));
                             turnIndicies.add(trajectoryCount);
+                            break;
                         case "wait":
                             waitTimes.add(Integer.parseInt(stringCommands[i + 1]));
                             waitIndicies.add(trajectoryCount);
+                            break;
+                        default:
+                            break;
                     }
+                    break;
+                default:
+                    break;
             }
             i++;
         }
@@ -220,14 +257,20 @@ public class AutoDevelopment extends ThreadLinearOpMode {
 
         waitForStart();
         int t = 0, w = 0;
-        for (int j = 0; j < commands.size(); i++) {
-            if (j == turnIndicies.get(t)) {
-                drive.turnSync(turnValues.get(t));
-            } else if (j == waitIndicies.get(w)) {
-                sleep(waitTimes.get(w));
-            } else {
-                drive.followTrajectorySync(commands.get(j));
+        for (int j = 0; j < commands.size(); j++) {
+            if (t < turnIndicies.size()) {
+                if (j == turnIndicies.get(t) - 1) {
+                    drive.turnSync(turnValues.get(t));
+                    t++;
+                }
             }
+            if (w < waitIndicies.size()) {
+                if (j == waitIndicies.get(w) - 1) {
+                    sleep(waitTimes.get(w));
+                    w++;
+                }
+            }
+            drive.followTrajectorySync(commands.get(j));
             if (isStopRequested()) return;
         }
     }

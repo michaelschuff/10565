@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode.Tests;
 
 import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
@@ -19,33 +21,38 @@ import org.firstinspires.ftc.teamcode.util.ThreadOpMode;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
+@Config
 @TeleOp(group = "Tests")
-public class LocalizationTest extends OpMode {
-    SampleMecanumDriveBase drive;
+public class LocalizationTest extends LinearOpMode {
+    private SampleMecanumDriveBase drive;
+    private DcMotor leftEncoder, frontEncoder;
+
     @Override
-    public void init() {
+    public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-
+        leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
+        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        waitForStart();
+        while(opModeIsActive()) {
+            drive.setDrivePower(new Pose2d(
+                    -gamepad1.left_stick_y,
+                    -gamepad1.left_stick_x,
+                    -gamepad1.right_stick_x
+            ));
 
-    }
+            Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
+            telemetry.addData("x", poseEstimate.getX());
+            telemetry.addData("y", poseEstimate.getY());
+            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("leftEncoder", -leftEncoder.getCurrentPosition());
+            telemetry.addData("frontEncoder", -frontEncoder.getCurrentPosition());
+            telemetry.update();
 
-    @Override
-    public void loop() {
-        drive.setDrivePower(new Pose2d(
-                -gamepad1.left_stick_y,
-                -gamepad1.left_stick_x,
-                -gamepad1.right_stick_x
-        ));
+            drive.updatePoseEstimate();
+            if (isStopRequested()) return;
+        }
 
-        Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
-        telemetry.addData("x", poseEstimate.getX());
-        telemetry.addData("y", poseEstimate.getY());
-        telemetry.addData("heading", poseEstimate.getHeading());
-
-        telemetry.update();
-
-        drive.updatePoseEstimate();
     }
 }
