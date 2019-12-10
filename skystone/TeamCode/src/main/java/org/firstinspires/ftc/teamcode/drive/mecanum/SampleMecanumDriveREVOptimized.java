@@ -37,17 +37,17 @@ import org.openftc.revextensions2.RevBulkData;
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
-    private Servo intake, bFoundation, fFoundation;
+    private Servo intake, rFoundation, lFoundation, lArm, rArm, claw;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double bFoundation1 = 0, fFoundation1 = 0, intake1 = 0;
+    private static final double rFoundation1 = 0.3, lFoundation1 = 0.5, intake1 = 0, lArm1 = 0, rArm1 = 0, claw1 = 0;
 
     //activated servo positions
-    private static final double bFoundation2 = 0, fFoundation2 = 0, intake2 = 0 ;
+    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, intake2 = 0, lArm2 = 0, rArm2 = 0, claw2 = 0;
 
-    private boolean isFoundationGrabbed = false;
+    private boolean isFoundationGrabbed = false, isArmUp = false, isClawGrabbed = false;
 
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
         super();
@@ -68,14 +68,20 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         br = hardwareMap.get(ExpansionHubMotor.class, "br");
         fr = hardwareMap.get(ExpansionHubMotor.class, "fr");
 
-        lIntake = hardwareMap.get(ExpansionHubMotor.class, "leftIntake");
-        rIntake = hardwareMap.get(ExpansionHubMotor.class, "rightIntake");
+        lIntake = hardwareMap.get(ExpansionHubMotor.class, "lIntake");
+        rIntake = hardwareMap.get(ExpansionHubMotor.class, "rIntake");
 
         motors = Arrays.asList(fl, bl, br, fr);
 
         intake = hardwareMap.get(Servo.class, "intake");
-        bFoundation = hardwareMap.get(Servo.class, "bFoundation");
-        fFoundation = hardwareMap.get(Servo.class, "fFoundation");
+
+        rFoundation = hardwareMap.get(Servo.class, "rFoundation");
+        lFoundation = hardwareMap.get(Servo.class, "lFoundation");
+
+        lArm = hardwareMap.get(Servo.class, "lArm");
+        rArm = hardwareMap.get(Servo.class, "rArm");
+
+        claw = hardwareMap.get(Servo.class, "claw");
 
         for (ExpansionHubMotor motor : motors) {
             if (RUN_USING_ENCODER) {
@@ -170,11 +176,31 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     public void toggleFoundation() {
         isFoundationGrabbed = !isFoundationGrabbed;
         if (isFoundationGrabbed) {
-            fFoundation.setPosition(fFoundation2);
-            bFoundation.setPosition(bFoundation2);
+            rFoundation.setPosition(rFoundation2);
+            lFoundation.setPosition(lFoundation2);
         } else {
-            fFoundation.setPosition(fFoundation1);
-            bFoundation.setPosition(bFoundation1);
+            rFoundation.setPosition(rFoundation1);
+            lFoundation.setPosition(lFoundation1);
+        }
+    }
+
+    public void toggleArm() {
+        isArmUp = !isArmUp;
+        if (isArmUp) {
+            lArm.setPosition(lArm1);
+            rArm.setPosition(rArm1);
+        } else {
+            lArm.setPosition(lArm2);
+            rArm.setPosition(rArm2);
+        }
+    }
+
+    public void toggleClaw() {
+        isClawGrabbed = !isClawGrabbed;
+        if (isClawGrabbed) {
+            claw.setPosition(claw1);
+        } else {
+            claw.setPosition(claw2);
         }
     }
 }

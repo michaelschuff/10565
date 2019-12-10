@@ -24,11 +24,17 @@ public class AutoDevelopment extends ThreadLinearOpMode {
     private ArrayList<Integer> waitIndicies;
     private ArrayList<Integer> turnIndicies;
     private ArrayList<Integer> waitTimes;
+    private ArrayList<Integer> foundationIndicies;
+    private ArrayList<Integer> armIndicies;
+    private ArrayList<Integer> clawIndicies;
     private ArrayList<Double> turnValues;
     private String[] stringCommands;
 
     public static String trajectories = "forward 10";
-    public static Pose2d startingPosition = new Pose2d(0, 0, 0);
+    public static double startingX = 0;
+    public static double startingY = 0;
+    public static double startingHeading = 0;
+    public static Pose2d startingPosition = new Pose2d(startingX, startingY, startingHeading);
 
 
     @Override
@@ -38,23 +44,26 @@ public class AutoDevelopment extends ThreadLinearOpMode {
         turnIndicies = new ArrayList<Integer>();
         waitTimes = new ArrayList<Integer>();
         turnValues = new ArrayList<Double>();
-//        camera = new VuforiaLib_Skystone();
-//        camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
-//        camera.start();
+        foundationIndicies = new ArrayList<Integer>();
+        armIndicies = new ArrayList<Integer>();
+        clawIndicies = new ArrayList<Integer>();
+        camera = new VuforiaLib_Skystone();
+        camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
+        camera.start();
         registerThread(new TaskThread(new TaskThread.Actions() {
             @Override
             public void loop() {
-//                camera.loop(true);
-//                try {
-//                    VuMarkPosition = camera.getFieldPosition();
-//                } catch (Exception e) {
-//
-//                }
+                camera.loop(true);
+                try {
+                    VuMarkPosition = camera.getFieldPosition();
+                } catch (Exception e) {
+
+                }
             }
         }));
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
-//        drive.setPoseEstimate(startingPosition);
+        drive.setPoseEstimate(startingPosition);
         /*  splineTo x y h
             strafeTo x y
             strafeRight y
@@ -115,6 +124,23 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                     turnValues.add(Double.parseDouble(stringCommands[i + 1]));
                     turnIndicies.add(trajectoryCount);
                     break;
+
+                case "toggleFoundation":
+                    foundationIndicies.add(trajectoryCount);
+                    waitTimes.add(250);
+                    waitIndicies.add(trajectoryCount);
+                    break;
+                case "toggleClaw":
+                    clawIndicies.add(trajectoryCount);
+                    waitTimes.add(250);
+                    waitIndicies.add(trajectoryCount);
+                    break;
+                case "toggleArm":
+                    armIndicies.add(trajectoryCount);
+                    waitTimes.add(250);
+                    waitIndicies.add(trajectoryCount);
+                    break;
+
                 case "wait":
                     waitTimes.add(Integer.parseInt(stringCommands[i + 1]));
                     waitIndicies.add(trajectoryCount);
@@ -175,6 +201,23 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                             turnValues.add(Double.parseDouble(stringCommands[i + 1]));
                             turnIndicies.add(trajectoryCount);
                             break;
+
+                        case "toggleFoundation":
+                            foundationIndicies.add(trajectoryCount);
+                            waitTimes.add(250);
+                            waitIndicies.add(trajectoryCount);
+                            break;
+                        case "toggleClaw":
+                            clawIndicies.add(trajectoryCount);
+                            waitTimes.add(250);
+                            waitIndicies.add(trajectoryCount);
+                            break;
+                        case "toggleArm":
+                            armIndicies.add(trajectoryCount);
+                            waitTimes.add(250);
+                            waitIndicies.add(trajectoryCount);
+                            break;
+
                         case "wait":
                             waitTimes.add(Integer.parseInt(stringCommands[i + 1]));
                             waitIndicies.add(trajectoryCount);
@@ -235,6 +278,23 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                             );
                             trajectoryCount++;
                             break;
+
+                        case "toggleFoundation":
+                            foundationIndicies.add(trajectoryCount);
+                            waitTimes.add(250);
+                            waitIndicies.add(trajectoryCount);
+                            break;
+                        case "toggleClaw":
+                            clawIndicies.add(trajectoryCount);
+                            waitTimes.add(250);
+                            waitIndicies.add(trajectoryCount);
+                            break;
+                        case "toggleArm":
+                            armIndicies.add(trajectoryCount);
+                            waitTimes.add(250);
+                            waitIndicies.add(trajectoryCount);
+                            break;
+
                         case "turn":
                             turnValues.add(Double.parseDouble(stringCommands[i + 1]));
                             turnIndicies.add(trajectoryCount);
@@ -256,8 +316,29 @@ public class AutoDevelopment extends ThreadLinearOpMode {
         if (isStopRequested()) return;
 
         waitForStart();
-        int t = 0, w = 0;
+        int t = 0, w = 0, a = 0, f = 0, c = 0;
         for (int j = 0; j < commands.size(); j++) {
+            if (c < clawIndicies.size()) {
+                if (j == clawIndicies.get(c) - 1) {
+                    drive.toggleClaw();
+                    c++;
+                    drive.waitForIdle();
+                }
+            }
+            if (a < armIndicies.size()) {
+                if (j == armIndicies.get(a) - 1) {
+                    drive.toggleArm();
+                    a++;
+                    drive.waitForIdle();
+                }
+            }
+            if (f < armIndicies.size()) {
+                if (j == armIndicies.get(f) - 1) {
+                    drive.toggleFoundation();
+                    f++;
+                    drive.waitForIdle();
+                }
+            }
             if (t < turnIndicies.size()) {
                 if (j == turnIndicies.get(t) - 1) {
                     drive.turnSync(turnValues.get(t));
@@ -268,6 +349,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                 if (j == waitIndicies.get(w) - 1) {
                     sleep(waitTimes.get(w));
                     w++;
+                    drive.waitForIdle();
                 }
             }
             drive.followTrajectorySync(commands.get(j));

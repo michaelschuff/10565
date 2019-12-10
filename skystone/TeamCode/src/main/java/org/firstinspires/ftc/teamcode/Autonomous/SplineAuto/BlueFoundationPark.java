@@ -21,11 +21,11 @@ public class BlueFoundationPark extends LinearOpMode{
         drive.setPoseEstimate(new Pose2d(-31.5,61.5,0));
 
         waitForStart();
-
+        drive.releaseIntake();
         drive.followTrajectorySync(drive.trajectoryBuilder().back(foundation).build());
-        //TODO: Deploy Hooks
+        drive.toggleFoundation();
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(foundation).build());
-        //TODO: Undeploy Hooks
+        drive.toggleFoundation();
         drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(skybridge).build());
     }
 }
