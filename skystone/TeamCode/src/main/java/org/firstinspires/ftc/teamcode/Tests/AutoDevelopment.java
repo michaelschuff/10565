@@ -229,7 +229,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                 case "setReversed":
                     i++;
                     trajectoryCount++;
-                    switch(stringCommands[i + 2]) {
+                    switch(stringCommands[i + 1]) {
                         case "splineTo":
                             commands.add(drive.trajectoryBuilder()
                                     .setReversed(Boolean.parseBoolean(stringCommands[i + 1]))
