@@ -43,6 +43,7 @@ public class DriverCentricAbsoluteRotation extends OpMode {
 
     @Override
     public void loop() {
+
         tempx = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
         theta = Math.toRadians(90) - startingDirection - drive.getRawExternalHeading();
@@ -64,6 +65,7 @@ public class DriverCentricAbsoluteRotation extends OpMode {
         y = tempx * sin + y * cos;
         x = x * Math.abs(x);
         y = y * Math.abs(y);
+
 
         motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
 

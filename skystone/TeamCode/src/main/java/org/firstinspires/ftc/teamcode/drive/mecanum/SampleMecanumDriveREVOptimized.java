@@ -42,10 +42,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.3, lFoundation1 = 0.5, intake1 = 0, lArm1 = 0, rArm1 = 0, claw1 = 0;
+    private static final double rFoundation1 = 0.3, lFoundation1 = 0.5, intake1 = 0, lArm1 = 0.38, rArm1 = 0.35, claw1 = 0;
 
     //activated servo positions
-    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, intake2 = 0, lArm2 = 0, rArm2 = 0, claw2 = 0;
+    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, intake2 = 0, lArm2 = 1, rArm2 = 1, claw2 = 0;
 
     private boolean isFoundationGrabbed = false, isArmUp = false, isClawGrabbed = false;
 
@@ -164,9 +164,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         return imu.getAngularOrientation().firstAngle;
     }
 
-    public void setIntakePower(double intakePower) {
-        lIntake.setPower(intakePower);
-        rIntake.setPower(intakePower);
+    public void setIntakePower(double leftPower, double rightPower) {
+        lIntake.setPower(leftPower);
+        rIntake.setPower(rightPower);
     }
 
     public void releaseIntake() {
@@ -175,32 +175,22 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public void toggleFoundation() {
         isFoundationGrabbed = !isFoundationGrabbed;
-        if (isFoundationGrabbed) {
-            rFoundation.setPosition(rFoundation2);
-            lFoundation.setPosition(lFoundation2);
-        } else {
-            rFoundation.setPosition(rFoundation1);
-            lFoundation.setPosition(lFoundation1);
-        }
+        rFoundation.setPosition(isFoundationGrabbed ? rFoundation2 : rFoundation1);
+        lFoundation.setPosition(isFoundationGrabbed ? lFoundation2 : lFoundation1);
     }
 
     public void toggleArm() {
         isArmUp = !isArmUp;
-        if (isArmUp) {
-            lArm.setPosition(lArm1);
-            rArm.setPosition(rArm1);
-        } else {
-            lArm.setPosition(lArm2);
-            rArm.setPosition(rArm2);
-        }
+        lArm.setPosition(isArmUp ? lArm1 : lArm2);
+        rArm.setPosition(isArmUp ? rArm1 : rArm2);
     }
 
     public void toggleClaw() {
         isClawGrabbed = !isClawGrabbed;
-        if (isClawGrabbed) {
-            claw.setPosition(claw1);
-        } else {
-            claw.setPosition(claw2);
-        }
+        claw.setPosition(isClawGrabbed ? claw1 : claw2);
+    }
+
+    public void setClawGrabbing(boolean grabbed) {
+        claw.setPosition(grabbed ? claw1 : claw2);
     }
 }

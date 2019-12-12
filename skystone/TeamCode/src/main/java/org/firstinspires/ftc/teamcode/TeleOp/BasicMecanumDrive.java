@@ -20,7 +20,7 @@ public class BasicMecanumDrive extends OpMode {
 
     @Override
     public void start() {
-        drive.releaseIntake();
+
     }
     @Override
     public void loop() {

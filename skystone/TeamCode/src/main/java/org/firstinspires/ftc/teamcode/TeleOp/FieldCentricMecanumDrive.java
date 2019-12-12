@@ -75,6 +75,15 @@ public class FieldCentricMecanumDrive extends OpMode {
         } else {
             drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
         }
+
+
+        drive.setIntakePower(-Math.pow(gamepad2.left_stick_y, 3), -Math.pow(gamepad2.right_stick_y, 3));
+
+        if (gamepad2.right_trigger > 0.25) {
+            drive.setClawGrabbing(true);
+        } else {
+            drive.setClawGrabbing(false);
+        }
     }
 
     private Double getDPadAngle(int x, int y) {
