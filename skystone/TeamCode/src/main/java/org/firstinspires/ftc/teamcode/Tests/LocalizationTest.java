@@ -32,7 +32,7 @@ public class LocalizationTest extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
         leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
-        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
+        frontEncoder = hardwareMap.dcMotor.get("rIntake");
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         waitForStart();
         while(opModeIsActive()) {

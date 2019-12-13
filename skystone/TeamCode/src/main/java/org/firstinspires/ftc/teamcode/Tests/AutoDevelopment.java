@@ -318,6 +318,8 @@ public class AutoDevelopment extends ThreadLinearOpMode {
         waitForStart();
         int t = 0, w = 0, a = 0, f = 0, c = 0;
         for (int j = 0; j < commands.size(); j++) {
+            drive.followTrajectorySync(commands.get(j));
+
             if (c < clawIndicies.size()) {
                 if (j == clawIndicies.get(c) - 1) {
                     drive.toggleClaw();
@@ -332,8 +334,8 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                     drive.waitForIdle();
                 }
             }
-            if (f < armIndicies.size()) {
-                if (j == armIndicies.get(f) - 1) {
+            if (f < foundationIndicies.size()) {
+                if (j == foundationIndicies.get(f) - 1) {
                     drive.toggleFoundation();
                     f++;
                     drive.waitForIdle();
@@ -341,7 +343,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
             }
             if (t < turnIndicies.size()) {
                 if (j == turnIndicies.get(t) - 1) {
-                    drive.turnSync(turnValues.get(t));
+                    drive.turnSync(Math.toRadians(turnValues.get(t)));
                     t++;
                 }
             }
@@ -352,7 +354,6 @@ public class AutoDevelopment extends ThreadLinearOpMode {
                     drive.waitForIdle();
                 }
             }
-            drive.followTrajectorySync(commands.get(j));
             if (isStopRequested()) return;
         }
     }

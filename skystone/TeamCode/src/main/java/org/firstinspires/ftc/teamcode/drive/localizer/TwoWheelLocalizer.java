@@ -42,7 +42,7 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
     public TwoWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(-3.625, 7.66191, Math.toRadians(180)), // left
-                new Pose2d(-0.9375, -0.137795, Math.toRadians(90)) // front
+                new Pose2d(-0.9375, -0.137795, Math.toRadians(-90)) // front
         ));
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
@@ -53,7 +53,7 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
         BNO055IMUUtil.remapAxes(imu, AxesOrder.ZYX, AxesSigns.NPN);
 
         leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
-        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
+        frontEncoder = hardwareMap.dcMotor.get("rIntake");
     }
 
     public static double encoderTicksToInches(int ticks) {

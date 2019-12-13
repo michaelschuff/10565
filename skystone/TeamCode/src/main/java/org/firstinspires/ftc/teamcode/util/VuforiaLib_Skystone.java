@@ -380,9 +380,9 @@ public class VuforiaLib_Skystone {
                 mOpMode.telemetry.addData("Orientation:", formatOrientation(lastLocation));
             else
                 mOpMode.telemetry.addData("Orientation:", "Unknown");
+            mOpMode.telemetry.update();
         }
 
-        mOpMode.telemetry.update();
     }
 
     public void stop()

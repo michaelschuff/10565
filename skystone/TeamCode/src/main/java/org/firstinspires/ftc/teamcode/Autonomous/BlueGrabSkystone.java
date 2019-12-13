@@ -68,7 +68,7 @@ public class BlueGrabSkystone extends ThreadLinearOpMode {
                 .strafeRight(20)
                 .build());
 
-        drive.setIntakePower(.5);
+        drive.setIntakePower(.5,.5);
 
         drive.setMotorPowers(.125, .125, .125, .125);
         sleep(2000);

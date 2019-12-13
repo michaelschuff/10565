@@ -36,16 +36,16 @@ import org.openftc.revextensions2.RevBulkData;
 @Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
-    public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
-    private Servo intake, rFoundation, lFoundation, lArm, rArm, claw;
+    public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake, lift;
+    public Servo intake, rFoundation, lFoundation, lArm, rArm, claw;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.3, lFoundation1 = 0.5, intake1 = 0, lArm1 = 0.38, rArm1 = 0.35, claw1 = 0;
+    private static final double rFoundation1 = 0.3, lFoundation1 = 0.5, intake1 = 0.67, lArm1 = 0.465, rArm1 = 0.535, claw1 = 0.35;
 
     //activated servo positions
-    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, intake2 = 0, lArm2 = 1, rArm2 = 1, claw2 = 0;
+    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, intake2 = 1, lArm2 = 0.85, rArm2 = 0.15, claw2 = 0.075;
 
     private boolean isFoundationGrabbed = false, isArmUp = false, isClawGrabbed = false;
 
@@ -70,6 +70,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         lIntake = hardwareMap.get(ExpansionHubMotor.class, "lIntake");
         rIntake = hardwareMap.get(ExpansionHubMotor.class, "rIntake");
+
+        lift = hardwareMap.get(ExpansionHubMotor.class, "lift");
 
         motors = Arrays.asList(fl, bl, br, fr);
 
@@ -101,6 +103,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         rIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+//        lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap));
     }
@@ -169,6 +172,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         rIntake.setPower(rightPower);
     }
 
+    public void setLiftPower(double liftPower) {
+        lift.setPower(liftPower);
+    }
+
     public void releaseIntake() {
         intake.setPosition(intake2);
     }
@@ -183,6 +190,21 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         isArmUp = !isArmUp;
         lArm.setPosition(isArmUp ? lArm1 : lArm2);
         rArm.setPosition(isArmUp ? rArm1 : rArm2);
+    }
+
+    public void IncArm() {
+        lArm.setPosition(lArm.getPosition() + .01);
+        rArm.setPosition(rArm.getPosition() - .01);
+    }
+
+    public void DecArm() {
+        lArm.setPosition(lArm.getPosition() - .01);
+        rArm.setPosition(rArm.getPosition() + .01);
+    }
+
+    public void resetArm() {
+        lArm.setPosition(lArm1);
+        rArm.setPosition(rArm1);
     }
 
     public void toggleClaw() {
