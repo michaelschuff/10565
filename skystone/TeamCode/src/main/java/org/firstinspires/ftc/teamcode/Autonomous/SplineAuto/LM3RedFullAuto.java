@@ -17,7 +17,7 @@ import java.io.FileWriter;
 import java.util.Vector;
 
 @Autonomous(group = "Auto")
-public class RedSkystones extends LinearOpMode {
+public class LM3RedFullAuto extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
