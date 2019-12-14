@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous;
+package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -12,6 +12,7 @@ import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Vector;
 
 @Autonomous(group = "Auto")
 public class RedSkystones extends ThreadLinearOpMode {
@@ -51,42 +52,61 @@ public class RedSkystones extends ThreadLinearOpMode {
                 .build()
         );
 
-//        try {
-//            drive.followTrajectorySync(
-//                    drive.trajectoryBuilder()
-//                            .splineTo(new Pose2d(drive.getPoseEstimate().getX() + skystonePosition.get(1), drive.getPoseEstimate().getY() + skystonePosition.get(0), Math.toRadians(-135)))
-//                            .build()
-//            );
-//        } catch (Exception e) {
-//            drive.followTrajectorySync(
-//                    drive.trajectoryBuilder()
-//                            .splineTo(new Pose2d(drive.getPoseEstimate().getX() - 14, drive.getPoseEstimate().getY() - 20, Math.toRadians(-135)))
-//                            .build()
-//            );
-//        }
 
 
-//        drive.turnSync(135);//TODO: turn to face 90
-//
-//        drive.toggleClaw();
-//
-//        drive.followTrajectorySync(
-//                drive.trajectoryBuilder()
-//                        .forward(15)
-//                        .strafeTo(new Vector2d(drive.getPoseEstimate().getY(), 19))
-//                        .build()
-//        );
-//
-//        drive.toggleArm();
+        Float yPos = null;
+        VectorF fieldPosition = null;
+
+        boolean a = false;
+
+        while (true) {
+            int c = 0;
+            while(opModeIsActive()) {
+                camera.loop(false);
+                try {
+                    fieldPosition = camera.getFieldPosition();
+                    yPos = fieldPosition.get(1);
+                    a = true;
+                    break;
+                } catch (Exception e) {
+                    c++;
+                    if (c > 1000) {
+                        break;
+                    }
+                }
+            }
+            if (a) {
+                break;
+            } else {
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder()
+                                .forward(8)
+                                .build()
+                );
+            }
+
+        }
+
+        if (yPos > 0) {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .forward(yPos / 25.4)
+                            .build()
+            );
+        } else {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .back(-yPos / 25.4)
+                            .build()
+            );
+        }
 
 
 
         while(!isStopRequested()) {
-            telemetry.addData("skystonePosition", skystonePosition);
+            telemetry.addData("yPos",yPos);
             telemetry.update();
         }
-
-
 
         try {
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));

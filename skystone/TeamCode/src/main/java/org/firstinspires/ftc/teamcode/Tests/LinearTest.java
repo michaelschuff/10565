@@ -23,7 +23,7 @@ public class LinearTest extends LinearOpMode {
         SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
         Trajectory trajectory = drive.trajectoryBuilder()
-                .strafeTo(new Vector2d(dx, dy))
+                .forward(dx)
                 .build();
 
         waitForStart();
