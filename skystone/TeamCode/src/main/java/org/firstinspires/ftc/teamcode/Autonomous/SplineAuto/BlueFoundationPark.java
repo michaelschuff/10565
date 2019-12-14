@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
 @Autonomous(group = "Auto")
 public class BlueFoundationPark extends LinearOpMode{
     private SampleMecanumDriveREVOptimized drive;
-    public static int a = 30, b = 5, c = 5, d = 10, e = 20, f = 40, g = 10, h = 10;
+    public static int b = 5, c = 5, d = 15, e = 15, f = 35, g = 15;
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -21,9 +21,8 @@ public class BlueFoundationPark extends LinearOpMode{
 //        drive.setPoseEstimate(new Pose2d(-31.5,61.5,0));
 
         waitForStart();
-        drive.followTrajectorySync(drive.trajectoryBuilder().back(a).build());
         drive.toggleFoundation();
-        sleep(2000);
+        sleep(750);
         drive.setPoseEstimate(new Pose2d(0, 0, 0));
 
         drive.followTrajectorySync(
@@ -34,8 +33,9 @@ public class BlueFoundationPark extends LinearOpMode{
                         .build()
         );
         drive.toggleFoundation();
-        sleep(2000);
-        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(d).forward(f).strafeRight(h).build());
+        sleep(750);
+        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(d).build());
+        drive.followTrajectorySync(drive.trajectoryBuilder().forward(f).build());
         drive.releaseIntake();
     }
 }

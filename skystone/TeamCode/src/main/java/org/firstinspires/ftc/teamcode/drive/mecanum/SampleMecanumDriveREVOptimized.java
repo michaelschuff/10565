@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -21,6 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.drive.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
@@ -42,7 +45,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.3, lFoundation1 = 0.5, intake1 = 0.67, lArm1 = 0.465, rArm1 = 0.535, claw1 = 0.35;
+    private static final double rFoundation1 = 0.3, lFoundation1 = 0.5, intake1 = 0.67, lArm1 = 0.45, rArm1 = 0.55, claw1 = 0.37;
 
     //activated servo positions
     private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, intake2 = 1, lArm2 = 0.85, rArm2 = 0.15, claw2 = 0.075;
@@ -162,6 +165,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         fr.setPower(v3);
     }
 
+    public TrajectoryBuilder trajectoryBuilder(DriveConstraints driveConstraints) {
+        return new TrajectoryBuilder(getPoseEstimate(), driveConstraints);
+    }
+
     @Override
     public double getRawExternalHeading() {
         return imu.getAngularOrientation().firstAngle;
@@ -210,6 +217,11 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     public void toggleClaw() {
         isClawGrabbed = !isClawGrabbed;
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
+    }
+
+    public void setArmPos(double val1, double val2) {
+        lArm.setPosition(val1);
+        rArm.setPosition(val2);
     }
 
     public void setClawGrabbing(boolean grabbed) {

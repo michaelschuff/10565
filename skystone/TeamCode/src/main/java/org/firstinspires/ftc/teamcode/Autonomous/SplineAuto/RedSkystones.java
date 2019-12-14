@@ -1,7 +1,9 @@
 package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
@@ -15,25 +17,15 @@ import java.io.FileWriter;
 import java.util.Vector;
 
 @Autonomous(group = "Auto")
-public class RedSkystones extends ThreadLinearOpMode {
+public class RedSkystones extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
 
+
+    private double whichSkystoneDist = 74;
     @Override
-    public void runMainOpMode() {
-        registerThread(new TaskThread(new TaskThread.Actions() {
-            @Override
-            public void loop() {
-                camera.loop(false);
-                try {
-                    skystonePosition = camera.getFieldPosition();
-                } catch (Exception e) {
-
-                }
-            }
-        }));
-
+    public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(-31.5,61.5,0));
 
@@ -44,11 +36,10 @@ public class RedSkystones extends ThreadLinearOpMode {
         waitForStart();
 
         drive.releaseIntake();
-        drive.setIntakePower(-1, -1);
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                    .strafeRight(19)
+                    .strafeRight(20)
                 .build()
         );
 
@@ -56,21 +47,20 @@ public class RedSkystones extends ThreadLinearOpMode {
 
         Float yPos = null;
         VectorF fieldPosition = null;
-
         boolean a = false;
+
 
         while (true) {
             int c = 0;
             while(opModeIsActive()) {
                 camera.loop(false);
                 try {
-                    fieldPosition = camera.getFieldPosition();
-                    yPos = fieldPosition.get(1);
+                    yPos = camera.getFieldPosition().get(1);
                     a = true;
                     break;
                 } catch (Exception e) {
                     c++;
-                    if (c > 1000) {
+                    if (c > 5000) {
                         break;
                     }
                 }
@@ -80,31 +70,71 @@ public class RedSkystones extends ThreadLinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .forward(8)
+                                .forward(7)
                                 .build()
                 );
+                whichSkystoneDist -= 7;
             }
 
         }
 
-        if (yPos > 0) {
+
+        String whichWay = "";
+        if (yPos / 25.4 - 1 > 0) {
             drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .forward(yPos / 25.4)
+                    drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
+                            .back(yPos / 25.4 - 1)
                             .build()
             );
+            whichWay = "yPos > 0";
+
         } else {
             drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .back(-yPos / 25.4)
+                    drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
+                            .forward(1 - yPos / 25.4)
                             .build()
             );
+            whichWay = "yPos < 0";
         }
+//
+//        wrong:0
+//        right:0
+//
+//
+//        wrong:0
+//        right:0
 
+        drive.turnSync(Math.toRadians(90));
+
+
+        drive.setArmPos(1, 0);
+
+
+        sleep(1300);
+        drive.toggleClaw();
+        sleep(400);
+        drive.setArmPos(0.85, 0.15);
+        sleep(500);
+        drive.turnSync(Math.toRadians(-90));
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .forward(whichSkystoneDist)
+                        .build()
+        );
+
+        drive.turnSync(Math.toRadians(90));
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .back(8)
+                        .build()
+        );
+        drive.toggleClaw();
+
+        grabFoundation();
 
 
         while(!isStopRequested()) {
-            telemetry.addData("yPos",yPos);
+            telemetry.addData("", whichWay);
             telemetry.update();
         }
 
@@ -116,5 +146,24 @@ public class RedSkystones extends ThreadLinearOpMode {
         } catch (Exception e) {
 
         }
+    }
+
+    private void grabFoundation() {
+        drive.toggleFoundation();
+        sleep(500);
+        drive.setPoseEstimate(new Pose2d(0, 0, 0));
+
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .forward(15)
+                        .splineTo(new Pose2d(20, 5, Math.toRadians(90)))
+                        .back(15)
+                        .build()
+        );
+        drive.toggleFoundation();
+        sleep(500);
+        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(15).build());
+        drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
+        drive.releaseIntake();
     }
 }
