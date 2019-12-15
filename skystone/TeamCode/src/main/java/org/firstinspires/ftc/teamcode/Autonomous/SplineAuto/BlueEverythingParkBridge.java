@@ -7,23 +7,26 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.util.TaskThread;
-import org.firstinspires.ftc.teamcode.util.ThreadLinearOpMode;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Vector;
 
-@Autonomous(group = "Auto")
-public class LM3BlueFullAuto extends LinearOpMode {
+@Autonomous(group = "Auto", name = "RedEverythingParkBridge")
+public class BlueEverythingParkBridge extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
 
 
     private double whichSkystoneDist = 74;
+
+
+    public BlueEverythingParkBridge() {
+        this.msStuckDetectInit = 10000;
+    }
+
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
@@ -148,7 +151,7 @@ public class LM3BlueFullAuto extends LinearOpMode {
         );
         drive.toggleFoundation();
         sleep(500);
-        drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(15).build());
+        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(7).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
         drive.releaseIntake();
     }

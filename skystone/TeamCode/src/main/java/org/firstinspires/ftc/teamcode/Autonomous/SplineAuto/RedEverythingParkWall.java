@@ -16,8 +16,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Vector;
 
-@Autonomous(group = "Auto")
-public class LM3RedFullAuto extends LinearOpMode {
+@Autonomous(group = "Auto", name = "BlueEverythingParkWall")
+public class RedEverythingParkWall extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
@@ -60,7 +60,7 @@ public class LM3RedFullAuto extends LinearOpMode {
                     break;
                 } catch (Exception e) {
                     c++;
-                    if (c > 5000) {
+                    if (c > 7500) {
                         break;
                     }
                 }
@@ -78,15 +78,12 @@ public class LM3RedFullAuto extends LinearOpMode {
 
         }
 
-
-        String whichWay = "";
         if (yPos / 25.4 - 1 > 0) {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
                             .back(yPos / 25.4 - 1)
                             .build()
             );
-            whichWay = "yPos > 0";
 
         } else {
             drive.followTrajectorySync(
@@ -94,15 +91,7 @@ public class LM3RedFullAuto extends LinearOpMode {
                             .forward(1 - yPos / 25.4)
                             .build()
             );
-            whichWay = "yPos < 0";
         }
-//
-//        wrong:0
-//        right:0
-//
-//
-//        wrong:0
-//        right:0
 
         drive.turnSync(Math.toRadians(90));
 
@@ -131,12 +120,6 @@ public class LM3RedFullAuto extends LinearOpMode {
         drive.toggleClaw();
 
         grabFoundation();
-
-
-        while(!isStopRequested()) {
-            telemetry.addData("", whichWay);
-            telemetry.update();
-        }
 
         try {
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));

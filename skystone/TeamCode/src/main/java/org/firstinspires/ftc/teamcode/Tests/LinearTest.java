@@ -15,12 +15,12 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
 @Config
 @Autonomous(group = "Tests")
 public class LinearTest extends LinearOpMode {
-    public static double dx = 46.5;
+    public static double dx = 24;
     public static double dy = 0;
 
     @Override
     public void runOpMode() throws InterruptedException {
-        SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        SampleMecanumDriveREVOptimized drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
         Trajectory trajectory = drive.trajectoryBuilder()
                 .forward(dx)
@@ -30,6 +30,7 @@ public class LinearTest extends LinearOpMode {
 
         if (isStopRequested()) return;
 
+        drive.releaseIntake();
         drive.followTrajectorySync(trajectory);
     }
 }

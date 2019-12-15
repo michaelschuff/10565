@@ -34,8 +34,17 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     public static double maxLiftPower = 0.75, maxIntakePower = 1;
 
+    private double maxSecondaryPower = .5;
+
+    public FieldCentricMecanumDrive() {
+        this.msStuckDetectInit = 10000;
+    }
+
     @Override
     public void init() {
+        if (gamepad1.right_bumper) {
+            drive.releaseIntake();
+        }
         try {
             File file = new File("../Data/StartingDirection.txt");
             Scanner sc = new Scanner(file);
@@ -61,6 +70,8 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     @Override
     public void loop() {
+
+
         tempx = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
 
@@ -90,6 +101,11 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
         x = x * Math.abs(x);
         y = y * Math.abs(y);
+
+        if (gamepad1.b) {
+            x = x * maxSecondaryPower;
+            y = y * maxSecondaryPower;
+        }
 
         motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
 
