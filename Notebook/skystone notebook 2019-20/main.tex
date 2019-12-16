@@ -1,0 +1,214 @@
+\documentclass[12pt]{report}
+\usepackage{parskip}
+\usepackage[utf8]{inputenc}
+\usepackage{import}
+\usepackage{subfiles}
+\usepackage{makeidx}
+%\usepackage{example}
+\usepackage{graphics}
+\usepackage{graphicx}
+\usepackage[a4paper, twoside, portrait, margin=2.5cm, includefoot]{geometry}
+\geometry{right=3.5cm,left=1.5cm,top=1.5cm,bottom=1.5cm, footskip=40pt}
+\usepackage{tikz,lipsum,lmodern}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{siunitx} 
+\usepackage{pgfplotstable}
+\usepackage{wrapfig}
+%\usepackage{soul}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{setspace}
+\usepackage{longtable}
+\usepackage{tabu}
+\usepackage{needspace}
+\usepackage{caption}
+\usepackage{rotating}
+\usepackage{marginnote}
+\usepackage{Format}
+\usetikzlibrary{calc}
+\usepackage{varwidth}
+\usepackage{nameref}
+\usepackage{xstring}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage[
+  scale=1,
+  angle=0,
+  opacity=1,
+  contents={}
+]{background}
+
+\title{\includegraphics[width=.75\textwidth]{Images/logo2-1.png}\\\textbf{Engineering Notebook}}
+\author{10565 Space Trash}
+\date{Skystone 2019 - 2020}
+
+\pgfplotsset{compat=1.15}
+\begin{document}
+\newgeometry{right=2.5cm,left=2.5cm,top=2.5cm,bottom=2.5cm}
+\maketitle
+\begin{doublespacing}
+\tableofcontents
+\end{doublespacing}
+\restoregeometry
+\clearpage
+\newpage
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[CE,CO]{\large \thepage}
+\fancyfoot[LE,RO]{\includegraphics[width=3cm]{Images/logogreenT.png}}
+\fancyfoot[LO,RE]{10565 Space Trash}
+
+
+% Setup for inserting code
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+  backgroundcolor=\color{backcolour},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{magenta},
+  numberstyle=\tiny\color{codegray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,         
+  breaklines=true,                 
+  captionpos=b,                    
+  keepspaces=true,                 
+  numbers=left,                    
+  numbersep=5pt,                  
+  showspaces=false,                
+  showstringspaces=false,
+  showtabs=false,                  
+  tabsize=2
+}
+
+\lstset{style=mystyle}
+%%%%%%%%%%%%%%%%%%%%%%pretty margins%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\definecolor{myRed}{rgb}    { 1, 0, 0}
+\definecolor{myOrange}{rgb} { 1,.5, 0}
+\definecolor{myYellow}{rgb} { 1, 1, 0}
+\definecolor{myGreen}{rgb}  { 0, 1, 0}
+\definecolor{myCyan}{rgb}   { 0, 1, 1}
+\definecolor{myBlue}{rgb}   { 0,.3, 1}
+\definecolor{myViolet}{rgb} { 0, 0, 1}
+\newcounter{chapshift}
+\addtocounter{chapshift}{-1}
+
+\newcommand{\ChapFrame}[3]{%
+    \AddEverypageHook{%
+        \ifodd\value{page}
+            \backgroundsetup{contents={%
+            \begin{tikzpicture}[overlay,remember picture]
+              \node[
+                fill=#2,
+                inner sep=0pt,
+                rectangle,
+                text width=2cm,
+                text height=30cm,
+                align=center,
+                anchor=north east
+              ] 
+              at ($ (current page.north east) + (-0cm,-0*\thechapshift cm) $) 
+              {\rotatebox{270}{\hspace*{-26cm}\parbox[c][1cm][t]{8cm}{%
+                  \raggedright\textcolor{black}{\huge #1}}}};
+            \end{tikzpicture}%
+          }%
+        }
+        \else
+            \backgroundsetup{contents={%
+            \begin{tikzpicture}[overlay,remember picture]
+            \node[
+              fill=#2,
+              inner sep=0pt,
+              rectangle,
+              text width=2cm,
+              text height=30cm,
+              align=center,
+              anchor=north west
+            ] 
+            at ($ (current page.north west) + (-0cm,-0*\thechapshift cm) $) 
+            {\rotatebox{90}{\hspace*{#3}\parbox[c][1cm][t]{8cm}{%
+                \raggedright\textcolor{black}{\huge #1}}}};
+            \end{tikzpicture}%
+          }%
+        }
+        \fi
+        \BgMaterial
+    }%
+  %\stepcounter{chapshift}%
+}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% \ChapFrame{chapter name}{color}{vertical height for word in left/even margin}
+
+\ChapFrame{Introduction}{myRed!20}{22cm}
+\chapter{Introduction}
+\subfile{Intro/goals}
+\newpage
+
+\ChapFrame{Design}{myOrange!25}{24cm}
+
+\chapter{Design}
+\section{Drivetrain}
+\subfile{Design/customDT}
+\subfile{Design/goBildaDT}
+\subfile{Design/boxTubeDT}
+\subfile{Design/newgoBilda}
+\subfile{Design/RI3D}
+\subfile{Design/Intake}
+\subfile{Design/Intake2}
+\subfile{Design/Claw}
+\subfile{Design/Claw2}
+\newpage
+
+
+\ChapFrame{Control}{myCyan!20}{24cm}
+\chapter{Control}
+\subfile{Control/Roadrunner}
+\subfile{Control/Vuforia}
+\subfile{Control/tele-op}
+\subfile{Control/auto}
+\newpage
+
+
+\ChapFrame{Engineering}{myGreen!20}{22cm}
+\chapter{Engineering}
+\subfile{Engineering/summer}
+\subfile{Engineering/3days}
+\subfile{Engineering/Sprint1}
+\subfile{Engineering/Sprint2}
+\subfile{Engineering/Sprint3}
+\subfile{Engineering/Sprint4}
+\newpage
+
+\ChapFrame{Outreach}{myBlue!20}{23cm}
+\chapter{Outreach}
+\subfile{Outreach/Motivate/motivate}
+\subfile{Outreach/Motivate/Mentoring}
+\subfile{Outreach/Motivate/STEMLikeAGirl}
+\subfile{Outreach/Motivate/person}
+\subfile{Outreach/Motivate/RetirementCenter}
+\subfile{Outreach/Motivate/HillsdaleLibrary}
+\newpage
+\subfile{Outreach/Connect/connect}
+\subfile{Outreach/Connect/SESEY}
+\subfile{Outreach/Connect/SamHerlle}
+\subfile{Outreach/Connect/Biotronik}
+\subfile{Outreach/Connect/JesseClark}
+\subfile{Outreach/Connect/MaryBullard}
+\subfile{Outreach/Connect/DWFritz}
+\subfile{Outreach/Connect/Daimler}
+\newpage
+
+
+\ChapFrame{Business}{violet!20}{23cm}
+\chapter{Business}
+\subfile{Business/costs}
+\newpage
+\end{document}

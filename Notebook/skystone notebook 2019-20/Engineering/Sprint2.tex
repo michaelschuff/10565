@@ -1,0 +1,192 @@
+\begin{document}
+\section{Sprint 2}
+
+\textbf{Goals for Sprint 2}\\\\
+    
+    Autonomous
+    \begin{itemize}
+        \item Move the Foundation into the Building Zone during autonomous and then park under the Skybridge for 15 points
+        \item Get the odometry pods to work
+        \item Have a component separate from the intake to move Stones during autonomous
+        \item Work on Vuforia to detect Skystones
+    \end{itemize}
+    
+    Outtake
+    \begin{itemize}
+        \item Have a simple outtake that will allow us to get Stones on the Foundation even if we can't stack them.
+    \end{itemize}
+    
+    CAD
+    \begin{itemize}
+        \item Make some changes to the intake
+    \end{itemize}
+    
+    General
+    \begin{itemize}
+        \item Get countersunk screws for the wheels so we can pass inspection
+        \item Print battery mount
+        \item CAD phone mount that works with our plan for autonomous and use of the phone's camera
+    \end{itemize}
+\vspace{1in}
+
+
+
+\meetingnotes{10/28/19 3:30pm - 4:00pm}{Sprint 2 - Meeting}{Dominik, Julia, Liana, Michael, Oliver, Ori, Rachel, Sarah}{
+
+    New intake & For LM1 we are going to have a new intake. Oliver will CAD a design and we will build the intake most likely over the weekend or the beginning of next week.\\\\
+    
+    Autonomous & For LM1 we want to have as close to a full autonomous as possible. We will fix the odometry pods by the end of the week, so Michael can make progress on autonomous. Josh has been working on vision and Vuforia stuff that can be implemented in autonomous.\\\\
+    Skystones in auto & To make autonomous easier and faster, the mechanism to move the Skystones from the Quarry under the Skybridge during autonomous will be separate from the intake. We can simply mount something on servos that can flip down and hold the Skystone while the robot moves, and then flip up to release the Skystone. Our current intake system wouldn't work well because the Skystones would be aligned next to other Stones, and outtaking the Skystone would take too much time.\\\\
+    
+    Moving the Foundation & Our plan to move the Foundation in both autonomous and endgame is to have small claws/hooks mounted on servos. These will be on the back of the robot.\\\\
+    
+    Drivetrain & We are going to countersink new screws so that the robot will fit in the 18" box (the screws on the outside of the wheels were the only problem).\\\\
+    
+    Outtake & We are going to take the claw off the robot and not focus on it until we have time to re-engineer it completely, though we like the general idea of having a claw on a virtual 4-bar linkage mounted on a slide lift. Our new outtake will simply flip the Stones onto the 
+    Foundation without worrying about stacking them.\\\\
+    
+    Phone/battery mounts & We have a CAD model of a battery mount that we will print and we need to create a phone mount that will work to mount in the front of our robot so that we can use the camera.
+}
+
+
+
+\practicenotes{10/28/2019 3:30pm - 7:00pm}{Sprint 2 - Practice}{Dominik, Josh, Julia, Liana, Michael, Oliver, Ori, Rachel, Sarah}{
+
+    Building\\\\
+    \textit{Disassembling: }Sarah, Michael, and Liana worked on disassembling the robot so we can fix our drivetrain, which was slightly too wide to pass inspection. We took the claw and lift system off the robot and don't plan to use it at the next meet. Rachel and Ori bought countersunk screws that will go in the side of the mecanum wheels. Michael, Dominik, Liana, and Julia used goBilda to build something that will grab the Skystones in autonomous and will be mounted on a servo.\\\\
+    Written by: Rachel
+    \newBox
+    
+    CAD and Design\\\\
+    \textit{Intake: }Oliver worked on CADing a new intake system, which we are going to be focusing on.\\\\
+    Written by: Julia
+    \newBox
+    
+    Notebook\\\\
+    \textit{Debugging: }Rachel got rid of all the remaining errors in the notebook by fixing the meetingnotes command. We also wrote an entry for LM0 and outlined our plan for the next two weeks.\\\\
+    Written by: Rachel
+}
+
+
+
+\practicenotes{10/30/19 6:00pm - 9:00pm}{Sprint 2 - Practice}{Dominik, Josh, Julia, Liana, Michael, Ori, Rachel, Sarah}{
+    
+    Building\\\\
+    \textit{Adjusting: }Michael, Liana, and Ori changed out the screws in the mecanum wheels so that the screws are countersunk. This should fix the issue of not fitting in the 18" box.\\\\
+    Written by: Rachel
+    \newBox
+    
+    CAD and Design\\\\
+    \textit{Teaching: }Sarah is working on CADing a phone mount that we will 3D print. She also taught Dominik and Julia the basics of using Onshape and CAD by having them CAD phone mounts as well.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Logistics\\\\
+    \textit{Outreach: }The club had the second Outreach and Connect meeting led by Sarah that Julia attended. They met with 2 different parents from last time and discussed some new Outreach and Connect ideas as well as discuss how to make some of these happen. We went over the last meeting and the list of ideas we came up with and this time, we started acting on getting some of these to happen. One of the parents, Coach Audrey, is going to reach out to her friend who works at Daimler to schedule a tour for anyone in the club who is interested in going. Another parent was going to reach out to the University of Portland Robotics team to see if we could get a tour of the College of Engineering as well as if we could check out the UP robotics team. Sarah is going to write an email to all of the feeder schools telling them about Wilson High School Robotics Club and how we would like to help out at activities//events they have as well as write an email to the Hillsdale Library to discuss us doing a little robot show-off and teaching event. Sarah is also working with 3 other kids to host a Wilson Robotics Club table at the 8th Grade Family Night at Wilson High School.\\\\
+    Written by: Sarah
+}
+
+
+
+\practicenotes{11/1/19 12:30pm - 9:00pm}{Sprint 2 - Practice}{Dominik, Julia, Liana, Michael, Oliver, Rachel, Sarah}{
+
+    Building\\\\
+    \textit{Localization: }We remade the odometry pods, and will mount one of them in the middle. Michael started working on code to test the odometry pods, which we will finish next practice. Michael, Liana, and Sarah are working on the grabber that we will use in autonomous to move the Skystones.\\\\
+    Written by: Rachel
+    \newBox
+    
+    CAD and Design\\\\
+    \textit{Intake: }Oliver is finishing his CAD model of the new intake.\\\\
+    Written by: Rachel
+}
+
+
+
+\practicenotes{11/3/19 12:00pm - 9:00pm}{Sprint 2 - Practice}{Josh, Julia, Liana, Michael, Oliver, Ori, Sarah}{
+    Building\\\\
+    \wrap{r}{Images2/11-3claw.png}{.4}
+    \textit{Claw: }We finished making the claw that will grab the Skystones during autonomous so that we can move them to the Building Zone. It is two goBilda pieces attached to a servo on the back right of the robot, to the right of the phone which is mounted sideways.\\\\\\\\\\\\\\\\
+    Written by: Rachel
+}
+
+
+
+\practicenotes{11/4/19 3:30pm - 7:00pm}{Sprint 2 - Practice}{Dominik, Josh, Julia, Liana, Michael, Oliver, Ori, Rachel, Sarah}{
+
+    Building\\\\
+    \textit{Dirty Work: }Liana is replacing a broken cable to one of the odometry pods. We bought more countersunk screws and different washers for the middle of the mecanum wheels to ensure that we fit in the 18" box. Liana also soldered the battery pack wire so we could still use it.\\\\
+    Written by: Rachel
+    \newBox
+    
+    CAD and Design\\\\
+    \textit{Phone Mount: }Ori and Sarah are both working on CADing phone mounts. The phone will be mounted on the side of the robot and horizontal, with the camera facing out to look for Skystones. The phone will be tilted down 30 degrees below upright so it can see the field and Stones more easily. Oliver finished his CAD model of the new intake.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Programming\\\\
+    \textit{Debugging: }Michael is setting up the Road Runner PID tuners to get the right values. Josh is working on setting up code for Michael to use in the autonomous code. Michael and Josh wrote some test code to test the PIDs that ended up spinning the robot in circles even though they think it is supposed to just go forward and backward.\\\\
+    Written by: Rachel
+    
+}
+%phone mount cad and intake cad
+
+
+\practicenotes{11/6/19 6:00pm - 9:00pm}{Sprint 2 - Practice}{Dominik, Julia, Liana, Michael, Oliver, Rachel}{
+
+    Programming\\\\
+    \textit{Debugging: }Michael and Ori worked on using the odometry pods to get some autonomous code working, but we ran into some of the same issues as last practice.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Building\\\\
+    %picture of phone on board
+    \textit{Phone Mount: }We mounted the phone mount that we 3D printed on the side of the robot. We also got the new encoder wire for the odometry pods and attached it so that we can work on autonomous.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Driver practice\\\\
+    \textit{Driver-Centric: }Oliver and Rachel both got to try driving a robot made and coded by Paul, one of our mentors, with driver-centric driving. We might consider having our own driver-centric mode.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Logistics\\\\
+    \textit{Teaching: }Rachel spent time helping team 7776 with their Engineering Notebook and getting rid of errors in one of their custom commands.\\\\
+    Written by: Rachel
+}
+
+
+
+\practicenotes{11/8/19 3:30pm - 9:00pm}{Sprint 2 - Practice}{Dominik, Josh, Julia, Liana, Michael, Oliver, Ori, Rachel, Sarah}{
+    
+    Programming\\\\
+    \textit{Localization: }Michael and Josh are working on problem solving the autonomous code. We realized that the one wheel without an encoder is the one wheel that isn't functioning as expected. Josh is writing backup code that doesn't involve Roadrunner in case we can't get Michael's code to work. Jaren, one of our mentors and team alumni, is here and helping us problem solve as well. For some reason, the front left wheel would go one way if not on the ground but the other way when we put the robot on the ground, but we solved this by turning off the encoder. Not running with the encoder also fixed our test autonomous code, so we can now actually use the odometry pods to write our full auto code.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Building\\\\
+    \textit{Intake and Outtake: }We got the 3" compliant wheels that we ordered for the new intake. Oliver, Ori, and Sarah worked on assembling the intake using the wheels and the 3D parts we printed. We built an outtake out of cardboard. The outtake is mounted on a servo that will flip the Stone onto the Foundation off the back of the robot. The intake will get the Stones at the front of the robot and deposit it directly on the outtake.\\\\
+    %picture of intake
+    %picture of outtake
+    Written by: Rachel
+}
+
+\meetingnotes{11/9/19 1:00pm - 5:00pm}{League Meet 1}{Dominik, Josh, Julia, Liana, Michael, Oliver, Ori, Rachel, Sarah}{
+    
+    Overview & We only won two matches (plus a surrogate match) but came in 5th because we had a lot of tiebreaker points. Two of the matches that we lost were lost on major penalties, once it was our fault and once our alliance partner messed up. Overall, we were pretty happy with how well our robot worked in TeleOp. Our autonomous was untested and is the main thing we want to improve before LM2.\\\\
+    
+    What went well & \begin{itemize}
+        \item Intake worked well and could pick up Stones in different configurations, against the wall, etc.
+        \item Outtake worked well enough and could flip Stones onto the Foundation but not stack them.
+        \item Our old autonomous to simply park under the Skybridge still worked when we used it.
+        \item Our mechanism to move the Foundation worked well in TeleOp and endgame.
+    \end{itemize}\\\\
+    
+    What needs improvement & \begin{itemize}
+        \item Our new autonomous was untested, and got us a penalty the one time we tried to run it.
+        \item Our battery got detached during one match, essentially disabling the robot.
+        \item The part of the intake that holds the servo is slightly broken, and there were some minor issues with the tension in the belt.
+        \item Our robot controller phone was not updated to the correct version, though we can easily fix this for next time.
+    \end{itemize}
+}
+
+\end{document}

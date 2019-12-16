@@ -1,0 +1,227 @@
+\begin{document}
+
+\section{Sprint 4}
+
+\textbf{Goals for Sprint 4}\\\\
+Autonomous
+\begin{itemize}
+    \item Autonomous code to find the Skystones and deliver them under the Skybridge and then park under the Skybridge
+    \item Autonomous code to reposition the Foundation to the Building Site and then park under the Skybridge
+\end{itemize}
+
+Building
+\begin{itemize}
+    \item Fine-tune the intake to make it more efficient by adjusting the springs, code, etc.
+    \item Build a new claw and outtake to stack Skystones on the Foundation, capable of making a Skyscraper 10-11 Stones tall
+\end{itemize}
+
+Competition
+\begin{itemize}
+    \item Win at least 4 matches at LM3
+    \item Get points with our Capstone
+\end{itemize}
+\vspace{1in}
+    
+\meetingnotes{12/2/19 3:30pm - 4:15pm}{Sprint 4 - Meeting}{Dominik, Josh, Julia, Liana, Michael, Oliver, Ori, Rachel}{
+    
+    Autonomous & We are almost done with Sampling, and we plan to have two complete autonomous programs by the next league meet; one program will find and Deliver both Skystones and park under the Skybridge and one will reposition the Foundation and then park under the Skybridge. We will also work on creating a program that will do everything in Autonomous by ourselves, including placing the Skystones on the Foundation after moving the Foundation.\\\\
+    
+    New outtake system & We have a completed CAD model, and need to 3D print parts and assemble the outtake. We want to leave a decent amount of time to test the outtake and potentially use it in Autonomous.\\\\
+    
+    New claw & We have a CAD model of a new claw that uses standoff posts as the supports between the sides instead of 3D printing the entire thing.\\\\
+    
+    Intake & We are going to run tests on the intake to see what speed the compliant wheels should spin to optimize use of the intake, as we've noticed that it doesn't work as well at full power.
+}
+
+\practicenotes{12/2/19 4:15pm - 10:00pm}{Sprint 4 - Practice}{Dominik, Josh, Julia, Liana, Michael, Oliver, Ori, Rachel}{
+    
+    Building\\\\
+    \textit{Fixing the Wheels: }Michael, Julia, Liana, and Dominik worked on replacing some goBilda screws with button head screws so that our outtake slides will fit smoothly. We have broken one of the odometry pod wires, and need to order new ones. The wires are very fragile, so we will probably end up ordering more than we need, because we cannot do any testing until they are delivered. Michael and Liana then replaced a possibly broken motor with a better one, but that did not solve the problem.\\\\
+    Written by: Julia \& Michael
+    \newBox
+    
+    Programming\\\\
+    \textit{Autonomous: }Josh is working on a Skystone autonomous that uses Roadrunners spline functionality, while Michael worked on getting the robot to follow the splines correctly. After the cable broke, Michael wrote a test to try to figure out what was wrong with strafing.\\\\
+    Written by: Michael
+}
+
+\practicenotes{12/4/19 6:00pm - 9:00pm}{Sprint 4 - Practice}{Dominik, Josh, Julia, Liana, Michael, Oliver, Ori, Rachel}{
+    
+    Building\\\\
+    \wrap{r}{Images2/12-4springs.png}{.5}
+    \textit{Adjusting:} Ori is assembling the slides that will lift the outtake. We had to dremel some of the screws because we couldn't find any that were flat enough. Michael, Liana, Oliver, and Dominik switched the two half of the intake pods around again so they could attach the new springs properly. Then they replaced the outside springs on the intake with stronger springs because the intake kept swinging when the robot moved and wasn't at the best position to intake Stones. The screws on the mecanum wheels were scraping against the screws on the chassis, so we replaced the screws on the chassis with buttonhead screws.\\\\\\
+    Written by: Rachel
+    \newBox
+    
+    Programming\\\\
+    \textit{Intaking Stones in Autonomous: }We are going to add a color sensor to each side, so we can not only determine when we have a Stone in the intake in autonomous, but also if it is a Skystone or a normal one.\\\\
+    \textit{Testing the wheels: }Michael wrote a tele-op program to test the motors/wheels to make sure they work correctly. We learned that the front-left wheel doesn't get nearly enough traction, so driving with only the front wheels will cause the robot to turn left instead of going straight; same was true of the back-right wheel. Michael and Rachel figured out that this was because the battery, which is fairly heavy, was mounted directly about the front-right wheel. Putting the battery in the middle of the robot solved this problem, but we need to come up with a permanent solution to this. We could just put weights above all the other wheels to even it out, considering we are well under the weight limit.\\\\
+    Michael also discovered that the front-left wheel slightly scraped the chassis. After we replaced the screws on the chassis with buttonhead screws so the wheels wouldn't scrape, and even after redistributing the weight on the front of the robot, the error persisted. We concluded it must be because of the uneven weight distribution back to front from the intake, battery, and weights. This problem should get fixed once the outtake it placed on the backside of the robot. Until then, we will just test our autonomous by setting a lower acceleration, as the error is significantly lessened from that.\\\\
+    Written by: Michael \& Rachel
+}
+
+
+
+\practicenotes{12/6/19 6:00pm - 9:00pm}{Sprint 4 - Practice}{Dominik, Josh, Liana, Michael, Oliver, Ori, Rachel}{
+    
+    Building\\\\
+    \wrap{r}{Images2/12-6slides.png}{.5}
+    \textit{Intake and Outtake: }Ori fixed his 3D printer and is assembling the slides for the outtake along with Oliver, as well as attaching them to their mounts. We also tested out our intake with the new springs and it worked well; the intakes didn't wobble when the robot moved/turned and the intake worked better at every angle the Stone was at.\\\\\\\\\\\\\\\\
+    Written by: Dominik
+    \newBox
+    
+    Programming\\\\
+    \textit{Vuforia and Multi-Threading: }While we are waiting for the new odometry wires to arrive, Michael wrote and implemented a multi-threaded autonomous that can be copy-pasted into other op-modes. We decided it would be a good idea to have the Vuforia running on a separate thread so that we don't have to worry about figuring out when we need to tell Vuforia to check for a VuMark, and can just have it running all the time.\\\\
+    \textit{Autonomous Strategy: }Josh and Michael decided that it would be better to pick up the Skystones while moving towards the wall instead of towards the middle of the field (switch which side of the Skystone we intake) and Josh is working on implementing this. We are also discussing different ideas for checking our position on the field with our mentor Paul.\\\\
+    Written by: Dominik \& Michael \& Rachel
+    \newBox
+    
+    CAD and Design\\\\
+    \textit{Intake Design: }Oliver started figuring out how to CAD a new intake for the robot, doing research in the FTC Discord. He wants to use two 2-inch compliant wheels on each side at the front and a pair of 3-inch compliant wheels at the back instead of our current intake. It will be better because it will be fully contained within the 18-inch box of the robot and thinner, because it will use metal instead of 3D printed plastic. It also won't have many of the problems our previous intake has, with a simpler design.\\\\
+    Written by: Dominik
+    \newBox
+    
+    Notebook\\\\
+    \textit{Teaching: }Dominik learned more about the notebook and Overleaf. Rachel helped 7776, another Wilson team, with their engineering notebook, specifically with getting rid of errors.\\\\
+    Written by: Rachel
+}
+
+
+
+\practicenotes{12/7/19 11:00am - 9:00pm}{Sprint 4 - Practice}{Michael}{
+
+    Building\\\\
+    \textit{Wiring:} Michael attempted to glue together one of the broken odometry pod wires, so he could test for another day. He also went out and bought some female DuPont connectors to attach to the replacement wires that just arrived at Josh's house today. We will attach them tomorrow.\\\\
+    Written by: Michael
+    \newBox
+    
+    Programming\\\\
+    \textit{Quick Splining:} Michael wrote a test for autonomous that allows us to build trajectories in road runner based on the value of a string (for example, it might read "splineTo 25 25 180 wait 100 turn 60" which means spline to x=25 y=25 heading=180, wait 100ms, and then turn 60 degrees). The advantage this gives us is we can then control what this string is in the dashboard, which means we will not have to rebuild the entire app when we want to test a new spline. This should speed up our autonomous testing immensely.\\\\
+    Written by: Michael
+}
+
+
+
+\practicenotes{12/8/19 1:00pm - 6:00pm}{Sprint 4 - Practice}{Dominik, Josh, Liana, Michael, Ori, Rachel}{
+
+    Building\\\\
+    \textit{Mounting slides: }Ori, Dominik, and Liana are working on mounting the slides for the outtake to the robot and drilled holes in the boxtube that the slides are on to mount it to the drivetrain. Michael and Ori took the REV hubs and phone mount off the robot and remounted them after we mounted the slides.\\\\
+    \textit{Wiring:} We finally got the wires we ordered for the odometry cables. Dominik, Josh, Liana, and Michael taped the wires and tested them. We also discovered that one of our level-shifters is broken so we replaced it.\\\\
+    \textit{Odometry pods: }Michael and Rachel replaced the plastic axles in the odometry pods with metal ones.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Programming\\\\
+    \textit{Testing and Debugging: }Michael tested his code for making splines through the dashboard, but got some errors, so he fixed those and it worked.\\\\
+    Written by: Michael
+}
+
+
+
+\practicenotes{12/9/19 3:30pm - 9:00pm}{Sprint 4 - Practice}{Liana, Michael, Oliver, Ori, Rachel, Sarah}{
+
+    Building\\\\
+    \textit{Odometry pods:} Ori and Michael put the odometry pods back on the robot.\\\\
+    \textit{Outtake:} The team worked on attaching the virtual four-bar outtake to the slides. We are going to 3D print the claw that we will attach to the outtake. The virtual four-bar and claw will pick up the Stone after we intake it and bring it to the back of the robot, and the slides are tall enough for us to make a Skyscraper at least 9 Stones tall.\\\\
+    \textit{Servo Mounting: }Michael, Oliver, Josh, and Liana worked on mounting the foundation servos to the back of the drive train. Some goBilda pieces had to be slightly modified to get the servo mount to fit.\\\\
+    \textit{Dremeling: }Liana dremeled screws that were getting in the way of the virtual four-bar lifting up and down.\\\\
+    \textit{Wiring: }Michael worked on reconnecting all of the motors and encoders to the REV hubs.\\\\
+    Written by: Michael \& Rachel
+    \newBox
+    
+    Programming\\\\
+    \textit{Tuning: }Michael tuned the Foundation servos to get the position values they need to be set at to be able to grab the Foundation. He then tried to run his code to test splines easily, but ran into a problem with the wait() commands, and ran out of time at practice to be able to fix it.\\\\
+    \textit{Tele-op: }Michael tested his driver centric tele-op code, and it worked wonderfully, now that the outtake was putting weight on the back wheels. He couldn't get absolute rotation working for now, but it is definitely in our plans to get it done.\\\\
+    Written by: Michael
+}
+
+
+
+\practicenotes{12/10/19 5:30pm - 7:00pm}{Sprint 4 - Practice}{Rachel}{
+    Programming\\\\
+    I used the dashboard to test values for the servos for the arm to determine what values they should be set to to grab the Stone and then release/stack the Stones. There was a weird issue where the left servo could go to negative values but the right one wouldn't go past 0 and only moved on (0,1).\\\\
+    Written by: Rachel
+}
+
+
+
+\practicenotes{12/11/19 3:30pm - 9:00pm}{Sprint 4 - Practice}{
+Dominik, Josh, Julia, Liana, Oliver, Ori, Rachel, Sarah}{
+
+    Building\\\\
+    \wrap{r}{Images2/12-11claw.png}{.5}
+    \textit{Claw: }Ori attached the claw to the robot. The claw is 3D printed with standoff posts as supports, and there is a servo that will move a piece to grip the Stone.\\\\
+    \textit{Ramp: }Ori made a ramp out of \\polycarbonate for the Stone to go up\\ when we intake it so that it can be\\ in the right position for the claw\\ to grab it. We have a 3D printed piece \\that attaches the ramp to the robot.\\\\
+    \textit{Wiring: }Rachel rewiring so that our \\wires are neater and more organized.\\ She also found servo extensions and an \\adaptor for the motor to lift the slides, \\but we need more servo extension wires \\for the servo on the claw.
+    \\\\
+    Written by: Julia and Rachel
+    \newBox
+    Programming\\\\
+    Half of the team went to Jackson for practice at 6:00pm. We experienced unexpected issues relating to rate of rotation of the wheels. Josh conducted tests to identify the issue and discovered that it was related to the use of encoders. Later Michael did more testing and found that the issue was with improper encoder cable placement. \\\\
+    Written by: Josh
+    %Josh should write something or someone else who was at Jackson
+}
+    %add CAD of 3D printed mount for the ramp and/or a picture
+
+
+\practicenotes{12/12/19 3:30pm - 8:00}{}{Julia, Michael, Oliver, Ori, Rachel}{
+    Building\\\\
+    \textit{Slide lift: }Oliver and Julia are attaching the belt to the slide pulleys. We didn't get the belt that we ordered but found some extra that was long enough to use, but we don't have the tensioners that we ordered so Rachel and Julia helped to get the tensioner tightened in the right place for the belt to work.\\\\
+    \textit{Fine-tuning:} Oliver added a hard stop so that the arm can only go down to a certain height. We added posts to guide the Stone when we intake it so that it is in the right position for the claw. One issue we encountered is that the arm and claw don't go low enough to pick up the Stone and/or that the Stone comes in the intake at an angle from the ramp. We are extending the ramp so that the Stone is always at the same angle for the claw to pick up.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Programming\\\\
+    \textit{Tuning: }Michael is using the dashboard to run the velocity tuner to tune the velocity for the pid. We encountered an issue where the drive-straight test made the robot drive sideways, but we realized that this is because we forgot to account for the fact that we flipped one of our odometry pods 180 degrees, so when it tries to correct for error it ends up driving the robot sideways. Michael fixed this in the code. We also tested the TrackWidthTuner after disabling the localizer.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Driver practice\\\\
+    \wrap{r}{Images2/12-12drive.png}{.45}
+    \textit{Testing: }The intake with the new springs works very well. After adding some tension to the belt, the slides also work well, as does the virtual-4-bar linkage arm. The main issue is making sure the the claw/arm is in the right place for the servo to grip the Stone. Ori and Rachel practiced driving the robot and could make a Skyscraper 9 Stones tall. Currently, driver 1 moves the bot and controls the virtual 4-bar arm while driver 2 controls the intake, lifting and lowering the slides, and the claw.\\\\\\\\\\
+    Written by: Rachel
+}
+
+
+\practicenotes{12/13/19 3:30pm - 9:00pm}{Sprint 4 - Practice}{Josh, Julia, Liana, Michael, Oliver, Ori, Rachel, Sarah}{
+
+    Building\\\\
+    Ori built a longer ramp for the Stones to go up, replacing the shorter one we had. The long ramp puts the intake at the right position to be gripped by the claw.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Programming\\\\
+    \textit{Skystone auto: }Michael worked on getting the Skystone autonomous to function and integrating Vuforia. We ended up using the outtake instead of the intake to grab the Skystones because this won't interfere at all with the other Stones in the Quarry. We can use the outtake by moving the arm to the outtake position and lowering it to the height of the Stone, which is also how we pick up our Capstone. To grab the Skystones, we start out with the camera centered on the first skystone, and then loop through VuForia for a while, and check whether a Skystone was detected or not. If no Skystone was found, we drive forward 8 inches (one Stone width), and repeat, until we find a Skystone. Once we do, we rotate 90 degrees, and lower the outtake. This seems like it would not be accurate because of the great degree of accuracy required to get the claw to fit on the stone, but it is actually substantially simpler and more accurate than using the intake. To use the intake, we would need to maneuver through a complex spline, as well as push the Stones next to the Skystone out of the way, without interfering with the Skystone. This is much more inaccurate than using the claw, because for the claw, we can get the Skystone position relative to us via VuForia, and then move to the correct position relative to the Skystone, and then just turn 90 degrees (turning is very accurate because we are using the gyro).\\\\
+    \textit{Foundation auto: }Michael tested and fine-tuned the auto code to move the Foundation into the Building Site. We pull the Foundation back and then turn it 90 degrees into the Building Site before releasing it and moving forward to either get a Skystone or park under the Skybridge.\\\\
+    Written by: Michael \& Rachel
+    \newBox
+    
+    Notebook\\\\
+    Rachel and Ori helped 7776 with their Engineering Notebook. Rachel fixed their command to format the X to fill the blank space in pages, while Ori edited some grammar and gave some advice.\\\\
+    Written by: Rachel
+    \newBox
+    
+    Driver Practice\\\\
+    Ori and Rachel practiced stacking Stones and picking up the Capstone. We realized that our Capstone is too short for us to use the intake, but we can grab it just with the claw in the outtake position and then lift it to the top of the Skyscraper. Currently, we can make a Skyscraper 8 Stones tall plus the Capstone. We had some issues with the tension in the belt for the lift, so we need to be careful to check it between matches at the meet. We also added code to manually control the positions of the arm, which will help us place the first block of the Skyscraper accurately instead of just dropping it on the Foundation. This also helps us when we pick up our Capstone. We also cut the bottom piece off our Capstone so it can essentially slide on top of the Skyscraper.\\\\
+    Written by: Rachel
+}
+
+
+
+\meetingnotes{12/14/19 1:00pm - 5:00pm}{League Meet 3}{Dominik, Julia, Liana Michael, Oliver, Rachel, Sarah}{
+
+    Overview & With the outtake completed and on the bot on Wednesday, Michael got a lot of time to test autonomous programs. We had an auto to grab a Skystone and the foundation, and then to park, as well as a program to grab a Skystone and park, grab the foundation and park, and just to park. Unfortunately Michael didn't get to test some of these auto's, and so some did not work. In a couple of our matches, when tele-op code was run, the app threw an error that was out of our control, and so we didn't get to score any points at all during those matches, however, when tele-op was working, we did manage to stack some Skystones. We ended up placing really bad i hate myself\\\\
+    
+    What went well & \begin{itemize}
+        \item Autonomous to grab a Skystone and grab foundation
+        \item Outtake got completed, and was functional to some degree
+    \end{itemize}\\\\
+    
+    What needs improvement & \begin{itemize}
+        \item Driver practice
+        \item Some trivial mistakes in certain autonomous programs
+        \item We were plagued by errors and crashes during this meet. It would be great to understand why these errors occur, and what we can do to prevent them.
+        \item Better lift for the outtake, specifically the belt
+    \end{itemize}
+}
+\end{document}

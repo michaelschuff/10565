@@ -1,0 +1,152 @@
+\definecolor{wilsongreen}{RGB}{38, 62, 33}
+\newcommand{\sbullet}[1]{\vspace{-1.2em}\begin{itemize}\item #1\end{itemize}}
+
+%Draws x at bottom of page if not whole page
+\newdimen\vspaceleft
+\newcommand{\xvspace}{
+    \vfuzz=1pt
+    \needspace{\baselineskip}
+
+    \vspaceleft=\textheight
+    \advance\vspaceleft by -\pagetotal
+    
+    \xleaders\vbox to \vspaceleft{%
+        \vspace{1em}\hspace{2pt}\begin{tikzpicture}%
+            \draw (4pt,1em) -- (\textwidth,\vspaceleft-2em);%
+            \draw (\textwidth,1em) -- (4pt,\vspaceleft-2em);%
+        \end{tikzpicture}\vspace{1em}%
+    }\vfill
+    
+    \clearpage
+}
+%Clears the entire page
+\newcommand{\xpage}{%
+    \renewcommand{\currentsection}{}%
+    \hspace{2pt}\begin{tikzpicture}%
+        \draw (4pt,1em) -- (\textwidth,\textheight);%
+        \draw (\textwidth,1em) -- (4pt,\textheight);%
+    \end{tikzpicture}%
+    \clearpage
+}
+\newcommand{\br}{\vspace{1em}\\}
+% standard spacing command between items in \tasks, \groups, etc.
+
+%standard spacing commands for generic tables
+\newcommand{\brc}{\\[0.3em]}
+\newcommand{\brd}{\\[1.6em]}
+
+% arguments: caption, file name; optional argument: rotation in degrees
+%This lowkey doesn't work so watch out
+\newcommand{\img}[3][0]{
+    \begin{figure}[ht]
+        \begin{center}
+            \includegraphics[width=.7776\textwidth,angle=#1]{#3}
+            \captionsetup{justification=centering}
+            \caption{#2}
+        \end{center}
+        
+    \end{figure}
+}
+\newcommand{\imgr}[2]{
+    \begin{center}
+        \includegraphics[width=.7776\textwidth]{#1}\\
+        {#2}\\
+    \end{center}
+}
+
+% make header rule green
+%\patchcmd{\headrule}{\hrule}{\color{wilsongreen}\hrule}{}{}
+
+% set lengths for sidebar
+\newlength{\outerheadwidth}
+\setlength{\outerheadwidth}{3em}
+\newlength{\outerheadsep}
+\setlength{\outerheadsep}{2em}
+
+% sidebar/footer variables
+\newcommand{\currentsection}{}
+\xdef\recordedby{}
+\xdef\daterecorded{}
+\xdef\reviewedby{}
+\xdef\datereviewed{}
+
+% sidebar command
+\newcommand*{\outerhead}{%
+  \bfseries\Huge%
+  \color{wilsongreen}%
+  \begin{picture}(0,0)
+    \put(0,\dimexpr\footskip + \textheight\relax){%
+      \makebox(\outerheadwidth,0)[t]{%
+        \rotatebox{\ifodd\value{page}-\fi 90}{\currentsection}%
+      }%
+    }%
+    \put(0,0){%
+      \makebox(\outerheadwidth,0)[b]{\vspace{-0.5em}\thepage}%
+    }%
+  \end{picture}%
+  \kern\outerheadwidth
+}
+
+% header style for signature page
+\fancypagestyle{signature_footer}{
+    \defaulthead
+    \cfoot{%
+        \vspace{-0.8em}%
+        \begin{tabularx}{\textwidth}{@{} l X l l @{}}%
+            Recorded By & Date & Reviewed By & Date \\
+            \hline\\[-1em]
+            \ifthenelse{\equal{\recordedby}{}}{-}{\recordedby} & \ifthenelse{\equal{\daterecorded}{}}{-}{\daterecorded} & \ifthenelse{\equal{\reviewedby}{}}{-}{\reviewedby} & \ifthenelse{\equal{\datereviewed}{}}{-}{\datereviewed}
+        \end{tabularx}%
+    }
+}
+% creates the signature at the end of an entry
+% arguments: recorder name, date recorded, reviewer name, date reviewed 
+\newcommand{\entrysignature}[4]{%
+    \xdef\recordedby{#1}%
+    \xdef\daterecorded{#2}%
+    \xdef\reviewedby{#3}%
+    \xdef\datereviewed{#4}%
+    \thispagestyle{signature_footer}%
+}
+
+%USE THIS functional command by rachel the notebook god instead of the weird 3 part command by benjamin
+%{written by}{date written}{reviewed by}{date reviewed}
+\newcommand{\writtenreviewed}[4]{
+    \begin{center}
+        \begin{tabular}{|p{.22\textwidth}|p{.22\textwidth}|p{.22\textwidth}|p{.22\textwidth}|}\hline
+             Written by&Date Written & Reviewed by & Date Reviewed\\
+             {#1}&{#2}&{#3}&{#4}\\
+        \end{tabular}\hline
+    \end{center}
+}
+
+\newcommand{\engineeringentry}[3]{
+    \subsection*{\Large {#1}}
+    \textit{{Team Members Attending: {#2}}}
+    \bigskip\\
+    
+    \begin{longtable}{ p{.5\textwidth} p{.5\textwidth}}
+        \textbf{Task} & \textbf{Reflection}\\
+        \toprule
+        \hspace{1in}
+        
+        {#3}
+    \end{longtable}\bottomrule
+}
+
+\newcommand{\sidesection}[1]{
+    \fancyhead[RO]{
+    \marginnote{
+        \begin{turn}{270} 
+        \huge {#1}
+        \end{turn}
+    }[3cm]
+}
+\fancyhead[LE]{
+    \marginnote{
+        \begin{turn}{90} 
+        \huge {#1}
+        \end{turn}
+    }[3cm]
+}
+}
