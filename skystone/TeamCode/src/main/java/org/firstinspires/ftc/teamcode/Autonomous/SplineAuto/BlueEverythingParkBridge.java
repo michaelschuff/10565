@@ -21,11 +21,10 @@ public class BlueEverythingParkBridge extends LinearOpMode {
     private VectorF skystonePosition = null;
 
 
-    private double whichSkystoneDist = 74;
+    private double whichSkystoneDist = 62;
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-31.5,61.5,0));
 
         camera = new VuforiaLib_Skystone();
         camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
@@ -39,7 +38,7 @@ public class BlueEverythingParkBridge extends LinearOpMode {
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .strafeRight(20)
+                        .strafeRight(20.5)
                         .build()
         );
 
@@ -70,10 +69,10 @@ public class BlueEverythingParkBridge extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .forward(7)
+                                .back(7)
                                 .build()
                 );
-                whichSkystoneDist -= 7;
+                whichSkystoneDist += 7;
             }
 
         }
@@ -103,7 +102,7 @@ public class BlueEverythingParkBridge extends LinearOpMode {
         sleep(1300);
         drive.toggleClaw();
         sleep(400);
-        drive.setArmPos(0.85, 0.15);
+        drive.setArmPos(0.8, 0.2);
         sleep(500);
         drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
@@ -115,7 +114,7 @@ public class BlueEverythingParkBridge extends LinearOpMode {
         drive.turnSync(Math.toRadians(90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .back(8)
+                        .back(10)
                         .build()
         );
         drive.toggleClaw();

@@ -14,7 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 
 @Autonomous(group = "Auto", name = "BlueDoubleSkystone")
-public class RedDoubleSkystone extends LinearOpMode {
+public class BlueDoubleSkystone extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;

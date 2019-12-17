@@ -20,17 +20,11 @@ public class RedEverythingParkBridge extends LinearOpMode {
     private VectorF skystonePosition = null;
 
 
-    private double whichSkystoneDist = 74;
-
-
-    public BlueEverythingParkBridge() {
-        this.msStuckDetectInit = 10000;
-    }
+    private double whichSkystoneDist = 68;
 
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
-        drive.setPoseEstimate(new Pose2d(-31.5,61.5,0));
 
         camera = new VuforiaLib_Skystone();
         camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
@@ -75,10 +69,10 @@ public class RedEverythingParkBridge extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .back(7)
+                                .forward(7)
                                 .build()
                 );
-                whichSkystoneDist -= 7;
+                whichSkystoneDist += 7;
             }
 
         }
@@ -93,11 +87,10 @@ public class RedEverythingParkBridge extends LinearOpMode {
         } else {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-                            .forward(1 - yPos / 25.4)
+                            .forward(-yPos / 25.4)
                             .build()
             );
         }
-
 
         drive.turnSync(Math.toRadians(90));
 
@@ -108,7 +101,7 @@ public class RedEverythingParkBridge extends LinearOpMode {
         sleep(1300);
         drive.toggleClaw();
         sleep(400);
-        drive.setArmPos(0.85, 0.15);
+        drive.setArmPos(0.8, 0.2);
         sleep(500);
         drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
@@ -120,14 +113,12 @@ public class RedEverythingParkBridge extends LinearOpMode {
         drive.turnSync(Math.toRadians(90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .back(8)
+                        .back(10)
                         .build()
         );
         drive.toggleClaw();
 
         grabFoundation();
-
-
 
         try {
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));
