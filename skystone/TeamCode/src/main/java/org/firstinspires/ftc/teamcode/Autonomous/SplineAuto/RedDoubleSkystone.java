@@ -1,23 +1,27 @@
 package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
 
-import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+        import com.acmerobotics.roadrunner.geometry.Pose2d;
+        import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
+        import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+        import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
+        import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+        import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
+        import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
+        import java.io.BufferedWriter;
+        import java.io.File;
+        import java.io.FileWriter;
 
-@Autonomous(group = "Auto", name = "BlueDoubleSkystone")
-public class RedDoubleSkystone extends LinearOpMode {
+@Autonomous(group = "Auto", name = "RedDoubleSkystone")
+public class BlueDoubleSkystone extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
+
+    public BlueDoubleSkystone() {
+        this.msStuckDetectInit = 10000;
+    }
 
     @Override
     public void runOpMode() {
@@ -65,7 +69,7 @@ public class RedDoubleSkystone extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .forward(7)
+                                .back(7)
                                 .build()
                 );
                 b = true;
@@ -100,7 +104,7 @@ public class RedDoubleSkystone extends LinearOpMode {
         sleep(400);
         drive.setArmPos(0.85, 0.15);
         sleep(500);
-        drive.turnSync(Math.toRadians(-90));
+        drive.turnSync(Math.toRadians(90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .back(70)
@@ -111,13 +115,13 @@ public class RedDoubleSkystone extends LinearOpMode {
 //        if (b) {
 //            drive.followTrajectorySync(
 //                    drive.trajectoryBuilder()
-//                            .forward(94)
+//                            .forward(90)
 //                            .build()
 //            );
 //        } else {
 //            drive.followTrajectorySync(
 //                    drive.trajectoryBuilder()
-//                            .forward(86)
+//                            .forward(82)
 //                            .build()
 //            );
 //        }
@@ -142,11 +146,12 @@ public class RedDoubleSkystone extends LinearOpMode {
 //        );
 //        drive.toggleClaw();
 
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .forward(30)
-                        .build()
+
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .forward(30)
+                .build()
         );
+
 
         try {
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));

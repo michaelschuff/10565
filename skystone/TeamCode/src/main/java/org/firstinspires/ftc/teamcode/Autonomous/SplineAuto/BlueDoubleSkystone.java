@@ -13,15 +13,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-@Autonomous(group = "Auto", name = "RedDoubleSkystone")
-public class BlueDoubleSkystone extends LinearOpMode {
+@Autonomous(group = "Auto", name = "BlueDoubleSkystone")
+public class RedDoubleSkystone extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
-
-    public BlueDoubleSkystone() {
-        this.msStuckDetectInit = 10000;
-    }
 
     @Override
     public void runOpMode() {
@@ -69,7 +65,7 @@ public class BlueDoubleSkystone extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .back(7)
+                                .forward(7)
                                 .build()
                 );
                 b = true;
@@ -104,7 +100,7 @@ public class BlueDoubleSkystone extends LinearOpMode {
         sleep(400);
         drive.setArmPos(0.85, 0.15);
         sleep(500);
-        drive.turnSync(Math.toRadians(90));
+        drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .back(70)
@@ -115,13 +111,13 @@ public class BlueDoubleSkystone extends LinearOpMode {
 //        if (b) {
 //            drive.followTrajectorySync(
 //                    drive.trajectoryBuilder()
-//                            .forward(90)
+//                            .forward(94)
 //                            .build()
 //            );
 //        } else {
 //            drive.followTrajectorySync(
 //                    drive.trajectoryBuilder()
-//                            .forward(82)
+//                            .forward(86)
 //                            .build()
 //            );
 //        }
@@ -146,12 +142,11 @@ public class BlueDoubleSkystone extends LinearOpMode {
 //        );
 //        drive.toggleClaw();
 
-
-        drive.followTrajectorySync(drive.trajectoryBuilder()
-                .forward(30)
-                .build()
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .forward(30)
+                        .build()
         );
-
 
         try {
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));

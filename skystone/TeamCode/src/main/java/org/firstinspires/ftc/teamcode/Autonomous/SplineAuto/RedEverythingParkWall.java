@@ -1,3 +1,4 @@
+
 package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -24,6 +25,8 @@ public class RedEverythingParkWall extends LinearOpMode {
 
 
     private double whichSkystoneDist = 74;
+
+
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
@@ -33,14 +36,16 @@ public class RedEverythingParkWall extends LinearOpMode {
         camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
         camera.start();
 
+        drive.setClawGrabbing(false);
+
         waitForStart();
 
         drive.releaseIntake();
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                    .strafeRight(20)
-                .build()
+                        .strafeRight(20.5)
+                        .build()
         );
 
 
@@ -70,7 +75,7 @@ public class RedEverythingParkWall extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .forward(7)
+                                .back(7)
                                 .build()
                 );
                 whichSkystoneDist -= 7;
@@ -93,6 +98,7 @@ public class RedEverythingParkWall extends LinearOpMode {
             );
         }
 
+
         drive.turnSync(Math.toRadians(90));
 
 
@@ -107,7 +113,7 @@ public class RedEverythingParkWall extends LinearOpMode {
         drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .forward(whichSkystoneDist)
+                        .back(whichSkystoneDist)
                         .build()
         );
 
@@ -120,6 +126,8 @@ public class RedEverythingParkWall extends LinearOpMode {
         drive.toggleClaw();
 
         grabFoundation();
+
+
 
         try {
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));
@@ -139,13 +147,13 @@ public class RedEverythingParkWall extends LinearOpMode {
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .forward(15)
-                        .splineTo(new Pose2d(20, 5, Math.toRadians(90)))
+                        .splineTo(new Pose2d(20, -5, Math.toRadians(-90)))
                         .back(15)
                         .build()
         );
         drive.toggleFoundation();
         sleep(500);
-        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(15).build());
+        drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(15).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
         drive.releaseIntake();
     }

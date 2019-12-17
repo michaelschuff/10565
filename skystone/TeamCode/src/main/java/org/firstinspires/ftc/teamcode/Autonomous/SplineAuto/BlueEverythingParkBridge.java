@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
 
+
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -13,7 +14,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-@Autonomous(group = "Auto", name = "RedEverythingParkBridge")
+@Autonomous(group = "Auto", name = "BlueEverythingParkBridge")
 public class BlueEverythingParkBridge extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
@@ -21,12 +22,6 @@ public class BlueEverythingParkBridge extends LinearOpMode {
 
 
     private double whichSkystoneDist = 74;
-
-
-    public BlueEverythingParkBridge() {
-        this.msStuckDetectInit = 10000;
-    }
-
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
@@ -36,13 +31,15 @@ public class BlueEverythingParkBridge extends LinearOpMode {
         camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
         camera.start();
 
+        drive.setClawGrabbing(false);
+
         waitForStart();
 
         drive.releaseIntake();
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .strafeRight(20.5)
+                        .strafeRight(20)
                         .build()
         );
 
@@ -73,13 +70,14 @@ public class BlueEverythingParkBridge extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .back(7)
+                                .forward(7)
                                 .build()
                 );
                 whichSkystoneDist -= 7;
             }
 
         }
+
 
         if (yPos / 25.4 - 1 > 0) {
             drive.followTrajectorySync(
@@ -96,7 +94,6 @@ public class BlueEverythingParkBridge extends LinearOpMode {
             );
         }
 
-
         drive.turnSync(Math.toRadians(90));
 
 
@@ -111,7 +108,7 @@ public class BlueEverythingParkBridge extends LinearOpMode {
         drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .back(whichSkystoneDist)
+                        .forward(whichSkystoneDist)
                         .build()
         );
 
@@ -124,8 +121,6 @@ public class BlueEverythingParkBridge extends LinearOpMode {
         drive.toggleClaw();
 
         grabFoundation();
-
-
 
         try {
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));
@@ -145,13 +140,13 @@ public class BlueEverythingParkBridge extends LinearOpMode {
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .forward(15)
-                        .splineTo(new Pose2d(20, -5, Math.toRadians(-90)))
+                        .splineTo(new Pose2d(20, 5, Math.toRadians(90)))
                         .back(15)
                         .build()
         );
         drive.toggleFoundation();
         sleep(500);
-        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(7).build());
+        drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(7).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
         drive.releaseIntake();
     }
