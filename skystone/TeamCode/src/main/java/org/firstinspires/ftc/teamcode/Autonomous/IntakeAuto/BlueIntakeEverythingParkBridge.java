@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
+package org.firstinspires.ftc.teamcode.Autonomous.IntakeAuto;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;

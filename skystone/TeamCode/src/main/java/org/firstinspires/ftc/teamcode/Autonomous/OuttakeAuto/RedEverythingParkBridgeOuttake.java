@@ -1,9 +1,9 @@
-package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
-
+package org.firstinspires.ftc.teamcode.Autonomous.OuttakeAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -15,16 +15,18 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-@Autonomous(group = "Auto", name = "BlueEverythingParkBridgeOuttake")
-public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
+@Disabled
+@Autonomous(group = "Auto", name = "RedEverythingParkBridgeOuttake")
+public class RedEverythingParkBridgeOuttake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
 
+
+
     private double startingAngle = Math.toRadians(0);
+    private double whichSkystoneDist = 68;
 
-
-    private double whichSkystoneDist = 62;
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
@@ -34,6 +36,7 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
         camera.start();
 
         drive.setClawGrabbing(false);
+        drive.setFoundationGrabbing(false);
 
         waitForStart();
 
@@ -72,14 +75,13 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .back(7)
+                                .forward(7)
                                 .build()
                 );
                 whichSkystoneDist += 7;
             }
 
         }
-
 
         if (yPos / 25.4 - 1 > 0) {
             drive.followTrajectorySync(
@@ -91,7 +93,7 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
         } else {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-                            .forward(1 - yPos / 25.4)
+                            .forward(-yPos / 25.4)
                             .build()
             );
         }
@@ -110,7 +112,7 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
         drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .forward(whichSkystoneDist)
+                        .back(whichSkystoneDist)
                         .build()
         );
 
@@ -144,13 +146,13 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .forward(15)
-                        .splineTo(new Pose2d(20, 5, Math.toRadians(90)))
+                        .splineTo(new Pose2d(20, -5, Math.toRadians(-90)))
                         .back(15)
                         .build()
         );
         drive.toggleFoundation();
         sleep(500);
-        drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(7).build());
+        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(7).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
         drive.releaseIntake();
     }
