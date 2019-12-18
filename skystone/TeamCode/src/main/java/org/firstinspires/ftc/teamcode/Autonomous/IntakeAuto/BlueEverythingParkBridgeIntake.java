@@ -1,7 +1,7 @@
-package org.firstinspires.ftc.teamcode.Autonomous.OuttakeAuto;
-
+package org.firstinspires.ftc.teamcode.Autonomous.IntakeAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
+import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -15,15 +15,21 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-@Autonomous(group = "Auto", name = "BlueEverythingParkBridgeOuttake")
-public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
+@Autonomous(group = "Auto")
+public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
 
-    private double startingAngle = 0;
+    //phone offsets
+    private double pxOffset = 0, pyOffset = 0, pzOffset = 0;
 
-    private double whichSkystoneDist = 62;
+    //field Constants
+    private double tileWidth = 23.5, botLength = 17.25, stoneWidth = 4, stoneLength = 8, stoneHeight = 4;
+
+    //starting parameters
+    private double startingAngle = Math.toRadians(0), startingX = -3 * tileWidth + 5.5 * stoneLength, startingY = -3 * tileWidth + botLength / 2 - pxOffset;
+
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
@@ -33,6 +39,7 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
         camera.start();
 
         drive.setClawGrabbing(false);
+        drive.setPoseEstimate(new Pose2d(startingX, startingY, startingAngle));
 
         waitForStart();
 
@@ -40,7 +47,7 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .strafeRight(20.5)
+                        .strafeTo(new Vector2d(startingX, startingY - 20))
                         .build()
         );
 
@@ -56,7 +63,8 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
             while(opModeIsActive()) {
                 camera.loop(false);
                 try {
-                    yPos = camera.getFieldPosition().get(1);
+                    fieldPosition = camera.getFieldPosition();
+                    yPos = fieldPosition.get(1);
                     a = true;
                     break;
                 } catch (Exception e) {
@@ -74,7 +82,6 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
                                 .back(7)
                                 .build()
                 );
-                whichSkystoneDist += 7;
             }
 
         }
@@ -109,7 +116,7 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
         drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .forward(whichSkystoneDist)
+                        .strafeTo(new Vector2d(2 * tileWidth, drive.getPoseEstimate().getY()))
                         .build()
         );
 
