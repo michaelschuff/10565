@@ -6,6 +6,7 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase.HEADING_PID;
 
@@ -34,11 +35,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     public static double maxLiftPower = 0.75, maxIntakePower = 1;
 
-    private double maxSecondaryPower = .5;
-
-    public FieldCentricMecanumDrive() {
-        this.msStuckDetectInit = 10000;
-    }
+    private double SloMoPower = .5;
 
     @Override
     public void init() {
@@ -46,9 +43,9 @@ public class FieldCentricMecanumDrive extends OpMode {
             drive.releaseIntake();
         }
         try {
-            File file = new File("../Data/StartingDirection.txt");
+            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
             Scanner sc = new Scanner(file);
-            startingDirection = Math.toRadians(Integer.parseInt(sc.nextLine()));
+            startingDirection = Float.parseFloat(sc.nextLine());
             sc.close();
         } catch (Exception e){
 
@@ -72,8 +69,15 @@ public class FieldCentricMecanumDrive extends OpMode {
     public void loop() {
 
 
-        tempx = gamepad1.left_stick_x;
-        y = -gamepad1.left_stick_y;
+        if (gamepad1.b) {
+            tempx = SloMoPower * gamepad1.left_stick_x;
+            y = SloMoPower * -gamepad1.left_stick_y;
+        } else {
+            tempx = gamepad1.left_stick_x;
+            y = -gamepad1.left_stick_y;
+        }
+
+
 
         double tempTheta = Math.atan2(y, tempx);
 
@@ -93,19 +97,15 @@ public class FieldCentricMecanumDrive extends OpMode {
 
 
 
-        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
-        if (absoluteRotation != null) {
-            absoluteRotation = absoluteRotationPIDController.update(absoluteRotation);
-        } else {
-            rotation = Math.pow(gamepad1.right_stick_x, 3);
-        }
+//        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
+//        if (absoluteRotation != null) {
+//            absoluteRotation = absoluteRotationPIDController.update(absoluteRotation);
+//        } else {
+//
+//        }
+        rotation = Math.pow(gamepad1.right_stick_x, 3);
         x = x * Math.abs(x);
         y = y * Math.abs(y);
-
-        if (gamepad1.b) {
-            x = x * maxSecondaryPower;
-            y = y * maxSecondaryPower;
-        }
 
         motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
 
@@ -183,11 +183,9 @@ public class FieldCentricMecanumDrive extends OpMode {
 //        }
 
         drive.setLiftPower(maxLiftPower * (gamepad2.right_trigger - gamepad2.left_trigger));
-        telemetry.addData("liftPower",maxPower * (gamepad2.right_trigger - gamepad2.left_trigger));
-        telemetry.addData("leftServo", drive.lArm.getPosition());
-        telemetry.addData("rightServo", drive.rArm.getPosition());
-        telemetry.addData("upDpad", gamepad1.dpad_up);
-        telemetry.addData("downDpad", gamepad1.dpad_down);
+        telemetry.addData("currentOffset", Math.toDegrees(theta));
+        telemetry.addData("imu angle", Math.toDegrees(drive.getRawExternalHeading()));
+        telemetry.addData("startingDirection", Math.toDegrees(startingDirection));
         telemetry.update();
     }
 

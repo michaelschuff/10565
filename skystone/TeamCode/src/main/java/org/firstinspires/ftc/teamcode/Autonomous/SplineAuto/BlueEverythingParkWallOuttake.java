@@ -1,12 +1,13 @@
-
 package org.firstinspires.ftc.teamcode.Autonomous.SplineAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 import org.firstinspires.ftc.teamcode.util.TaskThread;
 import org.firstinspires.ftc.teamcode.util.ThreadLinearOpMode;
@@ -17,16 +18,17 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.Vector;
 
-@Autonomous(group = "Auto", name = "BlueEverythingParkWall")
-public class RedEverythingParkWall extends LinearOpMode {
+@Disabled
+@Autonomous(group = "Auto", name = "BlueEverythingParkWallOuttake")
+public class BlueEverythingParkWallOuttake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
 
 
+    private double startingAngle = Math.toRadians(0);
+
     private double whichSkystoneDist = 74;
-
-
     @Override
     public void runOpMode() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
@@ -44,7 +46,7 @@ public class RedEverythingParkWall extends LinearOpMode {
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .strafeRight(20.5)
+                        .strafeRight(20)
                         .build()
         );
 
@@ -75,7 +77,7 @@ public class RedEverythingParkWall extends LinearOpMode {
             } else {
                 drive.followTrajectorySync(
                         drive.trajectoryBuilder()
-                                .back(7)
+                                .forward(7)
                                 .build()
                 );
                 whichSkystoneDist -= 7;
@@ -98,7 +100,6 @@ public class RedEverythingParkWall extends LinearOpMode {
             );
         }
 
-
         drive.turnSync(Math.toRadians(90));
 
 
@@ -113,7 +114,7 @@ public class RedEverythingParkWall extends LinearOpMode {
         drive.turnSync(Math.toRadians(-90));
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .back(whichSkystoneDist)
+                        .forward(whichSkystoneDist)
                         .build()
         );
 
@@ -127,11 +128,11 @@ public class RedEverythingParkWall extends LinearOpMode {
 
         grabFoundation();
 
-
-
         try {
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));
-            fileOut.write(String.valueOf(Math.toDegrees(drive.getRawExternalHeading())));
+            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(Double.toString(drive.getRawExternalHeading() + Math.toRadians(startingAngle)));
             fileOut.close();
 
         } catch (Exception e) {
@@ -147,13 +148,13 @@ public class RedEverythingParkWall extends LinearOpMode {
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .forward(15)
-                        .splineTo(new Pose2d(20, -5, Math.toRadians(-90)))
+                        .splineTo(new Pose2d(20, 5, Math.toRadians(90)))
                         .back(15)
                         .build()
         );
         drive.toggleFoundation();
         sleep(500);
-        drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(15).build());
+        drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(15).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
         drive.releaseIntake();
     }

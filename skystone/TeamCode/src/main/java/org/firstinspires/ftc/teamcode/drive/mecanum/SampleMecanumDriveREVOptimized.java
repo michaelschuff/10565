@@ -12,6 +12,7 @@ import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -36,6 +37,7 @@ import org.openftc.revextensions2.RevBulkData;
  * Optimized mecanum drive implementation for REV ExHs. The time savings may significantly improve
  * trajectory following performance with moderate additional complexity.
  */
+@Disabled
 @Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
@@ -45,7 +47,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.45, lFoundation1 = 0.35, intake1 = 0.67, lArm1 = 0.45, rArm1 = 0.55, claw1 = 0.37;
+    private static final double rFoundation1 = 0.35, lFoundation1 = 0.25, intake1 = 0.67, lArm1 = 0.45, rArm1 = 0.55, claw1 = 0.37;
 
     //activated servo positions
     private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, intake2 = 1, lArm2 = 0.85, rArm2 = 0.15, claw2 = 0.075;
@@ -70,22 +72,16 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         bl = hardwareMap.get(ExpansionHubMotor.class, "bl");
         br = hardwareMap.get(ExpansionHubMotor.class, "br");
         fr = hardwareMap.get(ExpansionHubMotor.class, "fr");
-
         lIntake = hardwareMap.get(ExpansionHubMotor.class, "lIntake");
         rIntake = hardwareMap.get(ExpansionHubMotor.class, "rIntake");
-
         lift = hardwareMap.get(ExpansionHubMotor.class, "lift");
-
         motors = Arrays.asList(fl, bl, br, fr);
 
         intake = hardwareMap.get(Servo.class, "intake");
-
         rFoundation = hardwareMap.get(Servo.class, "rFoundation");
         lFoundation = hardwareMap.get(Servo.class, "lFoundation");
-
         lArm = hardwareMap.get(Servo.class, "lArm");
         rArm = hardwareMap.get(Servo.class, "rArm");
-
         claw = hardwareMap.get(Servo.class, "claw");
 
         for (ExpansionHubMotor motor : motors) {
@@ -105,7 +101,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
-        rIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        lIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 //        lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap));
@@ -191,6 +187,11 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         isFoundationGrabbed = !isFoundationGrabbed;
         rFoundation.setPosition(isFoundationGrabbed ? rFoundation2 : rFoundation1);
         lFoundation.setPosition(isFoundationGrabbed ? lFoundation2 : lFoundation1);
+    }
+
+    public void setFoundationGrabbing(boolean isGrabbing) {
+        rFoundation.setPosition(isGrabbing ? rFoundation2 : rFoundation1);
+        lFoundation.setPosition(isGrabbing ? lFoundation2 : lFoundation1);
     }
 
     public void toggleArm() {

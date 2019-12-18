@@ -7,6 +7,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
@@ -14,11 +15,13 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
-@Autonomous(group = "Auto", name = "BlueEverythingParkBridge")
-public class BlueEverythingParkBridge extends LinearOpMode {
+@Autonomous(group = "Auto", name = "BlueEverythingParkBridgeOuttake")
+public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF skystonePosition = null;
+
+    private double startingAngle = Math.toRadians(0);
 
 
     private double whichSkystoneDist = 62;
@@ -122,8 +125,10 @@ public class BlueEverythingParkBridge extends LinearOpMode {
         grabFoundation();
 
         try {
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(new File("../Data/StartingDirection.txt")));
-            fileOut.write(String.valueOf(Math.toDegrees(drive.getRawExternalHeading())));
+            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(Double.toString(drive.getRawExternalHeading() + Math.toRadians(startingAngle)));
             fileOut.close();
 
         } catch (Exception e) {
