@@ -65,7 +65,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit = BNO055IMU.AngleUnit.RADIANS;
         imu.initialize(parameters);
-
         BNO055IMUUtil.remapAxes(imu, AxesOrder.ZYX, AxesSigns.NPN);
 
         fl = hardwareMap.get(ExpansionHubMotor.class, "fl");

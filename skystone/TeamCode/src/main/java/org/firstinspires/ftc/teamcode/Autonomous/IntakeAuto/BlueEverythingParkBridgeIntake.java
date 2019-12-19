@@ -19,7 +19,12 @@ import java.io.FileWriter;
 public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
-    private VectorF skystonePosition = null;
+    private VectorF vuforiaPosition = null;
+    //TODO: raise lift by 6.29921in
+    //strafe to foundation position
+
+
+    int SkystonePosition = -1;
 
     //phone offsets
     private double pxOffset = 0, pyOffset = 0, pzOffset = 0;
@@ -39,6 +44,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         camera.start();
 
         drive.setClawGrabbing(false);
+        drive.setFoundationGrabbing(false);
         drive.setPoseEstimate(new Pose2d(startingX, startingY, startingAngle));
 
         waitForStart();
@@ -51,56 +57,41 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                         .build()
         );
 
-
-
-        Float yPos = null;
-        VectorF fieldPosition = null;
-        boolean a = false;
-
-
-        while (true) {
-            int c = 0;
-            while(opModeIsActive()) {
-                camera.loop(false);
-                try {
-                    fieldPosition = camera.getFieldPosition();
-                    yPos = fieldPosition.get(1);
-                    a = true;
-                    break;
-                } catch (Exception e) {
-                    c++;
-                    if (c > 7500) {
-                        break;
-                    }
-                }
-            }
-            if (a) {
-                break;
-            } else {
+        vuforiaPosition = GetVuforia(7500);
+        if (vuforiaPosition != null) {
+            if (vuforiaPosition.get(1) < 0) {//TODO: figure out which vuforia value to get and then change this code accordingly
+                SkystonePosition = 1;
+                //TODO: put where bot should be for middle skystone here (blue side furthest on left)
                 drive.followTrajectorySync(
-                        drive.trajectoryBuilder()
-                                .back(7)
+                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
+                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
+                                .build()
+                );
+            } else {
+                SkystonePosition = 2;
+                //TODO: put where bot should be for edge skystone here (blue side second from left)
+                drive.followTrajectorySync(
+                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
+                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
                                 .build()
                 );
             }
 
-        }
-
-
-        if (yPos / 25.4 - 1 > 0) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-                            .back(yPos / 25.4 - 1)
-                            .build()
-            );
-
         } else {
+            //TODO: put where bot should be for inner skystone here (blue side third from left)
             drive.followTrajectorySync(
                     drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-                            .forward(1 - yPos / 25.4)
+                            .splineTo(new Pose2d(-16.26772, 10.82677, Math.toRadians(-110)))
                             .build()
             );
         }
+
+
+
+
+
+
+        //none of this code is for intake auto yet
 
         drive.turnSync(Math.toRadians(90));
 
@@ -130,6 +121,8 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
         grabFoundation();
 
+
+        
         try {
             File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
 
@@ -158,6 +151,21 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         sleep(500);
         drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(7).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
-        drive.releaseIntake();
+    }
+
+    private VectorF GetVuforia(int loops) {
+        while(opModeIsActive()) {
+            camera.loop(false);
+            try {
+                telemetry.addData("c",loops);
+                telemetry.update();
+                return camera.getFieldPosition();
+            } catch (Exception e) {
+                loops--;
+                if (loops < 0) {
+                    return null;
+                }
+            }
+        }
     }
 }
