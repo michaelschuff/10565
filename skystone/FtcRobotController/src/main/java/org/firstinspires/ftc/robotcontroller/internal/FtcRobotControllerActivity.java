@@ -254,6 +254,7 @@ public class FtcRobotControllerActivity extends Activity
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
+	Thread.setDefaultUncaughtExceptionHandler(new DefaultExceptionHandler(this, context));
     if (enforcePermissionValidator()) {
       return;
     }

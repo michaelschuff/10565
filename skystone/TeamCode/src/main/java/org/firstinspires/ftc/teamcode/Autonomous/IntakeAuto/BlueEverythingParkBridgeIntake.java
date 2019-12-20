@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.Autonomous.IntakeAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.trajectory.TemporalMarker;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -14,6 +16,7 @@ import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.List;
 
 @Autonomous(group = "Auto")
 public class BlueEverythingParkBridgeIntake extends LinearOpMode {
@@ -37,6 +40,55 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+
+        initHardware();
+
+        if (isStopRequested()) return;
+
+        waitForStart();
+
+        if (isStopRequested()) return;
+        grabFirstSkystone();
+
+        stackSkystone();
+
+        grabSecondSkystone();
+
+        stackSecondSkystone();
+
+        grabFoundation();
+
+
+
+        try {
+            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
+
+            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+            fileOut.write(Double.toString(drive.getRawExternalHeading() + Math.toRadians(startingAngle)));
+            fileOut.close();
+
+        } catch (Exception e) {
+
+        }
+    }
+
+    private VectorF GetVuforia(int loops) {
+        while(opModeIsActive()) {
+            camera.loop(false);
+            try {
+                telemetry.addData("c",loops);
+                telemetry.update();
+                return camera.getFieldPosition();
+            } catch (Exception e) {
+                loops--;
+                if (loops < 0) {
+                    return null;
+                }
+            }
+        }
+    }
+
+    private void initHardware() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
         camera = new VuforiaLib_Skystone();
@@ -46,10 +98,11 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         drive.setClawGrabbing(false);
         drive.setFoundationGrabbing(false);
         drive.setPoseEstimate(new Pose2d(startingX, startingY, startingAngle));
+    }
 
-        waitForStart();
-
+    private void grabFirstSkystone() {
         drive.releaseIntake();
+        drive.setIntakePower(-1, -1);
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
@@ -84,62 +137,80 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                             .splineTo(new Pose2d(-16.26772, 10.82677, Math.toRadians(-110)))
                             .build()
             );
+
         }
+        drive.setClawGrabbing(true);
+        drive.setIntakePower(0, 0);
+    }
 
+    private void stackSkystone() {
+        //TODO: put position of bot where we stack on initial foundation position
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .reverse()
+                        .splineTo(new Pose2d(40, 30, Math.toRadians(-90)))
+                        .build()
+        );
 
-
-
-
-
-        //none of this code is for intake auto yet
-
-        drive.turnSync(Math.toRadians(90));
-
-
+        //TODO: find correct delay for inbetween these
         drive.setArmPos(1, 0);
+        drive.setClawGrabbing(false);
+        drive.resetArm();
+    }
 
-
-        sleep(1300);
-        drive.toggleClaw();
-        sleep(400);
-        drive.setArmPos(0.8, 0.2);
-        sleep(500);
-        drive.turnSync(Math.toRadians(-90));
+    private void stackSecondSkystone() {
+        //TODO: put position of bot where we stack on initial foundation position
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(2 * tileWidth, drive.getPoseEstimate().getY()))
+                        .reverse()
+                        .splineTo(new Pose2d(40, 30, Math.toRadians(-90)))
                         .build()
         );
 
-        drive.turnSync(Math.toRadians(90));
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .back(10)
-                        .build()
-        );
-        drive.toggleClaw();
+        //TODO: find correct delay for inbetween these
+        //TODO: add pid onto lift and tune it and then set it to height we need to stack (about 4-6 in is good)
+        drive.setArmPos(1, 0);
+        drive.setClawGrabbing(false);
+        drive.resetArm();
+    }
 
-        grabFoundation();
-
-
-        
-        try {
-            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(Double.toString(drive.getRawExternalHeading() + Math.toRadians(startingAngle)));
-            fileOut.close();
-
-        } catch (Exception e) {
-
+    private void grabSecondSkystone() {
+        drive.setIntakePower(-1, -1);
+        //TODO: put position of bot where we grab corresponding skystone
+        if (SkystonePosition == 0) {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .splineTo(new Pose2d(0, 45, Math.toRadians(15)))
+                            .splineTo(new Pose2d(-47, 25, Math.toRadians(30)))
+                            .build()
+            );
+        } if (SkystonePosition == 1) {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .splineTo(new Pose2d(0, 45, Math.toRadians(12)))
+                            .splineTo(new Pose2d(-55, 25, Math.toRadians(30)))
+                            .build()
+            );
+        } else {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .splineTo(new Pose2d(0, 40, Math.toRadians(5)))
+                            .splineTo(new Pose2d(-63, 25, Math.toRadians(30)))
+                            .build()
+            );
         }
+        drive.setIntakePower(0, 0);
+
     }
 
     private void grabFoundation() {
+        //TODO: Optimize this. we may not need to push all the way against wall, just get it in asap and go to bridge
+
         drive.toggleFoundation();
         sleep(500);
         drive.setPoseEstimate(new Pose2d(0, 0, 0));
 
+        //TODO: find actualy position to spline to
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .forward(15)
@@ -151,21 +222,5 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         sleep(500);
         drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(7).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
-    }
-
-    private VectorF GetVuforia(int loops) {
-        while(opModeIsActive()) {
-            camera.loop(false);
-            try {
-                telemetry.addData("c",loops);
-                telemetry.update();
-                return camera.getFieldPosition();
-            } catch (Exception e) {
-                loops--;
-                if (loops < 0) {
-                    return null;
-                }
-            }
-        }
     }
 }
