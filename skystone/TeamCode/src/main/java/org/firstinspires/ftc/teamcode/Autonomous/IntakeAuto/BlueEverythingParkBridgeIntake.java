@@ -36,7 +36,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private double tileWidth = 23.5, botLength = 17.25, stoneWidth = 4, stoneLength = 8, stoneHeight = 4;
 
     //starting parameters
-    private double startingAngle = Math.toRadians(0), startingX = -3 * tileWidth + 5.5 * stoneLength, startingY = -3 * tileWidth + botLength / 2 - pxOffset;
+    private double startingAngle = Math.toRadians(-90), startingX = -33, startingY = 70.5 - botLength / 2;
 
     @Override
     public void runOpMode() {
@@ -50,13 +50,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         if (isStopRequested()) return;
         grabFirstSkystone();
 
-        stackSkystone();
-
-        grabSecondSkystone();
-
-        stackSecondSkystone();
-
-        grabFoundation();
+//        stackSkystone();
+//
+//        grabSecondSkystone();
+//
+//        stackSecondSkystone();
+//
+//        grabFoundation();
 
 
 
@@ -76,9 +76,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         while(opModeIsActive()) {
             camera.loop(false);
             try {
+                VectorF a = camera.getFieldPosition();
                 telemetry.addData("c",loops);
+                telemetry.addData("x", a.get(0));
+                telemetry.addData("y", a.get(1));
+                telemetry.addData("z", a.get(2));
                 telemetry.update();
-                return camera.getFieldPosition();
+                return a;
             } catch (Exception e) {
                 loops--;
                 if (loops < 0) {
@@ -86,6 +90,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                 }
             }
         }
+        return null;
     }
 
     private void initHardware() {
@@ -96,51 +101,51 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         camera.start();
 
         drive.setClawGrabbing(false);
-        drive.setFoundationGrabbing(false);
+//        drive.setFoundationGrabbing(false);
         drive.setPoseEstimate(new Pose2d(startingX, startingY, startingAngle));
     }
 
     private void grabFirstSkystone() {
         drive.releaseIntake();
-        drive.setIntakePower(-1, -1);
+//        drive.setIntakePower(-1, -1);
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(startingX, startingY - 20))
+                        .strafeTo(new Vector2d(-31, 47.25))
                         .build()
         );
 
         vuforiaPosition = GetVuforia(7500);
-        if (vuforiaPosition != null) {
-            if (vuforiaPosition.get(1) < 0) {//TODO: figure out which vuforia value to get and then change this code accordingly
-                SkystonePosition = 1;
-                //TODO: put where bot should be for middle skystone here (blue side furthest on left)
-                drive.followTrajectorySync(
-                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
-                                .build()
-                );
-            } else {
-                SkystonePosition = 2;
-                //TODO: put where bot should be for edge skystone here (blue side second from left)
-                drive.followTrajectorySync(
-                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
-                                .build()
-                );
-            }
-
-        } else {
-            //TODO: put where bot should be for inner skystone here (blue side third from left)
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-                            .splineTo(new Pose2d(-16.26772, 10.82677, Math.toRadians(-110)))
-                            .build()
-            );
-
-        }
-        drive.setClawGrabbing(true);
-        drive.setIntakePower(0, 0);
+//        if (vuforiaPosition != null) {
+//            if (vuforiaPosition.get(1) < 0) {//TODO: figure out which vuforia value to get and then change this code accordingly
+//                SkystonePosition = 1;
+//                //TODO: put where bot should be for middle skystone here (blue side furthest on left)
+//                drive.followTrajectorySync(
+//                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
+//                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
+//                                .build()
+//                );
+//            } else {
+//                SkystonePosition = 2;
+//                //TODO: put where bot should be for edge skystone here (blue side second from left)
+//                drive.followTrajectorySync(
+//                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
+//                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
+//                                .build()
+//                );
+//            }
+//
+//        } else {
+//            //TODO: put where bot should be for inner skystone here (blue side third from left)
+//            drive.followTrajectorySync(
+//                    drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
+//                            .splineTo(new Pose2d(-16.26772, 10.82677, Math.toRadians(-110)))
+//                            .build()
+//            );
+//
+//        }
+//        drive.setClawGrabbing(true);
+//        drive.setIntakePower(0, 0);
     }
 
     private void stackSkystone() {
@@ -184,7 +189,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                             .splineTo(new Pose2d(-47, 25, Math.toRadians(30)))
                             .build()
             );
-        } if (SkystonePosition == 1) {
+        } else if (SkystonePosition == 1) {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
                             .splineTo(new Pose2d(0, 45, Math.toRadians(12)))

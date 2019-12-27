@@ -37,7 +37,7 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
     public static double GEAR_RATIO = 38.0 / 30.0; // output (wheel) speed / input (encoder) speed
 
     private DcMotor leftEncoder, frontEncoder;
-    private BNO055IMU imu;
+    public BNO055IMU imu;
 
     public TwoWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
@@ -51,9 +51,6 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
         imu.initialize(parameters);
 
         BNO055IMUUtil.remapAxes(imu, AxesOrder.ZYX, AxesSigns.NPN);
-
-        leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
-        frontEncoder = hardwareMap.dcMotor.get("rIntake");
     }
 
     public static double encoderTicksToInches(int ticks) {
