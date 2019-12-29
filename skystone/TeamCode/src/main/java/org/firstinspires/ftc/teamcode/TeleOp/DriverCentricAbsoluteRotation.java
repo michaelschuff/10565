@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase.HEADING_PID;
 
@@ -19,10 +20,12 @@ public class DriverCentricAbsoluteRotation extends OpMode {
     private Double absoluteRotation;
     private PIDFController absoluteRotationPIDController;
 
+    private boolean reachedTargetAngle = true;
+
     @Override
     public void init() {
         try {
-            File file = new File("../Data/StartingDirection.txt");
+            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
             Scanner sc = new Scanner(file);
             startingDirection = Math.toRadians(Integer.parseInt(sc.nextLine()));
             sc.close();
@@ -34,10 +37,10 @@ public class DriverCentricAbsoluteRotation extends OpMode {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
 
-//        absoluteRotationPIDController = new PIDFController(HEADING_PID);
-//        absoluteRotationPIDController.setInputBounds(0.0, 2.0 * Math.PI);
-//        absoluteRotationPIDController.setOutputBounds(-1.0, 1.0);
-//        absoluteRotationPIDController.setTargetPosition(startingDirection);
+        absoluteRotationPIDController = new PIDFController(HEADING_PID);
+        absoluteRotationPIDController.setInputBounds(0.0, 2.0 * Math.PI);
+        absoluteRotationPIDController.setOutputBounds(-1.0, 1.0);
+        absoluteRotationPIDController.setTargetPosition(startingDirection);
     }
 
 
@@ -49,18 +52,16 @@ public class DriverCentricAbsoluteRotation extends OpMode {
         theta = Math.toRadians(90) - startingDirection - drive.getRawExternalHeading();
         cos = Math.cos(theta);
         sin = Math.sin(theta);
-//        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
 
-//        rotation = Math.atan2(-gamepad1.right_stick_y, gamepad1.right_stick_x);
-        rotation = gamepad1.right_stick_x;
-//        if (absoluteRotation != null) {
-//            absoluteRotation = absoluteRotationPIDController.update(absoluteRotation);
-//            if (Math.abs(absoluteRotation + rotation) > 1.0) {
-//                rotation = (absoluteRotation + rotation) / (Math.abs(absoluteRotation) + Math.abs(rotation));
-//            } else {
-//                rotation += absoluteRotation;
-//            }
-//        }
+        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
+        if (absoluteRotation != null) {
+            absoluteRotationPIDController.setTargetPosition(absoluteRotation);
+        }
+
+        rotation = Math.pow(gamepad1.right_stick_x, 3);
+        if (rotation == 0) {
+            rotation = absoluteRotationPIDController.update(drive.getRawExternalHeading());
+        }
         x = tempx * cos - y * sin;
         y = tempx * sin + y * cos;
         x = x * Math.abs(x);
@@ -78,7 +79,7 @@ public class DriverCentricAbsoluteRotation extends OpMode {
     }
 
     private Double getDPadAngle(int x, int y) {
-        if (!(x == 0 && y == 0)) {
+        if (x != 0 || y != 0) {
             return Math.atan2(y, x);
         }
         return null;

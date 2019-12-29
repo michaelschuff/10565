@@ -2,9 +2,6 @@ package org.firstinspires.ftc.teamcode.Autonomous.IntakeAuto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.TemporalMarker;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
@@ -16,7 +13,6 @@ import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.List;
 
 @Autonomous(group = "Auto")
 public class BlueEverythingParkBridgeIntake extends LinearOpMode {
@@ -27,7 +23,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     //strafe to foundation position
 
 
-    int SkystonePosition = -1;
+    int SkystonePosition = 1;
 
     //phone offsets
     private double pxOffset = 0, pyOffset = 0, pzOffset = 0;
@@ -106,44 +102,16 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     }
 
     private void grabFirstSkystone() {
-        drive.releaseIntake();
 //        drive.setIntakePower(-1, -1);
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(-31, 47.25))
+                        .splineTo(new Pose2d(22, -25, Math.toRadians(135)))
                         .build()
         );
 
         vuforiaPosition = GetVuforia(7500);
-//        if (vuforiaPosition != null) {
-//            if (vuforiaPosition.get(1) < 0) {//TODO: figure out which vuforia value to get and then change this code accordingly
-//                SkystonePosition = 1;
-//                //TODO: put where bot should be for middle skystone here (blue side furthest on left)
-//                drive.followTrajectorySync(
-//                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-//                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
-//                                .build()
-//                );
-//            } else {
-//                SkystonePosition = 2;
-//                //TODO: put where bot should be for edge skystone here (blue side second from left)
-//                drive.followTrajectorySync(
-//                        drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-//                                .splineTo(new Pose2d(-8.26772, 10.82677, Math.toRadians(-110)))
-//                                .build()
-//                );
-//            }
-//
-//        } else {
-//            //TODO: put where bot should be for inner skystone here (blue side third from left)
-//            drive.followTrajectorySync(
-//                    drive.trajectoryBuilder(new DriveConstraints(15, 15, 0, Math.PI, Math.PI, 0))
-//                            .splineTo(new Pose2d(-16.26772, 10.82677, Math.toRadians(-110)))
-//                            .build()
-//            );
-//
-//        }
+
 //        drive.setClawGrabbing(true);
 //        drive.setIntakePower(0, 0);
     }
