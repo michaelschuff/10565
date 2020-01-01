@@ -1,29 +1,31 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Movement;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 
-/*
- * This is a simple routine to test translational drive capabilities.
- */
 @Config
-@Autonomous(group = "Tests")
-public class StraightTest extends LinearOpMode {
+@Autonomous(group = "MovementTests")
+public class StrafeTest extends LinearOpMode {
     public static double distance = 24;
 
     @Override
     public void runOpMode() throws InterruptedException {
         SampleMecanumDriveREVOptimized drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        Trajectory trajectory;
+        if (distance > 0) {
+            trajectory = drive.trajectoryBuilder()
+                    .strafeLeft(distance)
+                    .build();
+        } else {
+            trajectory = drive.trajectoryBuilder()
+                    .strafeRight(-distance)
+                    .build();
+        }
 
-        Trajectory trajectory = drive.trajectoryBuilder()
-                .forward(distance)
-                .build();
 
         waitForStart();
 
@@ -31,4 +33,5 @@ public class StraightTest extends LinearOpMode {
 
         drive.followTrajectorySync(trajectory);
     }
+
 }

@@ -43,7 +43,7 @@ public class BasicMecanumDrive extends OpMode {
         }
     }
 
-    public double GetMaxAbsMotorPower() {
+    private double GetMaxAbsMotorPower() {
         return Math.max(Math.max(Math.abs(motorPowers[0]), Math.abs(motorPowers[1])), Math.max(Math.abs(motorPowers[2]), Math.abs(motorPowers[3])));
     }
 }

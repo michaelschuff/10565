@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Movement;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
  * This is an example of a more complex path to really test the tuning.
  */
 @Config
-@Autonomous(group = "Tests")
+@Autonomous(group = "MovementTests")
 public class SplineTest extends LinearOpMode {
     public static double dx = 46.5;
     public static double dy = 46.5;

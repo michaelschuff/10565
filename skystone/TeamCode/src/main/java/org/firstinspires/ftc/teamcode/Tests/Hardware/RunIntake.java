@@ -1,11 +1,13 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Hardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 
-@Autonomous(group = "Tests")
+@Disabled
+@Autonomous(group = "HardwareTests")
 public class RunIntake extends OpMode {
     private SampleMecanumDriveREVOptimized drive;
 

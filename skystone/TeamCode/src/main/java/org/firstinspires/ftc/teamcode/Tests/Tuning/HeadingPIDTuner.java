@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Tuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
 import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase.HEADING_PID;
 
 @Config
-@Autonomous(group = "Tests")
+@Autonomous(group = "PIDTuningTests")
 public class HeadingPIDTuner extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private FtcDashboard dashboard = FtcDashboard.getInstance();
@@ -37,15 +37,17 @@ public class HeadingPIDTuner extends LinearOpMode {
         if (isStopRequested()) return;
 
         while (!isStopRequested()) {
-            absoluteRotationPIDController.setTargetPosition(Math.toRadians(TargetDirection));
+            if (absoluteRotationPIDController.getTargetPosition() != Math.toRadians(TargetDirection)) {
+                absoluteRotationPIDController.setTargetPosition(Math.toRadians(TargetDirection));
+            }
 
             rotation = absoluteRotationPIDController.update(drive.getRawExternalHeading());
             drive.setMotorPowers(-rotation, -rotation, rotation, rotation);
 
             telemetry.addData("output: ", rotation);
-            telemetry.addData("target: ", Math.toDegrees(absoluteRotationPIDController.getTargetPosition()));
-            telemetry.addData("heading: ", Math.toDegrees(Math.toRadians(TargetDirection)));
-            telemetry.addData("error: ", Math.toDegrees(absoluteRotationPIDController.getTargetPosition() - Math.toRadians(TargetDirection)));
+            telemetry.addData("target: ", TargetDirection);
+            telemetry.addData("heading: ", Math.toDegrees(drive.getRawExternalHeading()));
+            telemetry.addData("error: ", Math.toDegrees(Math.toRadians(TargetDirection) - drive.getRawExternalHeading()));
             telemetry.update();
         }
     }

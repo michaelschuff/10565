@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Tuning;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -13,7 +13,7 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
  * drives in a DISTANCE-by-DISTANCE square indefinitely.
  */
 @Config
-@Autonomous(group = "Tests")
+@Autonomous(group = "PIDTuningTests")
 public class FollowerPIDTuner extends LinearOpMode {
     public static double DISTANCE = 46.5;
 

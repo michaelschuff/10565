@@ -42,8 +42,6 @@ public class BlueEverythingParkWallOuttake extends LinearOpMode {
 
         waitForStart();
 
-        drive.releaseIntake();
-
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .strafeRight(20)
@@ -156,6 +154,5 @@ public class BlueEverythingParkWallOuttake extends LinearOpMode {
         sleep(500);
         drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(15).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
-        drive.releaseIntake();
     }
 }

@@ -29,8 +29,8 @@ public class ThreeWheelGyroTrackingLocalizer extends TwoTrackingWheelLocalizer {
 
         this.imu = imu;
 
-        leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
-        rightEncoder = hardwareMap.dcMotor.get("rightEncoder");
+        leftEncoder = hardwareMap.dcMotor.get("lIntake");
+        rightEncoder = hardwareMap.dcMotor.get("rIntake");
         frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
     }
 

@@ -26,17 +26,12 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     private PIDFController absoluteRotationPIDController, liftController;
 
-    public static double skystoneHeightChange = 4, maxSlideHeight = 12, firstSkystoneHeight = 1;
+    public static double skystoneHeightChange = 4, maxSlideHeight = 38, firstSkystoneHeight = 1.5;
 
-    public static double maxLiftPower = 1, maxIntakePower = 1;
-
-    private double SloMoPower = 0.5;
+    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = 0.5;
 
     @Override
     public void init() {
-        if (gamepad1.right_bumper) {
-            drive.releaseIntake();
-        }
         try {
             File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
             Scanner sc = new Scanner(file);
@@ -125,10 +120,10 @@ public class FieldCentricMecanumDrive extends OpMode {
             aPressed = false;
         }
 
-        if (gamepad1.y) {//
+        if (gamepad1.y) {
             yPressed = true;
         } else if (yPressed) {
-//            liftController.setTargetPosition(0);
+            liftController.setTargetPosition(0);
             drive.setClawGrabbing(false);
             drive.resetArm();
             yPressed = false;
@@ -159,9 +154,6 @@ public class FieldCentricMecanumDrive extends OpMode {
         telemetry.update();
     }
 
-    private double liftTicksToInches(int ticks) {
-        return ticks / 103.6;
-    }
 
 
 

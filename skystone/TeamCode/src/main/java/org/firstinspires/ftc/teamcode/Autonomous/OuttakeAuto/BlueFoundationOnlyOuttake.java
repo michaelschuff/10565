@@ -63,6 +63,6 @@ public class BlueFoundationOnlyOuttake extends LinearOpMode {
         sleep(500);
         drive.followTrajectorySync(drive.trajectoryBuilder().strafeRight(15).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(30).build());
-        drive.releaseIntake();
+
     }
 }

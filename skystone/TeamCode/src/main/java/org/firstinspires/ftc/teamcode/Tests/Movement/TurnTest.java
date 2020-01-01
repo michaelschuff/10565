@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Movement;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -18,7 +18,7 @@ import java.io.FileWriter;
  * This is a simple routine to test turning capabilities.
  */
 @Config
-@Autonomous(group = "Tests")
+@Autonomous(group = "MovementTests")
 public class TurnTest extends LinearOpMode {
     public static double ANGLE = 90; // deg
     public static double STARTINGANGLE = 0;
@@ -32,17 +32,5 @@ public class TurnTest extends LinearOpMode {
         if (isStopRequested()) return;
 
         drive.turnSync(Math.toRadians(ANGLE));
-
-
-        try {
-            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(Double.toString(drive.getRawExternalHeading() + Math.toRadians(STARTINGANGLE)));
-            fileOut.close();
-
-        } catch (Exception e) {
-
-        }
     }
 }

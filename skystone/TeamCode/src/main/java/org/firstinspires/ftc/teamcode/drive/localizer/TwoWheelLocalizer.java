@@ -46,7 +46,8 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
         ));
         this.imu = imu;
 
-        BNO055IMUUtil.remapAxes(imu, AxesOrder.ZYX, AxesSigns.NPN);
+        leftEncoder = hardwareMap.get(DcMotor.class, "lIntake");
+        frontEncoder = hardwareMap.get(DcMotor.class, "frontEncoder");
     }
 
     public static double encoderTicksToInches(int ticks) {

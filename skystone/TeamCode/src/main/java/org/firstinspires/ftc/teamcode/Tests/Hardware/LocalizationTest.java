@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Hardware;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -22,10 +22,13 @@ import org.firstinspires.ftc.teamcode.util.ThreadOpMode;
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
 @Config
-@TeleOp(group = "Tests")
+@TeleOp(group = "HardwareTests")
 public class LocalizationTest extends LinearOpMode {
     private SampleMecanumDriveBase drive;
     private DcMotor leftEncoder, frontEncoder;
+
+    private double x, y, rotation, maxPower;
+    private double[] motorPowers = new double[]{0, 0, 0, 0};
 
     @Override
     public void runOpMode() {
@@ -34,20 +37,40 @@ public class LocalizationTest extends LinearOpMode {
         leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
         frontEncoder = hardwareMap.dcMotor.get("rIntake");
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+
+        if (isStopRequested()) return;
         waitForStart();
-        while(opModeIsActive()) {
+        while(!isStopRequested()) {
+            x = gamepad1.left_stick_x;
+            y = -gamepad1.left_stick_y;
+            x = x * Math.abs(x);
+            y = y * Math.abs(y);
+
+            rotation = gamepad1.right_stick_x;
+
+
+            motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
+
+            if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
+                maxPower = GetMaxAbsMotorPower();
+                drive.setMotorPowers(motorPowers[0] / maxPower, motorPowers[1] / maxPower, motorPowers[2] / maxPower, motorPowers[3] / maxPower);
+            } else {
+                drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
+            }
 
             Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", poseEstimate.getHeading());
-            telemetry.addData("leftEncoder", -leftEncoder.getCurrentPosition());
-            telemetry.addData("frontEncoder", -frontEncoder.getCurrentPosition());
             telemetry.update();
 
             drive.updatePoseEstimate();
             if (isStopRequested()) return;
         }
 
+    }
+
+    private double GetMaxAbsMotorPower() {
+        return Math.max(Math.max(Math.abs(motorPowers[0]), Math.abs(motorPowers[1])), Math.max(Math.abs(motorPowers[2]), Math.abs(motorPowers[3])));
     }
 }

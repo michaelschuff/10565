@@ -36,8 +36,6 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
 
         waitForStart();
 
-        drive.releaseIntake();
-
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .strafeRight(20.5)
@@ -151,6 +149,5 @@ public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
         sleep(500);
         drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(7).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
-        drive.releaseIntake();
     }
 }

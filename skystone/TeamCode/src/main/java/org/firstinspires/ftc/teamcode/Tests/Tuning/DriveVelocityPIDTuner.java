@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Tests;
+package org.firstinspires.ftc.teamcode.Tests.Tuning;
 
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
@@ -38,7 +38,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.kV;
  * ctor.
  */
 @Config
-@Autonomous(group = "Tests")
+@Autonomous(group = "PIDTuningTests")
 public class DriveVelocityPIDTuner extends LinearOpMode {
     public static double DISTANCE = 46.5;
 
