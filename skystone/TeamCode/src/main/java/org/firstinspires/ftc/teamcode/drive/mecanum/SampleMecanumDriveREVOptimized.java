@@ -51,10 +51,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.35, lFoundation1 = 0.25, lArm1 = 0.45, rArm1 = 0.55, claw1 = 0.37;
+    private static final double rFoundation1 = 0.35, lFoundation1 = 0.25, lArm1 = 0.33, rArm1 = 0.67, claw1 = 0.02;
 
     //activated servo positions
-    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, lArm2 = 0.85, rArm2 = 0.15, claw2 = 0.075;
+    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, lArm2 = 0.77, rArm2 = 0.23, claw2 = 0.3;
 
     private boolean isFoundationGrabbed = false, isArmUp = false, isClawGrabbed = false;
 
@@ -102,13 +102,13 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
-        lIntake.setDirection(DcMotorSimple.Direction.REVERSE);
+        rIntake.setDirection(DcMotorSimple.Direction.REVERSE);
 //        lift.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-//        setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
+        setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
 //        setLocalizer(new ThreeWheelGyroTrackingLocalizer(hardwareMap, imu));
-        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+//        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
 
 

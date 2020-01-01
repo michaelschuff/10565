@@ -19,7 +19,7 @@ public class FieldCentricMecanumDrive extends OpMode {
     private SampleMecanumDriveREVOptimized drive;
 
     private double[] motorPowers = new double[]{0, 0, 0, 0};
-    private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection;
+    private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection = Math.toRadians(90);
     private Double absoluteRotation;
 
     private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false;
@@ -32,31 +32,31 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     @Override
     public void init() {
-        try {
-            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
-            Scanner sc = new Scanner(file);
-            startingDirection = Float.parseFloat(sc.nextLine());
-            sc.close();
-        } catch (Exception e){
-
-        }
+//        try {
+//            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
+//            Scanner sc = new Scanner(file);
+//            startingDirection = Float.parseFloat(sc.nextLine());
+//            sc.close();
+//        } catch (Exception e){
+//
+//        }
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
 
-        absoluteRotationPIDController = new PIDFController(HEADING_PID);
-        absoluteRotationPIDController.setInputBounds(0.0, 2.0 * Math.PI);
-        absoluteRotationPIDController.setOutputBounds(-1.0, 1.0);
+//        absoluteRotationPIDController = new PIDFController(HEADING_PID);
+//        absoluteRotationPIDController.setInputBounds(0.0, 2.0 * Math.PI);
+//        absoluteRotationPIDController.setOutputBounds(-1.0, 1.0);
 
-        liftController = new PIDFController(new PIDCoefficients(3, 0, 0));
-        liftController.setOutputBounds(-1, 1);
-        liftController.setInputBounds(0, 0);
-        liftController.setTargetPosition(0);
+//        liftController = new PIDFController(new PIDCoefficients(3, 0, 0));
+//        liftController.setOutputBounds(-1, 1);
+//        liftController.setInputBounds(0, 0);
+//        liftController.setTargetPosition(0);
     }
 
     @Override
     public void loop() {
-
+        drive.setIntakePower(-1, -1);
         tempx = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
 
@@ -64,34 +64,32 @@ public class FieldCentricMecanumDrive extends OpMode {
 
         double tempTheta = Math.atan2(y, tempx);
 
-        double mag = tempx*tempx + y*y;
+        double mag = Math.pow(Math.sqrt(tempx*tempx + y*y), 1);
 
         tempx = mag * Math.cos(tempTheta);
         y = mag * Math.sin(tempTheta);
 
-        theta = Math.toRadians(90) - startingDirection - drive.getRawExternalHeading();
+        theta = -startingDirection - drive.getRawExternalHeading() + Math.toRadians(45);
         cos = Math.cos(theta);
         sin = Math.sin(theta);
         x = tempx * cos - y * sin;
         y = tempx * sin + y * cos;
-        x = x * Math.abs(x);
-        y = y * Math.abs(y);
 
 
 
 
-        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
-        if (absoluteRotation != null) {
-            absoluteRotationPIDController.setTargetPosition(absoluteRotation);
-        }
+//        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
+//        if (absoluteRotation != null) {
+//            absoluteRotationPIDController.setTargetPosition(absoluteRotation);
+//        }
 
         rotation = Math.pow(gamepad1.right_stick_x, 3);
-        if (rotation == 0) {
-            rotation = absoluteRotationPIDController.update(drive.getRawExternalHeading());
-        }
+//        if (rotation == 0) {
+//            rotation = absoluteRotationPIDController.update(drive.getRawExternalHeading());
+//        }
 
 
-        motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
+        motorPowers = new double[]{x + rotation, y + rotation, x - rotation, y - rotation};
 
         if (gamepad1.b) {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
@@ -123,7 +121,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         if (gamepad1.y) {
             yPressed = true;
         } else if (yPressed) {
-            liftController.setTargetPosition(0);
+//            liftController.setTargetPosition(0);
             drive.setClawGrabbing(false);
             drive.resetArm();
             yPressed = false;
@@ -150,8 +148,14 @@ public class FieldCentricMecanumDrive extends OpMode {
             drive.IncArm();
         }
 
+
         drive.setLiftPower(maxLiftPower * (gamepad2.right_trigger - gamepad2.left_trigger));
-        telemetry.update();
+
+//        telemetry.addData("fl",motorPowers[0]);
+//        telemetry.addData("bl",motorPowers[1]);
+//        telemetry.addData("br",motorPowers[2]);
+//        telemetry.addData("fr",motorPowers[3]);
+//        telemetry.update();
     }
 
 
