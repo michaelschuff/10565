@@ -30,13 +30,16 @@ public class LocalizationTest extends LinearOpMode {
     private double x, y, rotation, maxPower;
     private double[] motorPowers = new double[]{0, 0, 0, 0};
 
+    public static double startingX = 0, startingY = 0, startingHeading = 0;
+
     @Override
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        leftEncoder = hardwareMap.dcMotor.get("leftEncoder");
-        frontEncoder = hardwareMap.dcMotor.get("rIntake");
+        leftEncoder = hardwareMap.dcMotor.get("lIntake");
+        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        drive.setPoseEstimate(new Pose2d(startingX, startingY, Math.toRadians(startingHeading)));
 
         if (isStopRequested()) return;
         waitForStart();

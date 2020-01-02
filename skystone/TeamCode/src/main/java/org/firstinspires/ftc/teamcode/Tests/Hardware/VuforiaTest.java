@@ -21,18 +21,18 @@ public class VuforiaTest extends LinearOpMode {
         waitForStart();
 
         while(opModeIsActive()) {
-            camera.loop(false);
-            try {
-                fieldPosition = camera.getFieldPosition();
-                telemetry.addData("skystonePosX", fieldPosition.get(0));
-                telemetry.addData("skystonePosY", fieldPosition.get(1));
-                telemetry.addData("skystonePosZ", fieldPosition.get(2));
-            } catch (Exception e) {
-                telemetry.addData("skystonePosX", null);
-                telemetry.addData("skystonePosY", null);
-                telemetry.addData("skystonePosZ", null);
-            }
-            telemetry.update();
+            camera.loop(true);
+//            try {
+//                fieldPosition = camera.getFieldPosition();
+//                telemetry.addData("PosX", fieldPosition.get(0) / 25.4);
+//                telemetry.addData("PosY", fieldPosition.get(1) / 25.4);
+//                telemetry.addData("PosZ", fieldPosition.get(2) / 25.4);
+//            } catch (Exception e) {
+//                telemetry.addData("PosX", null);
+//                telemetry.addData("PosY", null);
+//                telemetry.addData("PosZ", null);
+//            }
+//            telemetry.update();
         }
     }
 }

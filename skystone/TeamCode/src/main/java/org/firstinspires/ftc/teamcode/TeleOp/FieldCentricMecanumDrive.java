@@ -56,7 +56,6 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     @Override
     public void loop() {
-        drive.setIntakePower(-1, -1);
         tempx = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
 

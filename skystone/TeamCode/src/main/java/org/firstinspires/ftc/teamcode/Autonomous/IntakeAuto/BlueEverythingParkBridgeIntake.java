@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Autonomous.IntakeAuto;
 
+import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -13,35 +14,36 @@ import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Timer;
+import java.util.TimerTask;
 
+@Config
 @Autonomous(group = "Auto")
 public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF vuforiaPosition = null;
-    //TODO: raise lift by 6.29921in
-    //strafe to foundation position
 
 
-    int SkystonePosition = 1;
+    private int SkystonePosition = 1;
 
-    //phone offsets
-    private double pxOffset = 0, pyOffset = 0, pzOffset = 0;
+
+    public static double splineToX = -24, splineToY = 28.8, splineToHeading = -135;
 
     //field Constants
-    private double tileWidth = 23.5, botLength = 17.25, stoneWidth = 4, stoneLength = 8, stoneHeight = 4;
+    private double tileWidth = 23.5, botWidth = 17.125, botLength = 17.1875, stoneWidth = 4, stoneLength = 8, stoneHeight = 4;
 
     //starting parameters
-    private double startingAngle = Math.toRadians(-90), startingX = -33, startingY = 70.5 - botLength / 2;
+    public static double startingAngle = -90, startingX = -24 - 17.125 / 2, startingY = 70.5 - 17.1875 / 2;
 
     @Override
     public void runOpMode() {
 
+        if (isStopRequested()) return;
         initHardware();
 
-        if (isStopRequested()) return;
-
         waitForStart();
+        telemetry.clear();
 
         if (isStopRequested()) return;
         grabFirstSkystone();
@@ -56,16 +58,16 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
 
 
-        try {
-            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
-
-            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(Double.toString(drive.getRawExternalHeading() + Math.toRadians(startingAngle)));
-            fileOut.close();
-
-        } catch (Exception e) {
-
-        }
+//        try {
+//            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
+//
+//            BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
+//            fileOut.write(Double.toString(drive.getRawExternalHeading() + Math.toRadians(startingAngle)));
+//            fileOut.close();
+//
+//        } catch (Exception e) {
+//
+//        }
     }
 
     private VectorF GetVuforia(int loops) {
@@ -98,19 +100,25 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
         drive.setClawGrabbing(false);
 //        drive.setFoundationGrabbing(false);
-        drive.setPoseEstimate(new Pose2d(startingX, startingY, startingAngle));
+        drive.setPoseEstimate(new Pose2d(startingX,  startingY, Math.toRadians(startingAngle)));
+        telemetry.addLine("Ready");
+        telemetry.update();
     }
 
     private void grabFirstSkystone() {
-//        drive.setIntakePower(-1, -1);
+        drive.setIntakePower(-1, -1);
 
-        drive.followTrajectorySync(
+        drive.followTrajectory(
                 drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(22, -25, Math.toRadians(135)))
+                        .splineTo(new Pose2d(splineToX, splineToY, Math.toRadians(splineToHeading)))
+                        .forward(3)
                         .build()
         );
-
-        vuforiaPosition = GetVuforia(7500);
+        SetIntake timer = new SetIntake(5, 0, 0);
+        drive.waitForIdle();
+        while(!isStopRequested()) {
+            
+        }
 
 //        drive.setClawGrabbing(true);
 //        drive.setIntakePower(0, 0);
@@ -195,5 +203,24 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         sleep(500);
         drive.followTrajectorySync(drive.trajectoryBuilder().strafeLeft(7).build());
         drive.followTrajectorySync(drive.trajectoryBuilder().forward(40).build());
+    }
+
+    public class SetIntake {
+        Timer timer;
+        double p1, p2;
+
+        public SetIntake(int seconds, double p1, double p2) {
+            timer = new Timer();
+            timer.schedule(new RemindTask(), seconds*1000);
+            this.p1 = p1;
+            this.p2 = p2;
+        }
+
+        class RemindTask extends TimerTask {
+            public void run() {
+                drive.setIntakePower(p1, p2);
+                timer.cancel(); //Terminate the timer thread
+            }
+        }
     }
 }

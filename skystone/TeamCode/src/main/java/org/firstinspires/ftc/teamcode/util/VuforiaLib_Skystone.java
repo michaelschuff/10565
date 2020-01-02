@@ -108,14 +108,17 @@ public class VuforiaLib_Skystone {
     private static final float bridgeRotZ = 180;
 
     // Constants for perimeter targets
-    private static final float halfField = 72 * mmPerInch;
-    private static final float quadField  = 36 * mmPerInch;
+    private static final float halfField = 70.5f * mmPerInch;
+    private static final float quadField  = 35.25f * mmPerInch;
+
+//    private static final float halfField = 72f * mmPerInch;
+//    private static final float quadField  = 36f * mmPerInch;
 
     // Class Members
     private boolean targetVisible = false;
-    private float phoneXRotate    = 0;
+    private float phoneXRotate    = 160;
     private float phoneYRotate    = 0;
-    private float phoneZRotate    = 0;
+    private float phoneZRotate    = -90;
 
     public void init(OpMode opMode, String licenseKey) {
 
@@ -285,23 +288,27 @@ public class VuforiaLib_Skystone {
         // pointing to the LEFT side of the Robot.
         // The two examples below assume that the camera is facing forward out the front of the robot.
 
-        // We need to rotate the camera around it's long axis to bring the correct camera forward.
-        if (CAMERA_CHOICE == BACK) {
-            phoneYRotate = -90;
-        } else {
-            phoneYRotate = 90;
-        }
+//         We need to rotate the camera around it's long axis to bring the correct camera forward.
+//        if (CAMERA_CHOICE == BACK) {
+//            phoneYRotate = -90;
+//        } else {
+//            phoneYRotate = 90;
+//        }
+//
+//        // Rotate the phone vertical about the X axis if it's in portrait mode
+//        if (PHONE_IS_PORTRAIT) {
+//            phoneXRotate = 90 ;
+//        }
 
-        // Rotate the phone vertical about the X axis if it's in portrait mode
-        if (PHONE_IS_PORTRAIT) {
-            phoneXRotate = 90 ;
-        }
 
+        //x=5
+        //y=30.2-32.6
+        //z=11.6
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 8.0f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 4.0f * mmPerInch;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
+        final float CAMERA_FORWARD_DISPLACEMENT  = 4.75f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_VERTICAL_DISPLACEMENT = 11.25f * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT     = -2.25f * mmPerInch;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
@@ -588,35 +595,35 @@ public class VuforiaLib_Skystone {
             return null;
         }
     }
-
-
-    /**
-     * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
-     * Detection engine.
-     */
-    private TFObjectDetector tfod = null;
-
-    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
-    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
-    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
-
-    /**
-     * Initialize the Tensor Flow Object Detection engine.
-     */
-    public TFObjectDetector initTfod(OpMode opmode) {
-        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
-
-            int tfodMonitorViewId = opmode.hardwareMap.appContext.getResources().getIdentifier(
-                    "tfodMonitorViewId", "id", opmode.hardwareMap.appContext.getPackageName());
-            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
-            return tfod;
-        }
-        return null;
-    }
-
-    public TFObjectDetector getTfod() {
-        return tfod;
-    }
+//
+//
+//    /**
+//     * {@link #tfod} is the variable we will use to store our instance of the Tensor Flow Object
+//     * Detection engine.
+//     */
+//    private TFObjectDetector tfod = null;
+//
+//    private static final String TFOD_MODEL_ASSET = "RoverRuckus.tflite";
+//    private static final String LABEL_GOLD_MINERAL = "Gold Mineral";
+//    private static final String LABEL_SILVER_MINERAL = "Silver Mineral";
+//
+//    /**
+//     * Initialize the Tensor Flow Object Detection engine.
+//     */
+//    public TFObjectDetector initTfod(OpMode opmode) {
+//        if (ClassFactory.getInstance().canCreateTFObjectDetector()) {
+//
+//            int tfodMonitorViewId = opmode.hardwareMap.appContext.getResources().getIdentifier(
+//                    "tfodMonitorViewId", "id", opmode.hardwareMap.appContext.getPackageName());
+//            TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
+//            tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
+//            tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
+//            return tfod;
+//        }
+//        return null;
+//    }
+//
+//    public TFObjectDetector getTfod() {
+//        return tfod;
+//    }
 }

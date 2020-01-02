@@ -41,8 +41,8 @@ public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
 
     public TwoWheelLocalizer(HardwareMap hardwareMap, BNO055IMU imu) {
         super(Arrays.asList(
-                new Pose2d(-2.0625, 7.90625, 0), // left
-                new Pose2d(-7.28125, 0.0625, Math.toRadians(90)) // front
+                new Pose2d(-2.125, 7.5625, Math.toRadians(180)), // left
+                new Pose2d(-5.125, 0.75, Math.toRadians(-90)) // front
         ));
         this.imu = imu;
 
