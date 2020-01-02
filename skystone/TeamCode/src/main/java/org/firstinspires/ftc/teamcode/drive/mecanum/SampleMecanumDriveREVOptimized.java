@@ -56,6 +56,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     //activated servo positions
     private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, lArm2 = 0.77, rArm2 = 0.23, claw2 = 0.3;
 
+    //inactive servo positions
+    private static final double rFoundation0 = 0, lFoundation0 = 0;
+
     private boolean isFoundationGrabbed = false, isArmUp = false, isClawGrabbed = false;
 
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
@@ -133,7 +136,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         lFoundation.setPosition(isGrabbing ? lFoundation2 : lFoundation1);
     }
 
-
     public void toggleArm() {
         isArmUp = !isArmUp;
         lArm.setPosition(isArmUp ? lArm1 : lArm2);
@@ -160,7 +162,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         rArm.setPosition(rArm1);
     }
 
-
     public void toggleClaw() {
         isClawGrabbed = !isClawGrabbed;
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
@@ -170,18 +171,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         claw.setPosition(grabbed ? claw1 : claw2);
     }
 
-
     private double liftTicksToInches(int ticks) {
         return ticks / 103.6;
     }
-
-    public double getLiftPosition() {
-        return liftTicksToInches(lift.getCurrentPosition());
-    }
-
-
-
-
 
     @Override
     public PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode) {

@@ -25,7 +25,6 @@ import org.firstinspires.ftc.teamcode.util.ThreadOpMode;
 @TeleOp(group = "HardwareTests")
 public class LocalizationTest extends LinearOpMode {
     private SampleMecanumDriveBase drive;
-    private DcMotor leftEncoder, frontEncoder;
 
     private double x, y, rotation, maxPower;
     private double[] motorPowers = new double[]{0, 0, 0, 0};
@@ -36,8 +35,6 @@ public class LocalizationTest extends LinearOpMode {
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
-        leftEncoder = hardwareMap.dcMotor.get("lIntake");
-        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(startingX, startingY, Math.toRadians(startingHeading)));
 
@@ -64,7 +61,7 @@ public class LocalizationTest extends LinearOpMode {
             Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", poseEstimate.getHeading());
+            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
             telemetry.update();
 
             drive.updatePoseEstimate();
