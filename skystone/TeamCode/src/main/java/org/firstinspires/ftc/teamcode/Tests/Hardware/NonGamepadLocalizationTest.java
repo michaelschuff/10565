@@ -21,6 +21,9 @@ public class NonGamepadLocalizationTest extends LinearOpMode {
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
 
+        drive.l.setPower(-1);
+        drive.r.setPower(-1);
+
         drive = new justLocalizer(hardwareMap);
         drive.setPoseEstimate(new Pose2d(startX, startY, Math.toRadians(startH)));
 

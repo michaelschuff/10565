@@ -36,7 +36,7 @@ public class RedEverythingParkBridgeOuttake extends LinearOpMode {
         camera.start();
 
         drive.setClawGrabbing(false);
-        drive.setFoundationGrabbing(false);
+//        drive.setFoundationGrabbing(false);
 
         waitForStart();
 

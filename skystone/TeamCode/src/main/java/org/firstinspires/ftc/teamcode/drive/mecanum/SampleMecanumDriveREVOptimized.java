@@ -45,21 +45,28 @@ import org.openftc.revextensions2.RevBulkData;
 @Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
-    public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake, lift;
-    public Servo rFoundation, lFoundation, lArm, rArm, claw;
+    private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
+    public ExpansionHubMotor lift;
+    private Servo rFoundation, lFoundation, lArm, rArm, claw;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.35, lFoundation1 = 0.25, lArm1 = 0.33, rArm1 = 0.67, claw1 = 0.02;
+    private static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.36, rArm1 = 0.65, claw1 = 0;
 
     //activated servo positions
-    private static final double rFoundation2 = 0.125, lFoundation2 = 0.7, lArm2 = 0.77, rArm2 = 0.23, claw2 = 0.3;
+    private static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.77, rArm2 = 0.23, claw2 = 0.325;
 
     //inactive servo positions
-    private static final double rFoundation0 = 0, lFoundation0 = 0;
+    private static final double rFoundation0 = 1, lFoundation0 = 0;
 
     private boolean isFoundationGrabbed = false, isArmUp = false, isClawGrabbed = false;
+
+    public int InchesToLiftTicks = 540;
+
+
+
+
 
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
         super();
@@ -96,6 +103,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
@@ -114,26 +123,41 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 //        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
 
-
-
     public void setIntakePower(double leftPower, double rightPower) {
         lIntake.setPower(leftPower);
         rIntake.setPower(rightPower);
+    }
+
+    public void setLiftPos(int liftPos) {
+        lift.setTargetPosition(liftPos);
     }
 
     public void setLiftPower(double liftPower) {
         lift.setPower(liftPower);
     }
 
-    public void toggleFoundation() {
-        isFoundationGrabbed = !isFoundationGrabbed;
-        rFoundation.setPosition(isFoundationGrabbed ? rFoundation2 : rFoundation1);
-        lFoundation.setPosition(isFoundationGrabbed ? lFoundation2 : lFoundation1);
+    public void setFoundation(short n) {
+        switch (n) {
+            case 0:
+                rFoundation.setPosition(rFoundation0);
+                lFoundation.setPosition(lFoundation0);
+                break;
+            case 1:
+                rFoundation.setPosition(rFoundation1);
+                lFoundation.setPosition(lFoundation1);
+                break;
+            case 2:
+                rFoundation.setPosition(rFoundation2);
+                lFoundation.setPosition(lFoundation2);
+                break;
+
+        }
     }
 
-    public void setFoundationGrabbing(boolean isGrabbing) {
-        rFoundation.setPosition(isGrabbing ? rFoundation2 : rFoundation1);
-        lFoundation.setPosition(isGrabbing ? lFoundation2 : lFoundation1);
+    public void toggleFoundation() {
+        isFoundationGrabbed = !isFoundationGrabbed;
+        rFoundation.setPosition(isFoundationGrabbed ? rFoundation2 : rFoundation0);
+        lFoundation.setPosition(isFoundationGrabbed ? lFoundation2 : lFoundation0);
     }
 
     public void toggleArm() {
@@ -157,22 +181,13 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         rArm.setPosition(val2);
     }
 
-    public void resetArm() {
-        lArm.setPosition(lArm1);
-        rArm.setPosition(rArm1);
-    }
-
     public void toggleClaw() {
         isClawGrabbed = !isClawGrabbed;
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
     }
 
     public void setClawGrabbing(boolean grabbed) {
-        claw.setPosition(grabbed ? claw1 : claw2);
-    }
-
-    private double liftTicksToInches(int ticks) {
-        return ticks / 103.6;
+        claw.setPosition(grabbed ? claw2 : claw1);
     }
 
     @Override

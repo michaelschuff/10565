@@ -1,12 +1,11 @@
 package org.firstinspires.ftc.teamcode.Autonomous.IntakeAuto;
 
-import android.support.annotation.NonNull;
-
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -25,22 +24,32 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF vuforiaPosition = null;
+    private float vuforiaHeading;
 
 
-    private int SkystonePosition = 1;
+    public static int SkystonePosition = 1;
 
 
     //field Constants
     private double tileWidth = 23.5, botWidth = 17.125, botLength = 17.1875, stoneWidth = 4, stoneLength = 8, stoneHeight = 4;
 
-    //starting parameters
-    public static double startingAngle = -90, startingX = -24 - 17.125 / 2, startingY = 70.5 - 17.1875 / 2;
 
+
+
+
+    //starting position
+    private static double startingAngle = -90, startingX = -24 - 17.125 / 2, startingY = 70.5 - 17.1875 / 2;
+
+    public static boolean a = false;
+
+    public static double strafex = 42.5, strafey = 33, splinex1 = 0, splinex2 = 35, spliney1 = 38, spliney2 = 50, liftPower = .5;
     @Override
     public void runOpMode() {
 
         if (isStopRequested()) return;
         initHardware();
+        telemetry.addLine("Ready");
+        telemetry.update();
 
         waitForStart();
         telemetry.clear();
@@ -48,11 +57,11 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         if (isStopRequested()) return;
         grabFirstSkystone();
 
-//        stackSkystone();
-//
-//        grabSecondSkystone();
-//
-//        stackSecondSkystone();
+        stackSkystone(false);
+
+        grabSecondSkystone();
+
+        stackSkystone(true);
 //
 //        grabFoundation();
 
@@ -91,17 +100,34 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         return null;
     }
 
-    @NonNull
     private VectorF GetVuforia() {
-        while(opModeIsActive()) {
+        while(!isStopRequested()) {
             camera.loop(false);
             try {
-                return camera.getFieldPosition();
+                VectorF a = camera.getFieldPosition();
+                if (a != null) {
+                    return a;
+                }
             } catch (Exception e) {
 
             }
         }
-        return new VectorF(0,0);
+        return new VectorF(0, 0, 0);
+    }
+
+    private float GetVuforiaH() {
+        int c = 0;
+        float a = 0f;
+        while(!isStopRequested() && c < 5) {
+            camera.loop(false);
+            try {
+                a += camera.getOrientation().thirdAngle;
+                c++;
+            } catch (Exception e) {
+
+            }
+        }
+        return a / c;
     }
 
     private void initHardware() {
@@ -113,86 +139,186 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
         drive.setClawGrabbing(false);
         drive.setPoseEstimate(new Pose2d(startingX,  startingY, Math.toRadians(startingAngle)));
-        telemetry.addLine("Ready");
-        telemetry.update();
     }
 
     private void grabFirstSkystone() {
-        drive.setIntakePower(-1, -1);
+        drive.setArmPos(0.36, 0.64);
+        drive.setIntakePower(-.75, -.75);
+        SetIntake timer = new SetIntake(8, 0, 0);
 
         if (SkystonePosition == 1) {
-            drive.followTrajectory(
+            drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(0, 0, Math.toRadians(-135)))
+                            .splineTo(new Pose2d(-16, 38, Math.toRadians(230)))
+                            .build()
+            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(-16,32))
+                            .build()
+            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .forward(3)
                             .build()
             );
         } else if (SkystonePosition == 2) {
-            drive.followTrajectory(
+            drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(0, 0, Math.toRadians(-135)))
+                            .splineTo(new Pose2d(-24, 38, Math.toRadians(230)))
+                            .build()
+            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(-24,32))
+                            .build()
+            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .forward(3)
                             .build()
             );
         } else {
-            drive.followTrajectory(
+            drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(-54.2, 32.3, Math.toRadians(-135)))
-                            .strafeTo(new Vector2d(-58.7,27.9))
+                            .splineTo(new Pose2d(-32, 38, Math.toRadians(230)))
+                            .build()
+            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(-32,32))
+                            .build()
+            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .forward(3)
                             .build()
             );
         }
 
-        SetIntake timer = new SetIntake(3, 0, 0);
-        drive.waitForIdle();
+    }
 
-//        drive.setClawGrabbing(true);
+    private void grabSecondSkystone() {
+
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .splineTo(new Pose2d(35, 36, Math.toRadians(180)))
+                        .build()
+        );
+
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .strafeTo(new Vector2d(-40.5, 38))
+                        .build()
+        );
+        drive.setIntakePower(-.75, -.75);
+        SetIntake timer = new SetIntake(8, 0, 0);
+
+        vuforiaPosition = GetVuforia();
+        vuforiaHeading = GetVuforiaH();
+
+
+        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
+
+        if (SkystonePosition == 1) {
+            drive.turnSync(Math.toRadians(40));
+//            drive.followTrajectorySync(
+//                    drive.trajectoryBuilder()
+//                            .splineTo(new Pose2d(splinex, spliney, Math.toRadians(230)))
+//                            .build()
+//            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(-40.5, 32))
+                            .build()
+            );
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .forward(3)
+                            .build()
+            );
+        } else if (SkystonePosition == 2) {
+
+        } else {
+
+        }
+
     }
 
     private void stackSkystone(boolean second) {
-        double x = 0, y = 0;
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .reverse()
-                        .splineTo(new Pose2d(0, 0, Math.toRadians(0)))
-                        .splineTo(new Pose2d(x, y, Math.toRadians(0)))
+                        .splineTo(new Pose2d(splinex1, spliney1, Math.toRadians(190)))
+                        .splineTo(new Pose2d(splinex2, spliney2, Math.toRadians(180)))
                         .build()
         );
+
+        drive.turnSync(Math.toRadians(-90));
 
         vuforiaPosition = GetVuforia();
+        vuforiaHeading = GetVuforiaH();
 
-        drive.setPoseEstimate(new Pose2d(vuforiaPosition.get(0), vuforiaPosition.get(1)));
+        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
 
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .reverse()
-                        .strafeTo(new Vector2d(x, y))
-                        .build()
-        );
-
-        //TODO: find correct delay for inbetween these
         if (second) {
-
+            while(!isStopRequested()) {
+                telemetry.addData("vufx", mmToInches(vuforiaPosition.get(0)));
+                telemetry.addData("vufy", mmToInches(vuforiaPosition.get(1)));
+                telemetry.addData("vufz", mmToInches(vuforiaPosition.get(2)));
+                telemetry.addData("vufHeading", vuforiaHeading);
+                camera.loop(true);
+                if (a) {
+                    break;
+                }
+            }
         }
-        drive.setArmPos(1, 0);
-        drive.setClawGrabbing(false);
-        drive.resetArm();
-    }
 
-    private void stackSecondSkystone(boolean second) {
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .reverse()
-                        .splineTo(new Pose2d(40, 30, Math.toRadians(-90)))
-                        .build()
-        );
-
-        //TODO: find correct delay for inbetween these
-        //TODO: add pid onto lift and tune it and then set it to height we need to stack (about 4-6 in is good)
+        drive.turnSync(Math.toRadians(90 - vuforiaHeading));
         if (second) {
-
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(strafex, strafey))
+                            .build()
+            );
+        } else {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(42.5, 33))
+                            .build()
+            );
         }
-        drive.setArmPos(1, 0);
-        drive.setClawGrabbing(false);
-        drive.resetArm();
+
+        if (second) {
+            drive.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            drive.setArmPos(0.36, 0.64);
+            drive.setLiftPos(500);
+            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.lift.setPower(liftPower);
+            sleep((long) (500));
+            drive.setArmPos(0.8, 0.2);
+            sleep((long) (1500));
+            drive.setClawGrabbing(false);
+            sleep(100);
+            drive.setLiftPos(800);
+            drive.lift.setPower(liftPower);
+            sleep(500);
+            drive.setArmPos(0.36, 0.64);
+            sleep(100);
+            drive.setLiftPos(0);
+            drive.lift.setPower(-liftPower);
+        } else {
+            drive.setArmPos(0.8, 0.2);
+            sleep(900);
+            drive.setClawGrabbing(false);
+            drive.setLiftPos(300);
+            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.lift.setPower(liftPower);
+            sleep(500);
+            drive.setArmPos(0.36, 0.64);
+            drive.setLiftPos(0);
+            drive.lift.setPower(-liftPower);
+        }
     }
 
     private void grabFoundation() {
@@ -228,8 +354,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         class RemindTask extends TimerTask {
             public void run() {
                 drive.setIntakePower(p1, p2);
+                drive.setClawGrabbing(true);
                 timer.cancel(); //Terminate the timer thread
             }
         }
+    }
+
+    private double mmToInches(double mm) {
+        return mm / 25.4;
     }
 }

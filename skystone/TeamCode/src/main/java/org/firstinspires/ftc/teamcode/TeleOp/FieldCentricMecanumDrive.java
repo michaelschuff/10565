@@ -122,7 +122,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         } else if (yPressed) {
 //            liftController.setTargetPosition(0);
             drive.setClawGrabbing(false);
-            drive.resetArm();
+//            drive.resetArm();
             yPressed = false;
         }
 

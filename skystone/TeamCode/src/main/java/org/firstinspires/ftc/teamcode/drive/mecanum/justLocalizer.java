@@ -25,12 +25,17 @@ public class justLocalizer extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     private BNO055IMU imu;
 
+
+    public DcMotor l, r;
     public justLocalizer(HardwareMap hardwareMap) {
         super();
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
         hub = hardwareMap.get(ExpansionHubEx.class, "hub 1");
+
+        l = hardwareMap.dcMotor.get("lIntake");
+        r = hardwareMap.dcMotor.get("rIntake");
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();

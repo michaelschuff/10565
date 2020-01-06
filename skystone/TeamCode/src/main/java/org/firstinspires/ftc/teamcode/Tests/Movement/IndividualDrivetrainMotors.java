@@ -34,10 +34,10 @@ public class IndividualDrivetrainMotors extends OpMode {
     public void loop() {
         drive.setMotorPowers(-Math.pow(gamepad1.left_stick_y, 3), -Math.pow(gamepad2.left_stick_y, 3), -Math.pow(gamepad2.right_stick_y, 3), -Math.pow(gamepad1.right_stick_y, 3));
 
-        telemetry.addData("front left", drive.fl.getVelocity());
-        telemetry.addData("front right", drive.fr.getVelocity());
-        telemetry.addData("back left", drive.bl.getVelocity());
-        telemetry.addData("back right", drive.br.getVelocity());
-        telemetry.update();
+//        telemetry.addData("front left", drive.fl.getVelocity());
+//        telemetry.addData("front right", drive.fr.getVelocity());
+//        telemetry.addData("back left", drive.bl.getVelocity());
+//        telemetry.addData("back right", drive.br.getVelocity());
+//        telemetry.update();
     }
 }

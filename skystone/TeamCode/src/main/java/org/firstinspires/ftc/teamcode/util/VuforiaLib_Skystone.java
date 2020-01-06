@@ -116,9 +116,9 @@ public class VuforiaLib_Skystone {
 
     // Class Members
     private boolean targetVisible = false;
-    private float phoneXRotate    = 160;
-    private float phoneYRotate    = 0;
-    private float phoneZRotate    = -90;
+    private float phoneXRotate    = 0;
+    private float phoneYRotate    = 70;
+    private float phoneZRotate    = -180;
 
     public void init(OpMode opMode, String licenseKey) {
 
@@ -301,14 +301,11 @@ public class VuforiaLib_Skystone {
 //        }
 
 
-        //x=5
-        //y=30.2-32.6
-        //z=11.6
         // Next, translate the camera lens to where it is on the robot.
         // In this example, it is centered (left to right), but forward of the middle of the robot, and above ground level.
-        final float CAMERA_FORWARD_DISPLACEMENT  = 4.75f * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
-        final float CAMERA_VERTICAL_DISPLACEMENT = 11.25f * mmPerInch;   // eg: Camera is 8 Inches above ground
-        final float CAMERA_LEFT_DISPLACEMENT     = -2.25f * mmPerInch;     // eg: Camera is ON the robot's center line
+        final float CAMERA_FORWARD_DISPLACEMENT  = (4.74375f) * mmPerInch;   // eg: Camera is 4 Inches in front of robot center
+        final float CAMERA_VERTICAL_DISPLACEMENT = (0) * mmPerInch;   // eg: Camera is 8 Inches above ground
+        final float CAMERA_LEFT_DISPLACEMENT     = (-1.9625f) * mmPerInch;     // eg: Camera is ON the robot's center line
 
         OpenGLMatrix robotFromCamera = OpenGLMatrix
                 .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
