@@ -6,13 +6,14 @@ import org.firstinspires.ftc.teamcode.Autonomous.SkyStoneFinder;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 
-@Autonomous(name="Test: SkystoneTest", group = "Auto")
+@Autonomous(name="Test: SkystoneTest")
 public class SkyStoneFinderTest extends OpMode {
 
     VuforiaLib_Skystone mvLib;
 
     @Override
     public void init(){
+        mvLib = new VuforiaLib_Skystone();
         mvLib.init(this,"");
     }
 
