@@ -52,7 +52,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.36, rArm1 = 0.65, claw1 = 0;
+    private static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.33, rArm1 = 0.67, claw1 = 0;
 
     //activated servo positions
     private static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.77, rArm2 = 0.23, claw2 = 0.325;
