@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
+import org.firstinspires.ftc.teamcode.Autonomous.SkyStoneFinder;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
@@ -50,8 +51,12 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         initHardware();
         telemetry.addLine("Ready");
         telemetry.update();
-
-        waitForStart();
+        while(!isStarted()){
+            SkystonePosition = SkyStoneFinder.detectSkystone(camera) + 1;
+            telemetry.addData("Skystone:", SkystonePosition);
+            telemetry.update();
+        }
+        //waitForStart();
         telemetry.clear();
 
         if (isStopRequested()) return;
