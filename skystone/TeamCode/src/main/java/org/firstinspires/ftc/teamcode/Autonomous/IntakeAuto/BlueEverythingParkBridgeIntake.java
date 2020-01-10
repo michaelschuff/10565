@@ -60,6 +60,14 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         //waitForStart();
         telemetry.clear();
 
+        if (SkystonePosition == 3) {
+            SkystonePosition = 1;
+        } else  if (SkystonePosition == 2) {
+            SkystonePosition = 3;
+        } else if (SkystonePosition == 1) {
+            SkystonePosition = 2;
+        }
+
         if (isStopRequested()) return;
         if (grabFirst) {
             grabFirstSkystone();
