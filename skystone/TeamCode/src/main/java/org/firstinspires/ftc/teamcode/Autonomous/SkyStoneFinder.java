@@ -15,19 +15,19 @@ public class SkyStoneFinder {
         int stoneOneAvg = 0, stoneTwoAvg = 0, stoneThreeAvg = 0;
         int skyStone;
         for(int i = height*410/900; i < height*510/900; i++){
-            for(int j = width*400/1600; j < width*550/1600; j++){
+            for(int j = width*550/1600; j < width*700/1600; j++){
                 stoneOneAvg += (inArray[j + i*width] >> 16) & 0xFF;
             }
         }
         stoneOneAvg /= (height*100/900)*(width*150/1600);
         for(int i = height*410/900; i < height*510/900; i++){
-            for(int j = width*700/1600; j < width*850/1600; j++){
+            for(int j = width*750/1600; j < width*900/1600; j++){
                 stoneTwoAvg += (inArray[j + i*width] >> 16) & 0xFF;
             }
         }
         stoneTwoAvg /= (height*100/900)*(width*150/1600);
         for(int i = height*410/900; i < height*510/900; i++){
-            for(int j = width*1000/1600; j < width*1150/1600; j++){
+            for(int j = width*1150/1600; j < width*1300/1600; j++){
                 stoneThreeAvg += (inArray[j + i*width] >> 16) & 0xFF;
             }
         }
