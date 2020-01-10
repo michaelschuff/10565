@@ -38,7 +38,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     //starting position
     private static double startingAngle = -90, startingX = -23.5 * 2 + 17.5 / 2, startingY = 70.5 - 17.5 / 2;
 
-    public static double armPos = .35;
+    public static double armPos = .35, liftPower = .5;
 
 
     public static boolean grabFirst = true, stackFirst = false, grabSecond = false, stackSecond = false, grabFoundation = false;
@@ -60,13 +60,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         //waitForStart();
         telemetry.clear();
 
-        if (SkystonePosition == 3) {
-            SkystonePosition = 1;
-        } else  if (SkystonePosition == 2) {
-            SkystonePosition = 3;
-        } else if (SkystonePosition == 1) {
-            SkystonePosition = 2;
-        }
+//        if (SkystonePosition == 3) {
+//            SkystonePosition = 1;
+//        } else  if (SkystonePosition == 2) {
+//            SkystonePosition = 3;
+//        } else if (SkystonePosition == 1) {
+//            SkystonePosition = 2;
+//        }
 
         if (isStopRequested()) return;
         if (grabFirst) {
@@ -112,60 +112,60 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                         .build()
         );
 
-//        drive.turnSync(Math.toRadians(-90));
+        drive.turnSync(Math.toRadians(-90));
 
-//        vuforiaPosition = GetVuforia();
-//        vuforiaHeading = GetVuforiaH();
-//        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
-//
-//        drive.turnSync(Math.toRadians(90 - vuforiaHeading));
-//        if (second) {
-//            drive.followTrajectorySync(
-//                    drive.trajectoryBuilder()
-//                            .strafeTo(new Vector2d(42.5, 33))
-//                            .build()
-//            );
-//        } else {
-//            drive.followTrajectorySync(
-//                    drive.trajectoryBuilder()
-//                            .strafeTo(new Vector2d(42.5, 33))
-//                            .build()
-//            );
-//        }
-//
-//        if (second) {
-//            drive.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//
-//            drive.setArmPos(armPos, 1 - armPos);
-//            drive.setLiftPos(500);
-//            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            drive.lift.setPower(liftPower);
-//            sleep((long) (500));
-//            drive.setArmPos(0.8, 0.2);
-//            sleep((long) (1500));
-//            drive.setClawGrabbing(false);
-//            sleep(100);
-//            drive.setLiftPos(800);
-//            drive.lift.setPower(liftPower);
-//            sleep(500);
-//            drive.setArmPos(armPos, 1 - armPos);
-//            drive.setFoundation((short) 2);
-//            sleep(100);
-//            drive.setLiftPos(0);
-//            drive.lift.setPower(-liftPower);
-//
-//        } else {
-//            drive.setArmPos(0.8, 0.2);
-//            sleep(900);
-//            drive.setClawGrabbing(false);
-//            drive.setLiftPos(300);
-//            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-//            drive.lift.setPower(liftPower);
-//            sleep(500);
-//            drive.setArmPos(armPos, 1 - armPos);
-//            drive.setLiftPos(0);
-//            drive.lift.setPower(-liftPower);
-//        }
+        vuforiaPosition = GetVuforia();
+        vuforiaHeading = GetVuforiaH();
+        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
+
+        drive.turnSync(Math.toRadians(90 - vuforiaHeading));
+        if (second) {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(42.5, 33))
+                            .build()
+            );
+        } else {
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(42.5, 33))
+                            .build()
+            );
+        }
+
+        if (second) {
+            drive.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            drive.setArmPos(armPos, 1 - armPos);
+            drive.setLiftPos(500);
+            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.lift.setPower(liftPower);
+            sleep((long) (500));
+            drive.setArmPos(0.8, 0.2);
+            sleep((long) (1500));
+            drive.setClawGrabbing(false);
+            sleep(100);
+            drive.setLiftPos(800);
+            drive.lift.setPower(liftPower);
+            sleep(500);
+            drive.setArmPos(armPos, 1 - armPos);
+            drive.setFoundation((short) 2);
+            sleep(100);
+            drive.setLiftPos(0);
+            drive.lift.setPower(-liftPower);
+
+        } else {
+            drive.setArmPos(0.8, 0.2);
+            sleep(900);
+            drive.setClawGrabbing(false);
+            drive.setLiftPos(300);
+            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.lift.setPower(liftPower);
+            sleep(500);
+            drive.setArmPos(armPos, 1 - armPos);
+            drive.setLiftPos(0);
+            drive.lift.setPower(-liftPower);
+        }
     }
 
     private VectorF CheckVuforia(int loops) {
