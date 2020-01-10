@@ -52,7 +52,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         telemetry.addLine("Ready");
         telemetry.update();
         while(!isStarted()){
-            SkystonePosition = SkyStoneFinder.detectSkystone(camera) + 1;
+            SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
             telemetry.addData("Skystone:", SkystonePosition);
             telemetry.update();
         }

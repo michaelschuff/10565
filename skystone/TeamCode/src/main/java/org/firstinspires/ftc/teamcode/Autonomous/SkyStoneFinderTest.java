@@ -20,6 +20,6 @@ public class SkyStoneFinderTest extends OpMode {
     @Override
     public void loop(){
         mvLib.start();
-        telemetry.addData("Skystone Position: ", SkyStoneFinder.detectSkystone(mvLib));
+        telemetry.addData("Skystone Position: ", SkyStoneFinder.detectSkystone(mvLib, false));
     }
 }
