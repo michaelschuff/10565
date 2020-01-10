@@ -235,7 +235,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
     private void grabFirstSkystone() {
         drive.setArmPos(armPos, 1 - armPos);
-        drive.setIntakePower(-.75, -.75);
+        drive.setIntakePower(-1, -1);
         SetIntake timer = new SetIntake(4, 0, 0);
 
         if (SkystonePosition == 1) {
@@ -246,7 +246,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
             );
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-43.5, 32))
+                            .strafeTo(new Vector2d(-45, 32))
                             .build()
             );
             drive.followTrajectorySync(
@@ -262,7 +262,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
             );
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-50.5, 32))
+                            .strafeTo(new Vector2d(-52, 32))
                             .build()
             );
             drive.followTrajectorySync(
