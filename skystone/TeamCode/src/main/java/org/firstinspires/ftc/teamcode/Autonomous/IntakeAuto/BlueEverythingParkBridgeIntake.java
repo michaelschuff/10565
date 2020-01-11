@@ -36,14 +36,14 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
 
     //starting position
-    private static double startingAngle = -90, startingX = -23.5 * 2 + 17.5 / 2, startingY = 70.5 - 17.5 / 2;
+    private static double startingAngle = -90, startingX = -23.25 * 2 + 17.5 / 2, startingY = 70.5 - 17.5 / 2;
 
     public static double armPos = .35, liftPower = .5;
 
 
     public static boolean grabFirst = true, stackFirst = false, grabSecond = false, stackSecond = false, grabFoundation = false;
 
-    public static double splinex = -57, spliney = 38, splineh = 235, strafey = 32, forwar = 3, splinex2 = -50.5;
+    public static double splinex = -57, spliney = 39, splineh = -45, strafey = 32, forwar = 3;
 
     @Override
     public void runOpMode() {
@@ -53,9 +53,9 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         telemetry.addLine("Ready");
         telemetry.update();
         while(!isStarted()){
-            SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
-            telemetry.addData("Skystone:", SkystonePosition);
-            telemetry.update();
+//            SkystonePosition = SkyStoneFinder.detectSkystone(camera) + 1;
+//            telemetry.addData("Skystone:", SkystonePosition);
+//            telemetry.update();
         }
         //waitForStart();
         telemetry.clear();
@@ -235,18 +235,19 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
     private void grabFirstSkystone() {
         drive.setArmPos(armPos, 1 - armPos);
-        drive.setIntakePower(-.75, -.75);
-        SetIntake timer = new SetIntake(4, 0, 0);
+        drive.setIntakePower(-1, -1);
+        SetIntake timer = new SetIntake(8, 0, 0);
 
         if (SkystonePosition == 1) {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(-43.5, 38, Math.toRadians(235)))
+                            .strafeTo(new Vector2d(-41.5, 38))
                             .build()
             );
+            drive.turnSync(Math.toRadians(-45));
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-43.5, 32))
+                            .strafeTo(new Vector2d(-41.5, 32))
                             .build()
             );
             drive.followTrajectorySync(
@@ -257,12 +258,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         } else if (SkystonePosition == 2) {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(-50.5, 38, Math.toRadians(235)))
+                            .strafeTo(new Vector2d(-50, 38))
                             .build()
             );
+            drive.turnSync(Math.toRadians(-45));
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-50.5, 32))
+                            .strafeTo(new Vector2d(-50, 32))
                             .build()
             );
             drive.followTrajectorySync(
@@ -273,17 +275,18 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         } else {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(splinex, spliney, Math.toRadians(235)))
+                            .strafeTo(new Vector2d(-57, 39))
+                            .build()
+            );
+            drive.turnSync(Math.toRadians(-40));
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .strafeTo(new Vector2d(-57, 32))
                             .build()
             );
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(splinex, strafey))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .forward(forwar)
+                            .forward(3)
                             .build()
             );
         }
