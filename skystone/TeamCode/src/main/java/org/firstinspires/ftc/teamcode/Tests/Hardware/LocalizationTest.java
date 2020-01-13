@@ -26,6 +26,8 @@ import org.firstinspires.ftc.teamcode.util.ThreadOpMode;
 public class LocalizationTest extends LinearOpMode {
     private SampleMecanumDriveBase drive;
 
+    private DcMotor frontEncoder, leftEncoder;
+
     private double x, y, rotation, maxPower;
     private double[] motorPowers = new double[]{0, 0, 0, 0};
 
@@ -37,6 +39,15 @@ public class LocalizationTest extends LinearOpMode {
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(startingX, startingY, Math.toRadians(startingHeading)));
+
+        frontEncoder = hardwareMap.dcMotor.get("frontEncoder");
+        leftEncoder = hardwareMap.dcMotor.get("lIntake");
+
+        frontEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        frontEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         if (isStopRequested()) return;
         waitForStart();
@@ -62,6 +73,8 @@ public class LocalizationTest extends LinearOpMode {
             telemetry.addData("x", poseEstimate.getX());
             telemetry.addData("y", poseEstimate.getY());
             telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
+            telemetry.addData("leftCount", leftEncoder.getCurrentPosition());
+            telemetry.addData("frontCount", frontEncoder.getCurrentPosition());
             telemetry.update();
 
             drive.updatePoseEstimate();
