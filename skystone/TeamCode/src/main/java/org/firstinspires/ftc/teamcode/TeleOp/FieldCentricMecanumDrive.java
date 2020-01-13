@@ -138,6 +138,18 @@ public class FieldCentricMecanumDrive extends OpMode {
             drive.IncArm();
         }
 
+        if(gamepad1.a){
+            drive.setClawGrabbing(false);
+            if(drive.getIsArmUp()){
+                drive.toggleArm();
+            }
+            drive.setLiftPower(-1);
+            while(drive.lift.getVelocity() > 0.1){
+              drive.setLiftPower(-1);
+            }
+            drive.setLiftPower(0);
+        }
+
 
         if (drive.lArm.getPosition() < 0.5) {
             V4BarOut = false;

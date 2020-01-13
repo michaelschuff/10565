@@ -188,6 +188,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
     }
 
+    public boolean getIsArmUp(){
+        return isArmUp;
+    }
+
     public void setClawGrabbing(boolean grabbed) {
         claw.setPosition(grabbed ? claw2 : claw1);
     }
