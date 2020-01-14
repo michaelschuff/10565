@@ -252,4 +252,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         return imu.getAngularOrientation().firstAngle;
     }
 
+    public double getMaxMotorVelocity(){
+        return fl.getVelocity() > fr.getVelocity() ? bl.getVelocity() > br.getVelocity() ? fl.getVelocity() > bl.getVelocity() ? fl.getVelocity() : bl.getVelocity() : fl.getVelocity() > br.getVelocity() ? fl.getVelocity() : bl.getVelocity() : bl.getVelocity() > br.getVelocity() ? fr.getVelocity() > bl.getVelocity() ? fr.getVelocity() : bl.getVelocity() : fr.getVelocity() > br.getVelocity() ? fr.getVelocity(): br.getVelocity();
+    }
+
 }

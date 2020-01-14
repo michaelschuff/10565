@@ -11,6 +11,7 @@ import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Autonomous.SkyStoneFinder;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
+import org.firstinspires.ftc.teamcode.drive.DriveConstants;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 import java.io.BufferedWriter;
@@ -53,9 +54,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         telemetry.addLine("Ready");
         telemetry.update();
         while(!isStarted()){
-//            SkystonePosition = SkyStoneFinder.detectSkystone(camera) + 1;
-//            telemetry.addData("Skystone:", SkystonePosition);
-//            telemetry.update();
+            try {
+                SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
+                telemetry.addData("Skystone:", SkystonePosition);
+                telemetry.update();
+            }catch (NullPointerException e){
+                telemetry.addData("Java Sux bc ", e.getStackTrace());
+            }
         }
         //waitForStart();
         telemetry.clear();
@@ -244,6 +249,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                             .strafeTo(new Vector2d(-41.5, 38))
                             .build()
             );
+
             drive.turnSync(Math.toRadians(-45));
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
@@ -418,5 +424,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
     private double mmToInches(double mm) {
         return mm / 25.4;
+    }
+
+    private boolean tooFast(){
+        if(drive.getMaxMotorVelocity() > DriveConstants.BASE_CONSTRAINTS.maxVel){
+            this.stop();
+            return true;
+        }
+        return false;
     }
 }
