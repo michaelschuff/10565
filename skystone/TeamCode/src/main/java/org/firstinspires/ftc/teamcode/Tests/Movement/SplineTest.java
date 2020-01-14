@@ -24,13 +24,13 @@ public class SplineTest extends LinearOpMode {
         SampleMecanumDriveBase drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(0, 0, Math.toRadians(90)));
         Trajectory trajectory = drive.trajectoryBuilder()
-                .splineTo(new Pose2d(15, 15, 0))
-                .splineTo(new Pose2d(30, 0, Math.toRadians(-90)))
-                .splineTo(new Pose2d(15, -15, Math.toRadians(180)))
+                .splineTo(new Pose2d(10, 10, 0))
+                .splineTo(new Pose2d(20, 0, Math.toRadians(-90)))
+                .splineTo(new Pose2d(10, -10, Math.toRadians(180)))
                 .splineTo(new Pose2d(0, 0, Math.toRadians(90)))
-                .splineTo(new Pose2d(-15, 15, Math.toRadians(180)))
-                .splineTo(new Pose2d(-30, 0, Math.toRadians(-90)))
-                .splineTo(new Pose2d(-15, -15, Math.toRadians(0)))
+                .splineTo(new Pose2d(-10, 10, Math.toRadians(180)))
+                .splineTo(new Pose2d(-20, 0, Math.toRadians(-90)))
+                .splineTo(new Pose2d(-10, -10, Math.toRadians(0)))
                 .splineTo(new Pose2d(0, 0, Math.toRadians(90)))
                 .build();
         waitForStart();

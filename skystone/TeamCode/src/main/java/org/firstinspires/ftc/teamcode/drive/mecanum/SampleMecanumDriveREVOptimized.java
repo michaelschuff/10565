@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.drive.mecanum;
 
+import static android.os.SystemClock.sleep;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MOTOR_VELO_PID;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.RUN_USING_ENCODER;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.encoderTicksToInches;
@@ -41,26 +42,26 @@ import org.openftc.revextensions2.RevBulkData;
  * Optimized mecanum drive implementation for REV ExHs. The time savings may significantly improve
  * trajectory following performance with moderate additional complexity.
  */
-@Disabled
 @Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     public ExpansionHubMotor lift;
-    private Servo rFoundation, lFoundation, lArm, rArm, claw;
+    private Servo rFoundation, lFoundation, rArm;
+    public Servo lArm, claw;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
     //idle servo positions
-    private static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.35, rArm1 = 0.65, claw1 = 0;
+    public static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.35, rArm1 = 0.65, claw1 = 0;
 
     //activated servo positions
-    private static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.77, rArm2 = 0.23, claw2 = 0.325;
+    public static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.65, rArm2 = 0.35, claw2 = 0.33;
 
     //inactive servo positions
-    private static final double rFoundation0 = 1, lFoundation0 = 0;
+    public static final double rFoundation0 = 1, lFoundation0 = 0;
 
-    private boolean isFoundationGrabbed = false, isArmUp = false, isClawGrabbed = false;
+    public boolean isFoundationGrabbed = false, isArmIn = true, isClawGrabbed = false;
 
     public int InchesToLiftTicks = 540;
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
@@ -98,7 +99,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -115,6 +116,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
 //        setLocalizer(new ThreeWheelGyroTrackingLocalizer(hardwareMap, imu));
+//        setLocalizer(new MecanumLocalizer(this,true));
 //        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
 
@@ -156,9 +158,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     }
 
     public void toggleArm() {
-        isArmUp = !isArmUp;
-        lArm.setPosition(isArmUp ? lArm1 : lArm2);
-        rArm.setPosition(isArmUp ? rArm1 : rArm2);
+        isArmIn = !isArmIn;
+        lArm.setPosition(isArmIn ? lArm1 : lArm2);
+        rArm.setPosition(isArmIn ? rArm1 : rArm2);
     }
 
     public void IncArm() {
@@ -176,17 +178,39 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         rArm.setPosition(val2);
     }
 
+    public void setArmIn(boolean isIn) {
+        isArmIn = isIn;
+        lArm.setPosition(isIn ? lArm1: lArm2);
+        rArm.setPosition(isIn ? rArm1: rArm2);
+    }
+
     public void toggleClaw() {
-        isClawGrabbed = !isClawGrabbed;
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
     }
 
     public boolean getIsArmUp(){
-        return isArmUp;
+        return isArmIn;
     }
 
     public void setClawGrabbing(boolean grabbed) {
         claw.setPosition(grabbed ? claw2 : claw1);
+    }
+
+    public void resetEveryThing() {
+        setClawGrabbing(false);
+        lift.setPower(1);
+        sleep(250);
+        setArmPos(lArm1, rArm1);
+        sleep(200);
+        lift.setPower(-1);
+    }
+
+    public boolean CheckLiftVelocity() {
+        if (Math.abs(lift.getVelocity())  < 0.1) {
+            lift.setPower(0);
+            return true;
+        }
+        return false;
     }
 
     @Override

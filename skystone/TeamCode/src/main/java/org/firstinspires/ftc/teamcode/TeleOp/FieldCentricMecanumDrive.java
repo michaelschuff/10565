@@ -20,38 +20,26 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     private double[] motorPowers = new double[]{0, 0, 0, 0};
     private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection = Math.toRadians(90);
-    private Double absoluteRotation;
 
-    private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false;
+    private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false, isResetting = false, V4BarOut = false, fActivated = false, rightBumpPressed = false, leftBumpPressed = false;
 
-    private PIDFController absoluteRotationPIDController, liftController;
-
-    public static double skystoneHeightChange = 4, maxSlideHeight = 38, firstSkystoneHeight = 1.5;
-
-    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = 0.5;
+    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = 0.5, firstStoneVal = 0.8, secondStoneVal = 0.6;
 
     @Override
     public void init() {
-//        try {
-//            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
-//            Scanner sc = new Scanner(file);
-//            startingDirection = Float.parseFloat(sc.nextLine());
-//            sc.close();
-//        } catch (Exception e){
-//
-//        }
+        try {
+            File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
+            Scanner sc = new Scanner(file);
+            startingDirection = Float.parseFloat(sc.nextLine());
+            sc.close();
+        } catch (Exception e){
+
+        }
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
-
-
-//        absoluteRotationPIDController = new PIDFController(HEADING_PID);
-//        absoluteRotationPIDController.setInputBounds(0.0, 2.0 * Math.PI);
-//        absoluteRotationPIDController.setOutputBounds(-1.0, 1.0);
-
-//        liftController = new PIDFController(new PIDCoefficients(3, 0, 0));
-//        liftController.setOutputBounds(-1, 1);
-//        liftController.setInputBounds(0, 0);
-//        liftController.setTargetPosition(0);
+        drive.setClawGrabbing(true);
+        drive.setArmIn(true);
+        drive.setClawGrabbing(false);
     }
 
     @Override
@@ -74,23 +62,12 @@ public class FieldCentricMecanumDrive extends OpMode {
         x = tempx * cos - y * sin;
         y = tempx * sin + y * cos;
 
-
-
-
-//        absoluteRotation = getDPadAngle((gamepad1.dpad_right ? 1 : 0) - (gamepad1.dpad_left ? 1 : 0), (gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0));
-//        if (absoluteRotation != null) {
-//            absoluteRotationPIDController.setTargetPosition(absoluteRotation);
-//        }
-
         rotation = Math.pow(gamepad1.right_stick_x, 3);
-//        if (rotation == 0) {
-//            rotation = absoluteRotationPIDController.update(drive.getRawExternalHeading());
-//        }
 
 
         motorPowers = new double[]{x + rotation, y + rotation, x - rotation, y - rotation};
 
-        if (gamepad1.b) {
+        if (V4BarOut || fActivated) {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
                 maxPower = GetMaxAbsMotorPower();
                 drive.setMotorPowers(SloMoPower * motorPowers[0] / maxPower, SloMoPower * motorPowers[1] / maxPower, SloMoPower * motorPowers[2] / maxPower, SloMoPower * motorPowers[3] / maxPower);
@@ -110,6 +87,20 @@ public class FieldCentricMecanumDrive extends OpMode {
 
         drive.setIntakePower(maxIntakePower * -Math.pow(gamepad2.left_stick_y, 3), maxIntakePower * -Math.pow(gamepad2.right_stick_y, 3));
 
+        if (gamepad1.right_bumper) {
+            rightBumpPressed = true;
+        } else  if (rightBumpPressed) {
+            drive.setArmPos(firstStoneVal, 1 - firstStoneVal);
+            rightBumpPressed = false;
+        }
+
+        if (gamepad1.left_bumper) {
+            leftBumpPressed = true;
+        } else  if (rightBumpPressed) {
+            drive.setArmPos(secondStoneVal, 1 - secondStoneVal);
+            leftBumpPressed = false;
+        }
+
         if (gamepad2.a) {
             aPressed = true;
         } else if (aPressed) {
@@ -120,9 +111,8 @@ public class FieldCentricMecanumDrive extends OpMode {
         if (gamepad1.y) {
             yPressed = true;
         } else if (yPressed) {
-//            liftController.setTargetPosition(0);
-            drive.setClawGrabbing(false);
-//            drive.resetArm();
+            drive.resetEveryThing();
+            isResetting = true;
             yPressed = false;
         }
 
@@ -136,6 +126,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         if (gamepad2.y) {
             y2Pressed = true;
         } else if (y2Pressed) {
+            fActivated = !fActivated;
             drive.toggleFoundation();
             y2Pressed = false;
         }
@@ -160,13 +151,30 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
 
-        drive.setLiftPower(maxLiftPower * (gamepad2.right_trigger - gamepad2.left_trigger));
+        if (drive.lArm.getPosition() < 0.5) {
+            V4BarOut = false;
+        } else {
+            V4BarOut = true;
+        }
 
-//        telemetry.addData("fl",motorPowers[0]);
-//        telemetry.addData("bl",motorPowers[1]);
-//        telemetry.addData("br",motorPowers[2]);
-//        telemetry.addData("fr",motorPowers[3]);
-//        telemetry.update();
+        if (!isResetting) {
+            drive.setLiftPower(maxLiftPower * (gamepad1.right_trigger - gamepad1.left_trigger));
+        } else {
+            if (drive.CheckLiftVelocity()) {
+                isResetting = false;
+            }
+        }
+
+
+        if (drive.claw.getPosition() == drive.claw1) {
+            drive.isClawGrabbed = false;
+        } else {
+            drive.isClawGrabbed = true;
+        }
+        telemetry.addData("clawGrabbed", drive.isClawGrabbed);
+        telemetry.addData("v4barOut", V4BarOut);
+        telemetry.addData("foundationgrabbed", fActivated);
+        telemetry.update();
     }
 
 
