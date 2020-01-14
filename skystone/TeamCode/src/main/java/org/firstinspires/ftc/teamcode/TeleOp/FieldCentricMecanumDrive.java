@@ -47,8 +47,6 @@ public class FieldCentricMecanumDrive extends OpMode {
         tempx = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
 
-
-
         double tempTheta = Math.atan2(y, tempx);
 
         double mag = Math.pow(Math.sqrt(tempx*tempx + y*y), 1);
@@ -140,7 +138,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
         if(gamepad1.a){
             drive.setClawGrabbing(false);
-            if(drive.getIsArmUp()){
+            if(!drive.getIsArmIn()){
                 drive.toggleArm();
             }
             drive.setLiftPower(-1);
@@ -171,14 +169,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         } else {
             drive.isClawGrabbed = true;
         }
-        telemetry.addData("clawGrabbed", drive.isClawGrabbed);
-        telemetry.addData("v4barOut", V4BarOut);
-        telemetry.addData("foundationgrabbed", fActivated);
-        telemetry.update();
     }
-
-
-
 
     private Double getDPadAngle(int x, int y) {
         if (x != 0 || y != 0) {

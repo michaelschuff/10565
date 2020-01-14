@@ -53,10 +53,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    public static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.35, rArm1 = 0.65, claw1 = 0;
+    public static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.36, rArm1 = 0.64, claw1 = 0;
 
     //activated servo positions
-    public static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.65, rArm2 = 0.35, claw2 = 0.33;
+    public static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.64, rArm2 = 0.36, claw2 = 0.33;
 
     //inactive servo positions
     public static final double rFoundation0 = 1, lFoundation0 = 0;
@@ -116,7 +116,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
 //        setLocalizer(new ThreeWheelGyroTrackingLocalizer(hardwareMap, imu));
-//        setLocalizer(new MecanumLocalizer(this,true));
+//        setLocalizer(new MecanumLocalizer(this, true));
 //        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
 
@@ -188,8 +188,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
     }
 
-    public boolean getIsArmUp(){
-        return isArmUp;
+    public boolean getIsArmIn(){
+        return isArmIn;
     }
 
     public void setClawGrabbing(boolean grabbed) {
