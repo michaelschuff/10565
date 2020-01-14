@@ -98,12 +98,25 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private void stackSkystone(boolean second) {
 
         drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                    .reverse()
-                    .splineTo(new Pose2d(0, 38), new LinearInterpolator(drive.getPoseEstimate().getHeading(), Math.toRadians(180) - drive.getPoseEstimate().getHeading()))
-                    .lineTo(new Vector2d(35, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
-                    .build()
+            drive.trajectoryBuilder()
+                .reverse()
+                .splineTo(new Pose2d(0, 38, Math.toRadians(180)))
+                .build()
         );
+
+//        drive.followTrajectorySync(
+//            drive.trajectoryBuilder()
+//                .lineTo(new Vector2d(35, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+//                .build()
+//        );
+
+        drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                        .strafeTo(new Vector2d(35, 40))
+                        .build()
+        );
+
+        drive.turnSync(Math.toRadians(-90));
 
         vuforiaPosition = GetVuforia();
         vuforiaHeading = GetVuforiaH();
@@ -189,7 +202,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                             .build()
             );
         }
-        SetIntake setIntake = new SetIntake(750, 0, 0);
+        SetIntake setIntake = new SetIntake(1.5, 0, 0);
 
     }
 
@@ -324,9 +337,9 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         Timer timer;
         double p1, p2;
 
-        public SetIntake(int seconds, double p1, double p2) {
+        public SetIntake(double seconds, double p1, double p2) {
             timer = new Timer();
-            timer.schedule(new RemindTask(), seconds*1000);
+            timer.schedule(new RemindTask(), (int) seconds*1000);
             this.p1 = p1;
             this.p2 = p2;
         }
