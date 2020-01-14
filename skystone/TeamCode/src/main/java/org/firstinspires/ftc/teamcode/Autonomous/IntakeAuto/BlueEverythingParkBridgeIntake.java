@@ -35,10 +35,6 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     public static int SkystonePosition = 1;
 
 
-    //field Constants
-    private double tileWidth = 23.5, botWidth = 17.125, botLength = 17.1875;
-
-
     //starting position
     private static double startingAngle = -90, startingX = -23.25 * 2 + 17.5 / 2, startingY = 70.5 - 17.5 / 2;
 
@@ -61,7 +57,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                 SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
                 telemetry.addData("Skystone:", SkystonePosition);
                 telemetry.update();
-            }catch (NullPointerException e){
+            } catch (NullPointerException e) {
                 telemetry.addData("Java Sux bc ", e.getStackTrace());
             }
         }
@@ -101,7 +97,6 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     }
 
     private void stackSkystone(boolean second) {
-
         drive.followTrajectorySync(
             drive.trajectoryBuilder()
                 .reverse()
@@ -109,19 +104,19 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                 .build()
         );
 
-//        drive.followTrajectorySync(
-//            drive.trajectoryBuilder()
-//                .lineTo(new Vector2d(35, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
-//                .build()
-//        );
-
         drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(35, 40))
-                        .build()
+            drive.trajectoryBuilder()
+                .lineTo(new Vector2d(35, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+                .build()
         );
 
-        drive.turnSync(Math.toRadians(-90));
+//        drive.followTrajectorySync(
+//                drive.trajectoryBuilder()
+//                        .strafeTo(new Vector2d(35, 40))
+//                        .build()
+//        );
+//
+//        drive.turnSync(Math.toRadians(-90));
 
         vuforiaPosition = GetVuforia();
         vuforiaHeading = GetVuforiaH();
@@ -131,13 +126,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         if (second) {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .lineTo(new Vector2d(42.5, 37), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
+                            .lineTo(new Vector2d(42.5, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
                             .build()
             );
         } else {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .lineTo(new Vector2d(42.5, 37), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
+                            .lineTo(new Vector2d(42.5, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
                             .build()
             );
         }
@@ -179,7 +174,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private void grabFirstSkystone() {
         drive.setArmPos(armPos, 1 - armPos);
         drive.setClawGrabbing(false);
-        drive.setIntakePower(-0.9, -0.9);
+        drive.setIntakePower(-1, -1);
 
 
         if (SkystonePosition == 1) {
@@ -215,7 +210,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .lineTo(new Vector2d(-12, 36), new LinearInterpolator(Math.toRadians(90), Math.toRadians(90)))
+                        .lineTo(new Vector2d(-12, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(90)))
 //                        .strafeTo(new Vector2d(strafex, strafey))
                         .build()
         );
