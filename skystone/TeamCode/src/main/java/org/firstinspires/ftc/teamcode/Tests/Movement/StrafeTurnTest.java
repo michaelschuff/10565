@@ -44,10 +44,10 @@ public class StrafeTurnTest extends LinearOpMode {
         Path path = new Path(segment);
 
         DriveConstraints constraints = new DriveConstraints(20, 40, 80, 1, 2, 4);
-        Trajectory traj = TrajectoryGenerator::generateSimpleTrajectory(path, constraints);
+        //Trajectory traj = TrajectoryGenerator::generateSimpleTrajectory(path, constraints);
 
         waitForStart();
 
-        drive.followTrajectorySync(traj);
+        //drive.followTrajectorySync(traj);
     }
 }
