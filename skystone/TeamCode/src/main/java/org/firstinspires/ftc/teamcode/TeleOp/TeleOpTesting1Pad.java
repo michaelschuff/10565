@@ -15,13 +15,13 @@ import java.util.Scanner;
 
 @Config
 @TeleOp(group = "Basic Drivetrain")
-public class FieldCentricMecanumDrive extends OpMode {
+public class TeleOpTesting1Pad extends OpMode {
     private SampleMecanumDriveREVOptimized drive;
 
     private double[] motorPowers = new double[]{0, 0, 0, 0};
     private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection = Math.toRadians(90);
 
-    private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false, isResetting = false, V4BarOut = false, fActivated = false, rightBumpPressed = false, leftBumpPressed = false;
+    private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false, isResetting = false, V4BarOut = false, fActivated = false, rightBumpPressed = false, leftBumpPressed = false, bPressed = false;
 
     public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = 0.5, firstStoneVal = 0.8, secondStoneVal = 0.6;
 
@@ -81,10 +81,6 @@ public class FieldCentricMecanumDrive extends OpMode {
             }
         }
 
-
-
-        drive.setIntakePower(maxIntakePower * -Math.pow(gamepad2.left_stick_y, 3), maxIntakePower * -Math.pow(gamepad2.right_stick_y, 3));
-
         if (gamepad1.right_bumper) {
             rightBumpPressed = true;
         } else  if (rightBumpPressed) {
@@ -99,18 +95,31 @@ public class FieldCentricMecanumDrive extends OpMode {
             leftBumpPressed = false;
         }
 
-        if (gamepad2.a) {
+        if (gamepad1.a) {
             aPressed = true;
         } else if (aPressed) {
             drive.toggleClaw();
             aPressed = false;
         }
 
+        if (gamepad1.b) {
+            bPressed = true;
+        } else if (bPressed) {
+            drive.toggleIntake();
+            bPressed = false;
+        }
+
         if (gamepad1.y) {
             yPressed = true;
         } else if (yPressed) {
-            drive.resetEveryThing();
-            isResetting = true;
+            if (V4BarOut) {
+                drive.resetEveryThing();
+                isResetting = true;
+            } else {
+                fActivated = !fActivated;
+                drive.toggleFoundation();
+            }
+
             yPressed = false;
         }
 
@@ -121,39 +130,13 @@ public class FieldCentricMecanumDrive extends OpMode {
             xPressed = false;
         }
 
-        if (gamepad2.y) {
-            y2Pressed = true;
-        } else if (y2Pressed) {
-            fActivated = !fActivated;
-            drive.toggleFoundation();
-            y2Pressed = false;
-        }
-
-//        if (gamepad1.left_bumper) {
-//            drive.DecArm();
+//        if (gamepad1.b) {
+//            y2Pressed = true;
+//        } else if (y2Pressed) {
+//            fActivated = !fActivated;
+//            drive.toggleFoundation();
+//            y2Pressed = false;
 //        }
-//        if (gamepad1.right_bumper) {
-//            drive.IncArm();
-//        }
-
-//        if(gamepad1.a){
-//            drive.setClawGrabbing(false);
-//            if(!drive.getIsArmIn()){
-//                drive.toggleArm();
-//            }
-//            drive.setLiftPower(-1);
-//            while(drive.lift.getVelocity() > 0.1){
-//              drive.setLiftPower(-1);
-//            }
-//            drive.setLiftPower(0);
-//        }
-
-
-        if (drive.lArm.getPosition() < 0.5) {
-            V4BarOut = false;
-        } else {
-            V4BarOut = true;
-        }
 
         if (!isResetting) {
             drive.setLiftPower(maxLiftPower * (gamepad1.right_trigger - gamepad1.left_trigger));
@@ -168,6 +151,12 @@ public class FieldCentricMecanumDrive extends OpMode {
             drive.isClawGrabbed = false;
         } else {
             drive.isClawGrabbed = true;
+        }
+
+        if (drive.lArm.getPosition() < 0.5) {
+            V4BarOut = false;
+        } else {
+            V4BarOut = true;
         }
     }
 
