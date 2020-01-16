@@ -81,8 +81,6 @@ public class FieldCentricMecanumDrive extends OpMode {
             }
         }
 
-
-
         drive.setIntakePower(maxIntakePower * -Math.pow(gamepad2.left_stick_y, 3), maxIntakePower * -Math.pow(gamepad2.right_stick_y, 3));
 
         if (gamepad1.right_bumper) {
