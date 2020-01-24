@@ -6,6 +6,7 @@ import com.acmerobotics.dashboard.config.ValueProvider;
 import com.acmerobotics.dashboard.config.variable.BasicVariable;
 import com.acmerobotics.dashboard.config.variable.CustomVariable;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.profile.MotionProfile;
@@ -45,6 +46,7 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
     private static final String PID_VAR_NAME = "VELO_PID";
 
     private FtcDashboard dashboard = FtcDashboard.getInstance();
+    TelemetryPacket fasttelem = new TelemetryPacket();
     private String catName;
     private CustomVariable catVar;
 
@@ -168,14 +170,13 @@ public class DriveVelocityPIDTuner extends LinearOpMode {
             drive.setDrivePower(new Pose2d(targetPower, 0, 0));
 
             List<Double> velocities = drive.getWheelVelocities();
-
             // update telemetry
-            telemetry.addData("targetVelocity", motionState.getV());
+            fasttelem.put("targetVelocity", motionState.getV());
             for (int i = 0; i < velocities.size(); i++) {
-                telemetry.addData("velocity" + i, velocities.get(i));
-                telemetry.addData("error" + i, motionState.getV() - velocities.get(i));
+                fasttelem.put("velocity" + i, velocities.get(i));
+                fasttelem.put("error" + i, motionState.getV() - velocities.get(i));
             }
-            telemetry.update();
+            dashboard.sendTelemetryPacket(fasttelem);
         }
 
         removePidVariable();

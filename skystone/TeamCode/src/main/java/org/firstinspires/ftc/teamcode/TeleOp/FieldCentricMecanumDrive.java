@@ -23,7 +23,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false, isResetting = false, V4BarOut = false, fActivated = false, rightBumpPressed = false, leftBumpPressed = false;
 
-    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = 0.5, firstStoneVal = 0.8, secondStoneVal = 0.6;
+    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = 0.5, firstStoneVal = 0.8, secondStoneVal = 0.7;
 
     @Override
     public void init() {
@@ -60,7 +60,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         x = tempx * cos - y * sin;
         y = tempx * sin + y * cos;
 
-        rotation = Math.pow(gamepad1.right_stick_x, 3);
+        rotation = Math.pow(gamepad1.right_stick_x, 3) * Math.abs(gamepad1.right_stick_x);
 
 
         motorPowers = new double[]{x + rotation, y + rotation, x - rotation, y - rotation};
