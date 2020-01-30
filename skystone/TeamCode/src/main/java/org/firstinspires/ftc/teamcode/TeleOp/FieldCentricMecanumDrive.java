@@ -37,6 +37,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        drive.setRunUsingEncoder(false);
         drive.setClawGrabbing(true);
         drive.setArmIn(true);
         drive.setClawGrabbing(false);
@@ -126,25 +127,6 @@ public class FieldCentricMecanumDrive extends OpMode {
             drive.toggleFoundation();
             y2Pressed = false;
         }
-
-//        if (gamepad1.left_bumper) {
-//            drive.DecArm();
-//        }
-//        if (gamepad1.right_bumper) {
-//            drive.IncArm();
-//        }
-
-//        if(gamepad1.a){
-//            drive.setClawGrabbing(false);
-//            if(!drive.getIsArmIn()){
-//                drive.toggleArm();
-//            }
-//            drive.setLiftPower(-1);
-//            while(drive.lift.getVelocity() > 0.1){
-//              drive.setLiftPower(-1);
-//            }
-//            drive.setLiftPower(0);
-//        }
 
 
         if (drive.lArm.getPosition() < 0.5) {

@@ -54,11 +54,11 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         telemetry.update();
         while(!isStarted()){
             try {
-                SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
-                telemetry.addData("Skystone:", SkystonePosition);
-                telemetry.update();
+//                SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
+//                telemetry.addData("Skystone:", SkystonePosition);
+//                telemetry.update();
             } catch (NullPointerException e) {
-                telemetry.addData("Java Sux bc ", e.getStackTrace());
+//                telemetry.addData("Java Sux bc ", e.getStackTrace());
             }
         }
         telemetry.clear();
@@ -134,36 +134,39 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         }
 
         if (second) {
-            drive.lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            drive.bLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            drive.fLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             drive.setArmPos(armPos, 1 - armPos);
             drive.setLiftPos(500);
-            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.lift.setPower(liftPower);
+            drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.setLiftPower(liftPower);
             sleep((long) (500));
             drive.setArmPos(stackArmPos, 1 - stackArmPos);
             sleep((long) (1500));
             drive.setClawGrabbing(false);
             sleep(100);
             drive.setLiftPos(800);
-            drive.lift.setPower(liftPower);
+            drive.setLiftPower(liftPower);
             sleep(500);
             drive.setArmPos(armPos, 1 - armPos);
             drive.setFoundation((short) 2);
             sleep(100);
             drive.setLiftPos(0);
-            drive.lift.setPower(-liftPower);
+            drive.setLiftPower(-liftPower);
 
         } else {
             drive.setArmPos(stackArmPos, 1 - stackArmPos);
             sleep(900);
             drive.setClawGrabbing(false);
             drive.setLiftPos(500);
-            drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.lift.setPower(liftPower);
+            drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            drive.setLiftPower(liftPower);
             sleep(600);
             drive.setArmPos(armPos, 1 - armPos);
             drive.setLiftPos(0);
-            drive.lift.setPower(-liftPower);
+            drive.setLiftPower(-liftPower);
         }
     }
 

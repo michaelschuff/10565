@@ -21,11 +21,13 @@ public class LiftTest extends LinearOpMode {
         waitForStart();
 
         drive.setLiftPos(pos);
-        drive.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         drive.setLiftPower(0.5);
 
         while(!isStopRequested()){
-            telemetry.addData("liftpos", (float) drive.lift.getCurrentPosition() / drive.InchesToLiftTicks);
+            telemetry.addData("b lift pos", (float) drive.bLift.getCurrentPosition() / drive.InchesToLiftTicks);
+            telemetry.addData("f lift pos", (float) drive.fLift.getCurrentPosition() / drive.InchesToLiftTicks);
         }
     }
 }

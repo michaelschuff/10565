@@ -32,22 +32,22 @@ import java.util.List;
  */
 @Config
 public class TwoWheelLocalizer extends TwoTrackingWheelLocalizer {
-    public static double TICKS_PER_REV = 1350;
+    public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = 0.944882; // in
-    public static double GEAR_RATIO = 38.0 / 30.0; // output (wheel) speed / input (encoder) speed
+    public static double GEAR_RATIO = 1; // output (wheel) speed / input (encoder) speed
 
     private DcMotor leftEncoder, frontEncoder;
     public BNO055IMU imu;
 
     public TwoWheelLocalizer(HardwareMap hardwareMap, BNO055IMU imu) {
         super(Arrays.asList(
-                new Pose2d(-2.125, 7.5625, Math.toRadians(180)), // left
-                new Pose2d(-5.125, 0.75, Math.toRadians(-90)) // front
+                new Pose2d(-2, 7.5, Math.toRadians(180)), // left
+                new Pose2d(-1, 0, Math.toRadians(-90)) // front
         ));
         this.imu = imu;
 
         leftEncoder = hardwareMap.get(DcMotor.class, "lIntake");
-        frontEncoder = hardwareMap.get(DcMotor.class, "frontEncoder");
+        frontEncoder = hardwareMap.get(DcMotor.class, "fLift");
     }
 
     public static double encoderTicksToInches(int ticks) {

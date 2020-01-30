@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.drive.localizer.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
@@ -40,7 +41,7 @@ import org.openftc.revextensions2.RevBulkData;
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
-    public ExpansionHubMotor lift;
+    public ExpansionHubMotor fLift, bLift;
     private Servo rFoundation, lFoundation, rArm;
     public Servo lArm, claw;
     private List<ExpansionHubMotor> motors;
@@ -77,7 +78,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         fr = hardwareMap.get(ExpansionHubMotor.class, "fr");
         lIntake = hardwareMap.get(ExpansionHubMotor.class, "lIntake");
         rIntake = hardwareMap.get(ExpansionHubMotor.class, "rIntake");
-        lift = hardwareMap.get(ExpansionHubMotor.class, "lift");
+        fLift = hardwareMap.get(ExpansionHubMotor.class, "fLift");
+        bLift = hardwareMap.get(ExpansionHubMotor.class, "bLift");
         motors = Arrays.asList(fl, bl, br, fr);
 
         rFoundation = hardwareMap.get(Servo.class, "rFoundation");
@@ -95,7 +97,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
 //        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 //        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        bLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        fLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
 
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
@@ -105,7 +108,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         rIntake.setDirection(DcMotorSimple.Direction.REVERSE);
-//        lift.setDirection(DcMotorSimple.Direction.REVERSE);
+        bLift.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
@@ -120,11 +123,13 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     }
 
     public void setLiftPos(int liftPos) {
-        lift.setTargetPosition(liftPos);
+        fLift.setTargetPosition(liftPos);
+        bLift.setTargetPosition(liftPos);
     }
 
     public void setLiftPower(double liftPower) {
-        lift.setPower(liftPower);
+        bLift.setPower(liftPower);
+        fLift.setPower(liftPower);
     }
 
     public void setFoundation(short n) {
@@ -192,16 +197,19 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public void resetEveryThing() {
         setClawGrabbing(false);
-        lift.setPower(1);
+        bLift.setPower(1);
+        fLift.setPower(1);
         sleep(250);
         setArmPos(lArm1, rArm1);
         sleep(200);
-        lift.setPower(-1);
+        bLift.setPower(-1);
+        fLift.setPower(-1);
     }
 
     public boolean CheckLiftVelocity() {
-        if (Math.abs(lift.getVelocity())  < 0.1) {
-            lift.setPower(0);
+        if (Math.abs(bLift.getVelocity()) < 0.1) {
+            bLift.setPower(0);
+            fLift.setPower(0);
             return true;
         }
         return false;
@@ -215,6 +223,19 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         } else {
             lIntake.setPower(0);
             rIntake.setPower(0);
+        }
+    }
+
+    public void setRunUsingEncoder(boolean a) {
+        if (a) {
+            for (ExpansionHubMotor motor : motors) {
+                motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+        } else {
+            for (ExpansionHubMotor motor : motors) {
+                motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            }
         }
     }
 

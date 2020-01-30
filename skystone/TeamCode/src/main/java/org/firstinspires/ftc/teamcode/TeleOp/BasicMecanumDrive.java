@@ -27,6 +27,7 @@ public class BasicMecanumDrive extends OpMode {
     @Override
     public void init() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        drive.setRunUsingEncoder(false);
     }
 
     @Override

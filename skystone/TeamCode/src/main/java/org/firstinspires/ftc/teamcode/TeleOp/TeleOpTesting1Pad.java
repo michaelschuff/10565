@@ -37,6 +37,7 @@ public class TeleOpTesting1Pad extends OpMode {
         }
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        drive.setRunUsingEncoder(false);
         drive.setClawGrabbing(true);
         drive.setArmIn(true);
         drive.setClawGrabbing(false);
