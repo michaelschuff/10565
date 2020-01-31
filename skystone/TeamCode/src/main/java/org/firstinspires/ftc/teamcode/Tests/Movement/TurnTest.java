@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.Tests.Movement;
 
 import com.acmerobotics.dashboard.config.Config;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
@@ -17,6 +18,8 @@ import java.io.FileWriter;
 /*
  * This is a simple routine to test turning capabilities.
  */
+
+@Disabled
 @Config
 @Autonomous(group = "MovementTests")
 public class TurnTest extends LinearOpMode {

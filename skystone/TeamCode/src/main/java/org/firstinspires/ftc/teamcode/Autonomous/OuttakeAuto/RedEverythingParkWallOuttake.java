@@ -10,14 +10,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.util.TaskThread;
-import org.firstinspires.ftc.teamcode.util.ThreadLinearOpMode;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Vector;
 
 @Disabled
 @Autonomous(group = "Auto", name = "RedEverythingParkWallOuttake")

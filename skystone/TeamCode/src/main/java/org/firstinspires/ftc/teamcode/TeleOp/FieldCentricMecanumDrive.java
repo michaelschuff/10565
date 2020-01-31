@@ -45,7 +45,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     @Override
     public void loop() {
-        tempx = gamepad1.left_stick_x;
+        x = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
 
         double tempTheta = Math.atan2(y, tempx);
@@ -60,6 +60,24 @@ public class FieldCentricMecanumDrive extends OpMode {
         sin = Math.sin(theta);
         x = tempx * cos - y * sin;
         y = tempx * sin + y * cos;
+
+        theta = Math.atan2(y, x) - startingDirection - drive.getExternalHeading() + Math.toRadians(45);
+
+        mag = Math.pow(Math.sqrt(x*x + y*y), 3);
+
+        if (3 * Math.PI / 4 >= theta && theta >= Math.PI / 4){
+            y = mag;
+            x = y / Math.tan(theta);
+        } else if (Math.PI / 4 >= theta && theta >= -Math.PI / 4){
+            x = mag;
+            y = x * Math.tan(theta);
+        } else if (-3 * Math.PI / 4 <= theta && theta <= Math.PI / 4){
+            y = -mag;
+            x = y / Math.tan(theta);
+        } else if (theta <= -3 * Math.PI / 4 || theta >= 3 * Math.PI / 4){
+            x = -mag;
+            y = x * Math.tan(theta);
+        }
 
         rotation = Math.pow(gamepad1.right_stick_x, 3) * Math.abs(gamepad1.right_stick_x);
 
@@ -128,13 +146,6 @@ public class FieldCentricMecanumDrive extends OpMode {
             y2Pressed = false;
         }
 
-
-        if (drive.lArm.getPosition() < 0.5) {
-            V4BarOut = false;
-        } else {
-            V4BarOut = true;
-        }
-
         if (!isResetting) {
             drive.setLiftPower(maxLiftPower * (gamepad1.right_trigger - gamepad1.left_trigger));
         } else {
@@ -143,19 +154,10 @@ public class FieldCentricMecanumDrive extends OpMode {
             }
         }
 
+        V4BarOut = !drive.getIsArmIn();
 
-        if (drive.claw.getPosition() == drive.claw1) {
-            drive.isClawGrabbed = false;
-        } else {
-            drive.isClawGrabbed = true;
-        }
-    }
+        drive.updateClawGrabbed();
 
-    private Double getDPadAngle(int x, int y) {
-        if (x != 0 || y != 0) {
-            return Math.atan2(y, x);
-        }
-        return null;
     }
 
     private double GetMaxAbsMotorPower() {

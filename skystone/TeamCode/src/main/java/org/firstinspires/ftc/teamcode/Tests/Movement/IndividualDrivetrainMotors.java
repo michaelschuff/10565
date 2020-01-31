@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
 
+//@Disabled
 @Config
 @TeleOp(group = "MovementTests")
 public class IndividualDrivetrainMotors extends OpMode {

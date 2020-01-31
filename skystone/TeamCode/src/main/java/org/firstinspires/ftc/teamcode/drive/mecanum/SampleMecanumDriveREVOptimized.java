@@ -42,8 +42,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     public ExpansionHubMotor fLift, bLift;
-    private Servo rFoundation, lFoundation, rArm;
-    public Servo lArm, claw;
+    private Servo rFoundation, lFoundation, rArm, lArm, claw;
     private List<ExpansionHubMotor> motors;
     private BNO055IMU imu;
 
@@ -58,7 +57,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public boolean isFoundationGrabbed = false, isArmIn = true, isClawGrabbed = false, intaking = false;
 
-    public int InchesToLiftTicks = 540;
     public SampleMecanumDriveREVOptimized(HardwareMap hardwareMap) {
         super();
 
@@ -95,8 +93,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         }
 
-//        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         bLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -112,7 +108,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
 
         setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
-//        setLocalizer(new ThreeWheelGyroTrackingLocalizer(hardwareMap, imu));
 //        setLocalizer(new MecanumLocalizer(this, true));
 //        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
@@ -188,6 +183,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     }
 
     public boolean getIsArmIn(){
+        updateV4BOut();
         return isArmIn;
     }
 
@@ -236,6 +232,22 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
                 motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
                 motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
             }
+        }
+    }
+
+    private void updateV4BOut() {
+        if (lArm.getPosition() < 0.5) {
+            isArmIn = false;
+        } else {
+            isArmIn = true;
+        }
+    }
+
+    public void updateClawGrabbed() {
+        if (claw.getPosition() == claw1) {
+            isClawGrabbed = false;
+        } else {
+            isClawGrabbed = true;
         }
     }
 

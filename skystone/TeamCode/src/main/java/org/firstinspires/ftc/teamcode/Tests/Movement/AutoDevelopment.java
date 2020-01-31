@@ -6,11 +6,10 @@ import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.util.TaskThread;
-import org.firstinspires.ftc.teamcode.util.ThreadLinearOpMode;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
 import java.util.ArrayList;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 @Disabled
 @Config
 @Autonomous(group = "MovementTests")
-public class AutoDevelopment extends ThreadLinearOpMode {
+public class AutoDevelopment extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private VectorF VuMarkPosition = null;//in mm
@@ -40,7 +39,7 @@ public class AutoDevelopment extends ThreadLinearOpMode {
 
 
     @Override
-    public void runMainOpMode() {
+    public void runOpMode() {
         commands = new ArrayList<Trajectory>();
         waitIndicies = new ArrayList<Integer>();
         turnIndicies = new ArrayList<Integer>();
@@ -52,17 +51,6 @@ public class AutoDevelopment extends ThreadLinearOpMode {
         camera = new VuforiaLib_Skystone();
         camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
         camera.start();
-        registerThread(new TaskThread(new TaskThread.Actions() {
-            @Override
-            public void loop() {
-                camera.loop(true);
-                try {
-                    VuMarkPosition = camera.getFieldPosition();
-                } catch (Exception e) {
-
-                }
-            }
-        }));
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(startingPosition);

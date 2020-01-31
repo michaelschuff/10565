@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode.Tests.Hardware;
 
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 
+@Disabled
 @Autonomous(group = "HardwareTests")
 public class VuforiaTest extends LinearOpMode {
     VuforiaLib_Skystone camera;

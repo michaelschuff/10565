@@ -26,8 +26,8 @@ public class LiftTest extends LinearOpMode {
         drive.setLiftPower(0.5);
 
         while(!isStopRequested()){
-            telemetry.addData("b lift pos", (float) drive.bLift.getCurrentPosition() / drive.InchesToLiftTicks);
-            telemetry.addData("f lift pos", (float) drive.fLift.getCurrentPosition() / drive.InchesToLiftTicks);
+            telemetry.addData("b lift pos", (float) drive.bLift.getCurrentPosition() / drive.bLift.getMotorType().getTicksPerRev());
+            telemetry.addData("f lift pos", (float) drive.fLift.getCurrentPosition() / drive.fLift.getMotorType().getTicksPerRev());
         }
     }
 }

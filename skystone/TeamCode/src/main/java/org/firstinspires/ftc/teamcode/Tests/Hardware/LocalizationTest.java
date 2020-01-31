@@ -5,14 +5,11 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBase;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
-import org.firstinspires.ftc.teamcode.util.TaskThread;
-import org.firstinspires.ftc.teamcode.util.ThreadOpMode;
 
 /**
  * This is a simple teleop routine for testing localization. Drive the robot around like a normal
@@ -21,6 +18,7 @@ import org.firstinspires.ftc.teamcode.util.ThreadOpMode;
  * exercise is to ascertain whether the localizer has been configured properly (note: the pure
  * encoder localizer heading may be significantly off if the track width has not been tuned).
  */
+
 @Config
 @TeleOp(group = "HardwareTests")
 public class LocalizationTest extends LinearOpMode {
@@ -40,8 +38,8 @@ public class LocalizationTest extends LinearOpMode {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(startingX, startingY, Math.toRadians(startingHeading)));
 
-        leftEncoder = hardwareMap.get(DcMotor.class, "leftEncoder");
-        frontEncoder = hardwareMap.get(DcMotor.class, "lIntake");
+        leftEncoder = hardwareMap.get(DcMotor.class, "lIntake");
+        frontEncoder = hardwareMap.get(DcMotor.class, "fLift");
 
         frontEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         leftEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -58,7 +56,6 @@ public class LocalizationTest extends LinearOpMode {
             y = y * Math.abs(y);
 
             rotation = Math.pow(gamepad1.right_stick_x, 3);
-
 
             motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
 

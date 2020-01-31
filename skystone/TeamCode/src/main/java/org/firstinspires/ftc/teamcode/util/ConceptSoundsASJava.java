@@ -68,7 +68,7 @@ import java.io.File;
  *     You can copy and paste the entire 'raw' folder using Android Studio.
  *
  */
-
+@Disabled
 @TeleOp(name="Concept: Sound Resources", group="Concept")
 public class ConceptSoundsASJava extends LinearOpMode {
 

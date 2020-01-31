@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.TeleOp;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -13,6 +14,7 @@ import static org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveBas
 import java.io.File;
 import java.util.Scanner;
 
+@Disabled
 @Config
 @TeleOp(group = "Basic Drivetrain")
 public class TeleOpTesting1Pad extends OpMode {
@@ -148,17 +150,9 @@ public class TeleOpTesting1Pad extends OpMode {
         }
 
 
-        if (drive.claw.getPosition() == drive.claw1) {
-            drive.isClawGrabbed = false;
-        } else {
-            drive.isClawGrabbed = true;
-        }
+        drive.updateClawGrabbed();
 
-        if (drive.lArm.getPosition() < 0.5) {
-            V4BarOut = false;
-        } else {
-            V4BarOut = true;
-        }
+        V4BarOut = !drive.getIsArmIn();
     }
 
     private Double getDPadAngle(int x, int y) {
