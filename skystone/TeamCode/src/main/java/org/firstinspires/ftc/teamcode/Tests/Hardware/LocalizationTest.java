@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.Tests.Hardware;
 import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -24,6 +25,7 @@ import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimiz
 public class LocalizationTest extends LinearOpMode {
     private SampleMecanumDriveBase drive;
 
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
     private DcMotor frontEncoder, leftEncoder, rightEncoder;
 
     private double x, y, rotation, maxPower;
@@ -34,7 +36,6 @@ public class LocalizationTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
-
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setPoseEstimate(new Pose2d(startingX, startingY, Math.toRadians(startingHeading)));
 
@@ -46,7 +47,7 @@ public class LocalizationTest extends LinearOpMode {
 
         frontEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftEncoder.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+        TelemetryPacket fasttelem = new TelemetryPacket();
         if (isStopRequested()) return;
         waitForStart();
         while(!isStopRequested()) {
@@ -67,12 +68,12 @@ public class LocalizationTest extends LinearOpMode {
             }
 
             Pose2d poseEstimate = drive.getLocalizer().getPoseEstimate();
-            telemetry.addData("x", poseEstimate.getX());
-            telemetry.addData("y", poseEstimate.getY());
-            telemetry.addData("heading", Math.toDegrees(poseEstimate.getHeading()));
-            telemetry.addData("leftCount", leftEncoder.getCurrentPosition());
-            telemetry.addData("frontCount", frontEncoder.getCurrentPosition());
-            telemetry.update();
+            fasttelem.put("x", poseEstimate.getX());
+            fasttelem.put("y", poseEstimate.getY());
+            fasttelem.put("heading", Math.toDegrees(poseEstimate.getHeading()));
+            fasttelem.put("leftCount", leftEncoder.getCurrentPosition());
+            fasttelem.put("frontCount", frontEncoder.getCurrentPosition());
+            dashboard.sendTelemetryPacket(fasttelem);
 
             drive.updatePoseEstimate();
             if (isStopRequested()) return;

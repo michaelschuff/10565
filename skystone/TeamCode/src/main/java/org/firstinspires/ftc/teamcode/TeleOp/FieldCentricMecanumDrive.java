@@ -45,59 +45,75 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     @Override
     public void loop() {
+//        x = gamepad1.left_stick_x;
+//        y = -gamepad1.left_stick_y;
+//
+//        double tempTheta = Math.atan2(y, tempx);
+//
+//        double mag = Math.pow(Math.sqrt(tempx*tempx + y*y), 1);
+//
+//        tempx = mag * Math.cos(tempTheta);
+//        y = mag * Math.sin(tempTheta);
+//
+//        theta = -startingDirection - drive.getRawExternalHeading() + Math.toRadians(45);
+//        cos = Math.cos(theta);
+//        sin = Math.sin(theta);
+//        x = tempx * cos - y * sin;
+//        y = tempx * sin + y * cos;
+//
+//        theta = Math.atan2(y, x) - startingDirection - drive.getExternalHeading() + Math.toRadians(45);
+//
+//        mag = Math.pow(Math.sqrt(x*x + y*y), 3);
+//
+//        if (3 * Math.PI / 4 >= theta && theta >= Math.PI / 4){
+//            y = mag;
+//            x = y / Math.tan(theta);
+//        } else if (Math.PI / 4 >= theta && theta >= -Math.PI / 4){
+//            x = mag;
+//            y = x * Math.tan(theta);
+//        } else if (-3 * Math.PI / 4 <= theta && theta <= Math.PI / 4){
+//            y = -mag;
+//            x = y / Math.tan(theta);
+//        } else if (theta <= -3 * Math.PI / 4 || theta >= 3 * Math.PI / 4){
+//            x = -mag;
+//            y = x * Math.tan(theta);
+//        }
+//
+//        rotation = Math.pow(gamepad1.right_stick_x, 3) * Math.abs(gamepad1.right_stick_x);
+//
+//
+//        motorPowers = new double[]{x + rotation, y + rotation, x - rotation, y - rotation};
+//
+//        if (V4BarOut || fActivated) {
+//            if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
+//                maxPower = GetMaxAbsMotorPower();
+//                drive.setMotorPowers(SloMoPower * motorPowers[0] / maxPower, SloMoPower * motorPowers[1] / maxPower, SloMoPower * motorPowers[2] / maxPower, SloMoPower * motorPowers[3] / maxPower);
+//            } else {
+//                drive.setMotorPowers(SloMoPower * motorPowers[0], SloMoPower * motorPowers[1], SloMoPower * motorPowers[2], SloMoPower * motorPowers[3]);
+//            }
+//        } else {
+//            if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
+//                maxPower = GetMaxAbsMotorPower();
+//                drive.setMotorPowers(motorPowers[0] / maxPower, motorPowers[1] / maxPower, motorPowers[2] / maxPower, motorPowers[3] / maxPower);
+//            } else {
+//                drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
+//            }
+//        }
         x = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
+        x = x * Math.abs(x);
+        y = y * Math.abs(y);
 
-        double tempTheta = Math.atan2(y, tempx);
-
-        double mag = Math.pow(Math.sqrt(tempx*tempx + y*y), 1);
-
-        tempx = mag * Math.cos(tempTheta);
-        y = mag * Math.sin(tempTheta);
-
-        theta = -startingDirection - drive.getRawExternalHeading() + Math.toRadians(45);
-        cos = Math.cos(theta);
-        sin = Math.sin(theta);
-        x = tempx * cos - y * sin;
-        y = tempx * sin + y * cos;
-
-        theta = Math.atan2(y, x) - startingDirection - drive.getExternalHeading() + Math.toRadians(45);
-
-        mag = Math.pow(Math.sqrt(x*x + y*y), 3);
-
-        if (3 * Math.PI / 4 >= theta && theta >= Math.PI / 4){
-            y = mag;
-            x = y / Math.tan(theta);
-        } else if (Math.PI / 4 >= theta && theta >= -Math.PI / 4){
-            x = mag;
-            y = x * Math.tan(theta);
-        } else if (-3 * Math.PI / 4 <= theta && theta <= Math.PI / 4){
-            y = -mag;
-            x = y / Math.tan(theta);
-        } else if (theta <= -3 * Math.PI / 4 || theta >= 3 * Math.PI / 4){
-            x = -mag;
-            y = x * Math.tan(theta);
-        }
-
-        rotation = Math.pow(gamepad1.right_stick_x, 3) * Math.abs(gamepad1.right_stick_x);
+        rotation = gamepad1.right_stick_x;
 
 
-        motorPowers = new double[]{x + rotation, y + rotation, x - rotation, y - rotation};
+        motorPowers = new double[]{y + x + rotation, y - x + rotation, y + x - rotation, y - x - rotation};
 
-        if (V4BarOut || fActivated) {
-            if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
-                maxPower = GetMaxAbsMotorPower();
-                drive.setMotorPowers(SloMoPower * motorPowers[0] / maxPower, SloMoPower * motorPowers[1] / maxPower, SloMoPower * motorPowers[2] / maxPower, SloMoPower * motorPowers[3] / maxPower);
-            } else {
-                drive.setMotorPowers(SloMoPower * motorPowers[0], SloMoPower * motorPowers[1], SloMoPower * motorPowers[2], SloMoPower * motorPowers[3]);
-            }
+        if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
+            maxPower = GetMaxAbsMotorPower();
+            drive.setMotorPowers(motorPowers[0] / maxPower, motorPowers[1] / maxPower, motorPowers[2] / maxPower, motorPowers[3] / maxPower);
         } else {
-            if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
-                maxPower = GetMaxAbsMotorPower();
-                drive.setMotorPowers(motorPowers[0] / maxPower, motorPowers[1] / maxPower, motorPowers[2] / maxPower, motorPowers[3] / maxPower);
-            } else {
-                drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
-            }
+            drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
         }
 
         drive.setIntakePower(maxIntakePower * -Math.pow(gamepad2.left_stick_y, 3), maxIntakePower * -Math.pow(gamepad2.right_stick_y, 3));

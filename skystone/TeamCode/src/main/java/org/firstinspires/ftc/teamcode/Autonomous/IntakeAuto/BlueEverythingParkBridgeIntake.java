@@ -32,18 +32,14 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private float vuforiaHeading;
 
 
-    public static int SkystonePosition = 1;
-
+    public static int SkystonePosition = 2;
 
     //starting position
     private static double startingAngle = -90, startingX = -23.25 * 2 + 17.5 / 2, startingY = 70.5 - 17.5 / 2;
 
-    public static double armPos = .37, liftPower = .5, stackArmPos = 0.8;
+    public static double armPos = .37;
 
-
-    public static boolean grabFirst = true, stackFirst = true, grabSecond = false, stackSecond = false, grabFoundation = true;
-
-//    public static double strafey = 37, strafex = 0, spliney1 = 40, spliney2 = 40, splinex2 = 35, h = -10;
+    public static boolean grabFirst = true, stackFirst = true, grabSecond = true, stackSecond = true, grabThird = false, grabFoundation = false;
 
     @Override
     public void runOpMode() {
@@ -55,10 +51,10 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         while(!isStarted()){
             try {
 //                SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
-//                telemetry.addData("Skystone:", SkystonePosition);
+//                telemetry.addData("Skystone", SkystonePosition);
 //                telemetry.update();
             } catch (NullPointerException e) {
-//                telemetry.addData("Java Sux bc ", e.getStackTrace());
+                telemetry.addData("Java Sux bc", e.getStackTrace());
             }
         }
         telemetry.clear();
@@ -72,6 +68,18 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
         if (stackFirst) {
             stackSkystone(false);
+        }
+
+        if (grabSecond) {
+            grabSecondSkystone();
+        }
+
+        if (stackSecond) {
+            stackSkystone(true);
+        }
+
+        if (grabThird) {
+            grabThirdSkystone();
         }
 
         if (grabFoundation) {
@@ -99,82 +107,49 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private void stackSkystone(boolean second) {
         drive.followTrajectorySync(
             drive.trajectoryBuilder()
-                .setReversed(true)
-                .splineTo(new Pose2d(0, 38), new LinearInterpolator(drive.getPoseEstimate().getHeading(), (Math.toRadians(180) - drive.getPoseEstimate().getHeading())))
-                .setReversed(false)
-                .lineTo(new Vector2d(35, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+                .reverse()
+                .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                .splineTo(new Pose2d(43.5, 39, Math.toRadians(90)))
+//                .setReversed(false)
+//                .lineTo(new Vector2d(35, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+//                .lineTo(new Vector2d(43.5, 39), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
                 .build()
         );
-
-//        drive.followTrajectorySync(
-//                drive.trajectoryBuilder()
-//                        .strafeTo(new Vector2d(35, 40))
-//                        .build()
-//        );
+//        if (second) {
+//            drive.setArmPos(armPos, 1 - armPos);
+//            drive.setLiftPos(500);
+//            drive.setLiftPower(liftPower);
+//            sleep((long) (500));
+//            drive.setArmPos(stackArmPos, 1 - stackArmPos);
+//            sleep((long) (1500));
+//            drive.setClawGrabbing(false);
+//            sleep(100);
+//            drive.setLiftPos(800);
+//            drive.setLiftPower(liftPower);
+//            sleep(500);
+//            drive.setArmPos(armPos, 1 - armPos);
+//            drive.setFoundation((short) 2);
+//            sleep(100);
+//            drive.setLiftPos(0);
+//            drive.setLiftPower(-liftPower);
 //
-//        drive.turnSync(Math.toRadians(-90));
-
-        vuforiaPosition = GetVuforia();
-        vuforiaHeading = GetVuforiaH();
-        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
-
-        drive.turnSync(Math.toRadians(90 - vuforiaHeading));
-        if (second) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .lineTo(new Vector2d(42.5, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
-                            .build()
-            );
-        } else {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .lineTo(new Vector2d(42.5, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
-                            .build()
-            );
-        }
-
-        if (second) {
-            drive.bLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            drive.fLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            drive.setArmPos(armPos, 1 - armPos);
-            drive.setLiftPos(500);
-            drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.setLiftPower(liftPower);
-            sleep((long) (500));
-            drive.setArmPos(stackArmPos, 1 - stackArmPos);
-            sleep((long) (1500));
-            drive.setClawGrabbing(false);
-            sleep(100);
-            drive.setLiftPos(800);
-            drive.setLiftPower(liftPower);
-            sleep(500);
-            drive.setArmPos(armPos, 1 - armPos);
-            drive.setFoundation((short) 2);
-            sleep(100);
-            drive.setLiftPos(0);
-            drive.setLiftPower(-liftPower);
-
-        } else {
-            drive.setArmPos(stackArmPos, 1 - stackArmPos);
-            sleep(900);
-            drive.setClawGrabbing(false);
-            drive.setLiftPos(500);
-            drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.setLiftPower(liftPower);
-            sleep(600);
-            drive.setArmPos(armPos, 1 - armPos);
-            drive.setLiftPos(0);
-            drive.setLiftPower(-liftPower);
-        }
+//        } else {
+//            drive.setArmPos(stackArmPos, 1 - stackArmPos);
+//            sleep(900);
+//            drive.setClawGrabbing(false);
+//            drive.setLiftPos(300);
+//            drive.setLiftPower(liftPower);
+//            sleep(600);
+//            drive.setArmPos(armPos, 1 - armPos);
+//            drive.setLiftPos(0);
+//            drive.setLiftPower(-liftPower);
+//        }
     }
 
     private void grabFirstSkystone() {
         drive.setArmPos(armPos, 1 - armPos);
         drive.setClawGrabbing(false);
         drive.setIntakePower(-1, -1);
-
 
         if (SkystonePosition == 1) {
             drive.followTrajectorySync(
@@ -201,53 +176,79 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                             .build()
             );
         }
-        SetIntake setIntake = new SetIntake(1.5, 0, 0);
+        SetIntake setIntake = new SetIntake(1, 0, 0);
 
     }
 
     private void grabSecondSkystone() {
+        drive.setIntakePower(-1, -1);
 
-        drive.followTrajectorySync(
+        if (SkystonePosition == 1) {
+            drive.followTrajectorySync(
                 drive.trajectoryBuilder()
-                        .lineTo(new Vector2d(-12, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(90)))
-//                        .strafeTo(new Vector2d(strafex, strafey))
-                        .build()
-        );
+                    .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                    .lineTo(new Vector2d(-40 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .lineTo(new Vector2d(-40 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-42 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build()
+            );
+        } else if (SkystonePosition == 2) {
+            drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                    .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                    .lineTo(new Vector2d(-48 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .lineTo(new Vector2d(-48 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-50 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build()
+            );
+        } else {
+            drive.followTrajectorySync(
+                drive.trajectoryBuilder()
+                    .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                    .lineTo(new Vector2d(-56 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .lineTo(new Vector2d(-56 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-58 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build()
+            );
+        }
 
+        SetIntake setIntake = new SetIntake(1, 0, 0);
 
-//        vuforiaPosition = GetVuforia();
-//        vuforiaHeading = GetVuforiaH();
+    }
 
-        drive.setIntakePower(-.75, -.75);
-        SetIntake timer = new SetIntake(6, 0, 0);
-
-//        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
+    private void grabThirdSkystone() {
+        drive.setIntakePower(-1, -1);
 
         if (SkystonePosition == 1) {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .lineTo(new Vector2d(-39.5 + 24, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                            .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                            .lineTo(new Vector2d(-39.5 + 24, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(225)))
                             .lineTo(new Vector2d(-39.5 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                            .lineTo(new Vector2d(-41 + 24, 28.5), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                            .lineTo(new Vector2d(-42 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
                             .build()
             );
         } else if (SkystonePosition == 2) {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .lineTo(new Vector2d(-48 + 24, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                            .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                            .lineTo(new Vector2d(-48 + 24, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(135)))
                             .lineTo(new Vector2d(-48 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                            .lineTo(new Vector2d(-49.5 + 24, 28.5), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                            .lineTo(new Vector2d(-50 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
                             .build()
             );
         } else {
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
-                            .lineTo(new Vector2d(-56 + 24, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                            .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                            .lineTo(new Vector2d(-56 + 24, 38), new LinearInterpolator(Math.toRadians(90), Math.toRadians(135)))
                             .lineTo(new Vector2d(-56 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                            .lineTo(new Vector2d(-56 + 24, 28.5), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(-10)))
+                            .lineTo(new Vector2d(-58 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
                             .build()
             );
         }
+
+        SetIntake setIntake = new SetIntake(1, 0, 0);
 
     }
 
@@ -267,6 +268,20 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                         .splineTo(new Pose2d(0, 36, Math.toRadians(180)))
                         .build()
         );
+    }
+
+    private void initHardware() {
+        drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+
+        camera = new VuforiaLib_Skystone();
+        camera.init(this, "");
+        camera.start();
+
+        drive.setClawGrabbing(false);
+        drive.setPoseEstimate(new Pose2d(startingX,  startingY, Math.toRadians(startingAngle)));
+//        drive.setLiftPos(0);
+//        drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     private VectorF CheckVuforia(int loops) {
@@ -321,16 +336,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         return a / c;
     }
 
-    private void initHardware() {
-        drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
-        camera = new VuforiaLib_Skystone();
-        camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
-        camera.start();
-
-        drive.setClawGrabbing(false);
-        drive.setPoseEstimate(new Pose2d(startingX,  startingY, Math.toRadians(startingAngle)));
-    }
 
     public class SetIntake {
         Timer timer;
