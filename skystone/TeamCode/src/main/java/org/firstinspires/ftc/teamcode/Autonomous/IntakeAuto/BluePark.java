@@ -38,7 +38,7 @@ public class BluePark extends LinearOpMode {
             File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
 
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(Double.toString(drive.getRawExternalHeading() - Math.toRadians(startingAngle)));
+            fileOut.write(Double.toString(Math.toRadians(startingAngle) - drive.getRawExternalHeading()));
             fileOut.close();
 
         } catch (Exception e) {

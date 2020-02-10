@@ -23,6 +23,7 @@ public class IndividualDrivetrainMotors extends OpMode {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+        drive.setRunUsingEncoder(false);
     }
 
     @Override
@@ -33,12 +34,14 @@ public class IndividualDrivetrainMotors extends OpMode {
 
     @Override
     public void loop() {
-        drive.setMotorPowers(-Math.pow(gamepad1.left_stick_y, 3), -Math.pow(gamepad2.left_stick_y, 3), -Math.pow(gamepad2.right_stick_y, 3), -Math.pow(gamepad1.right_stick_y, 3));
+        double pow = gamepad1.right_trigger - gamepad1.left_trigger;
+        drive.setMotorPowers(-Math.pow(gamepad1.left_stick_y, 3) + pow, -Math.pow(gamepad2.left_stick_y, 3) + pow, -Math.pow(gamepad2.right_stick_y, 3) + pow, -Math.pow(gamepad1.right_stick_y, 3) + pow);
 
-//        telemetry.addData("front left", drive.fl.getVelocity());
-//        telemetry.addData("front right", drive.fr.getVelocity());
-//        telemetry.addData("back left", drive.bl.getVelocity());
-//        telemetry.addData("back right", drive.br.getVelocity());
-//        telemetry.update();
+        telemetry.addData("power", pow);
+        telemetry.addData("front left", 2 * Math.PI * 2 * drive.fl.getVelocity() / drive.fl.getMotorType().getTicksPerRev());
+        telemetry.addData("front right", 2 * Math.PI * 2 * drive.fr.getVelocity() / drive.fr.getMotorType().getTicksPerRev());
+        telemetry.addData("back left", 2 * Math.PI * 2 * drive.bl.getVelocity() / drive.bl.getMotorType().getTicksPerRev());
+        telemetry.addData("back right", 2 * Math.PI * 2 * drive.br.getVelocity() / drive.br.getMotorType().getTicksPerRev());
+        telemetry.update();
     }
 }

@@ -5,12 +5,13 @@ import com.acmerobotics.dashboard.config.Config;
 import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.openftc.revextensions2.ExpansionHubMotor;
 
 @Config
-@Autonomous(group = "HardwareTests")
+@TeleOp(group = "HardwareTests")
 public class MotorTickTest extends OpMode {
 
     private ExpansionHubMotor motor;
@@ -27,7 +28,8 @@ public class MotorTickTest extends OpMode {
 
     @Override
     public void loop() {
-        telemetry.addData("Ticks per rev",motor.getMotorType().getTicksPerRev());
+        motor.setPower(gamepad1.left_stick_y);
+        telemetry.addData("Ticks per rev", motor.getMotorType().getTicksPerRev());
         telemetry.addData("Tested ticks", motor.getCurrentPosition());
     }
 }

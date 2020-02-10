@@ -19,11 +19,11 @@ public class FieldCentricMecanumDrive extends OpMode {
     private SampleMecanumDriveREVOptimized drive;
 
     private double[] motorPowers = new double[]{0, 0, 0, 0};
-    private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection = Math.toRadians(90);
+    private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection = Math.toRadians(-90);
 
     private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false, isResetting = false, V4BarOut = false, fActivated = false, rightBumpPressed = false, leftBumpPressed = false;
 
-    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = 1, firstStoneVal = 0.8, secondStoneVal = 0.7;
+    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = .5, firstStoneVal = 0.8, secondStoneVal = 0.7, DownLiftPow = 1;
 
     @Override
     public void init() {
@@ -48,20 +48,24 @@ public class FieldCentricMecanumDrive extends OpMode {
         x = gamepad1.left_stick_x;
         y = -gamepad1.left_stick_y;
 
-        theta = Math.atan2(y, x) - startingDirection - drive.getExternalHeading() + Math.toRadians(45);
+        theta = (Math.atan2(y, x) - drive.getExternalHeading() + startingDirection - Math.toRadians(135)) % (2 * Math.PI);
+
+        if (theta < 0) {
+            theta = 2 * Math.PI + theta;
+        }
 
         double mag = Math.pow(Math.sqrt(x*x + y*y), 3);
 
-        if (3 * Math.PI / 4 >= theta && theta >= Math.PI / 4){
+        if (3 * Math.PI / 4 >= theta && theta >= Math.PI / 4) {
             y = mag;
             x = y / Math.tan(theta);
-        } else if (Math.PI / 4 >= theta && theta >= -Math.PI / 4){
+        } else if ((Math.PI / 4 >= theta && theta >= 0) || (7 * Math.PI / 4 <= theta && theta <= 2 * Math.PI)) {
             x = mag;
             y = x * Math.tan(theta);
-        } else if (-3 * Math.PI / 4 <= theta && theta <= Math.PI / 4){
+        } else if (5 * Math.PI / 4 <= theta && theta <= 7 * Math.PI / 4) {
             y = -mag;
             x = y / Math.tan(theta);
-        } else if (theta <= -3 * Math.PI / 4 || theta >= 3 * Math.PI / 4){
+        } else if (3 * Math.PI / 4 <= theta && theta <= 5 * Math.PI / 4) {
             x = -mag;
             y = x * Math.tan(theta);
         }
@@ -133,10 +137,16 @@ public class FieldCentricMecanumDrive extends OpMode {
             y2Pressed = false;
         }
 
-        if (!isResetting) {
-            drive.setLiftPower(maxLiftPower * (gamepad1.right_trigger - gamepad1.left_trigger));
+        if (drive.getLiftPos() < 750) {
+            DownLiftPow = .05 + Math.abs(drive.getLiftPos() / 750.0);
         } else {
-            if (drive.CheckLiftVelocity()) {
+            DownLiftPow = 1;
+        }
+
+        if (!isResetting) {
+            drive.setLiftPower(maxLiftPower * (gamepad1.right_trigger - DownLiftPow * gamepad1.left_trigger));
+        } else {
+            if (drive.CheckLiftPos()) {
                 isResetting = false;
             }
         }
@@ -145,6 +155,8 @@ public class FieldCentricMecanumDrive extends OpMode {
 
         drive.updateClawGrabbed();
 
+        telemetry.addData("liftpos", drive.getLiftPos());
+        telemetry.update();
     }
 
     private double GetMaxAbsMotorPower() {

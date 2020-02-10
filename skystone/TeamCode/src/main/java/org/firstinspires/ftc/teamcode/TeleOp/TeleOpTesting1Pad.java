@@ -144,7 +144,7 @@ public class TeleOpTesting1Pad extends OpMode {
         if (!isResetting) {
             drive.setLiftPower(maxLiftPower * (gamepad1.right_trigger - gamepad1.left_trigger));
         } else {
-            if (drive.CheckLiftVelocity()) {
+            if (drive.CheckLiftPos()) {
                 isResetting = false;
             }
         }

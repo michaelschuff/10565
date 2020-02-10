@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.teamcode.drive.localizer.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
@@ -40,7 +39,7 @@ import org.openftc.revextensions2.RevBulkData;
 @Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
-    private ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
+    public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     public ExpansionHubMotor fLift, bLift;
     private Servo rFoundation, lFoundation, rArm, lArm, claw;
     private List<ExpansionHubMotor> motors;
@@ -50,7 +49,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     public static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.37 , rArm1 = 0.63, claw1 = 0;
 
     //activated servo positions
-    public static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.67, rArm2 = 0.33, claw2 = 0.33;
+    public static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.67, rArm2 = 0.33, claw2 = 0.35;
 
     //inactive servo positions
     public static final double rFoundation0 = 1, lFoundation0 = 0;
@@ -86,6 +85,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         rArm = hardwareMap.get(Servo.class, "rArm");
         claw = hardwareMap.get(Servo.class, "claw");
 
+        bLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         for (ExpansionHubMotor motor : motors) {
             if (RUN_USING_ENCODER) {
                 motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -193,20 +194,27 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public void resetEveryThing() {
         setClawGrabbing(false);
-        bLift.setPower(1);
-        fLift.setPower(1);
+        bLift.setPower(0.75);
+        fLift.setPower(0.75);
         sleep(250);
         setArmPos(lArm1, rArm1);
         sleep(200);
-        bLift.setPower(-1);
-        fLift.setPower(-1);
+        bLift.setPower(-0.75);
+        fLift.setPower(-0.75);
     }
 
-    public boolean CheckLiftVelocity() {
-        if (Math.abs(bLift.getVelocity()) < 0.1) {
+    public boolean CheckLiftPos() {
+        int pos = bLift.getCurrentPosition();
+        if (bLift.getVelocity() < 0.01 && pos < 100) {
             bLift.setPower(0);
             fLift.setPower(0);
+            bLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            bLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             return true;
+        } else if (pos < 1000) {
+            double pow = 0.075 + Math.sqrt(Math.abs(pos) / 1000.0);
+            bLift.setPower(-pow);
+            fLift.setPower(-pow);
         }
         return false;
     }
@@ -237,9 +245,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     private void updateV4BOut() {
         if (lArm.getPosition() < 0.5) {
-            isArmIn = false;
-        } else {
             isArmIn = true;
+        } else {
+            isArmIn = false;
         }
     }
 
@@ -249,6 +257,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         } else {
             isClawGrabbed = true;
         }
+    }
+
+    public int getLiftPos() {
+        return bLift.getCurrentPosition();
     }
 
     @Override
@@ -299,10 +311,20 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        fl.setPower(v);
-        bl.setPower(v1);
-        br.setPower(v2);
-        fr.setPower(v3);
+        fl.setPower(adjustPower(v));
+        bl.setPower(adjustPower(v1));
+        br.setPower(adjustPower(v2));
+        fr.setPower(adjustPower(v3));
+    }
+
+    private double adjustPower(double power) {
+        double minPower = 0;
+        if (power > 0) {
+            return power * (1 - minPower) + minPower;
+        } else if (power < 0) {
+            return power * (1 - minPower) + minPower;
+        }
+        return 0;
     }
 
     public TrajectoryBuilder trajectoryBuilder(DriveConstraints driveConstraints) {
