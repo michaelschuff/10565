@@ -49,7 +49,7 @@ public class    SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     public static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.37 , rArm1 = 0.63, claw1 = 0;
 
     //activated servo positions
-    public static final double rFoundation2 = 0.325, lFoundation2 = 0.675, lArm2 = 0.67, rArm2 = 0.33, claw2 = 0.35;
+    public static final double rFoundation2 = 0.3, lFoundation2 = 0.7, lArm2 = 0.67, rArm2 = 0.33, claw2 = 0.35;
 
     //inactive servo positions
     public static final double rFoundation0 = 1, lFoundation0 = 0;

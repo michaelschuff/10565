@@ -105,6 +105,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
     private void stackSkystone(boolean second) {
         if (!second) {
+            drive.setFoundation((short) 1);
             drive.followTrajectorySync(
                     drive.trajectoryBuilder()
                             .addMarker(1, () -> {
@@ -113,11 +114,16 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                             })
                             .reverse()
                             .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
-                            .addMarker(.5, () -> {
-                                drive.setArmPos(0.8, 0.2);
-                                return Unit.INSTANCE;
-                            })
-                            .splineTo(new Pose2d(43.5, 39, Math.toRadians(90)))
+                            .splineTo(new Pose2d(43.5, 37, Math.toRadians(90)))
+                            .build()
+            );
+            drive.setFoundation((short) 2);
+            drive.setArmPos(0.8, 0.2);
+            sleep(250);
+//            drive.turnSync(Math.toRadians(45));
+            drive.followTrajectorySync(
+                    drive.trajectoryBuilder()
+                            .splineTo(new Pose2d(28, 40, Math.toRadians(180)))
                             .build()
             );
         } else {
