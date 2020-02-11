@@ -37,7 +37,7 @@ import org.openftc.revextensions2.RevBulkData;
  * trajectory following performance with moderate additional complexity.
  */
 @Config
-public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
+public class    SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     public ExpansionHubMotor fLift, bLift;
@@ -183,9 +183,14 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
     }
 
-    public boolean getIsArmIn(){
+    public boolean getIsArmIn() {
         updateV4BOut();
         return isArmIn;
+    }
+
+    public void resetLiftTicks() {
+        bLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void setClawGrabbing(boolean grabbed) {
@@ -311,6 +316,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
+//        fl.setPower(v);
+//        bl.setPower(v1);
+//        br.setPower(v2);
+//        fr.setPower(v2);
         fl.setPower(adjustPower(v));
         bl.setPower(adjustPower(v1));
         br.setPower(adjustPower(v2));
@@ -318,11 +327,11 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     }
 
     private double adjustPower(double power) {
-        double minPower = 0;
+        double minPower = 0.15;
         if (power > 0) {
             return power * (1 - minPower) + minPower;
         } else if (power < 0) {
-            return power * (1 - minPower) + minPower;
+            return power * (1 - minPower) - minPower;
         }
         return 0;
     }

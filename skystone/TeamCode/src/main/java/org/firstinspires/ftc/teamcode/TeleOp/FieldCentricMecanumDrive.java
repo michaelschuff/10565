@@ -30,7 +30,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false, isResetting = false, V4BarOut = false, fActivated = false, rightBumpPressed = false, leftBumpPressed = false;
 
-    private ButtonReader a2, y1, y2, x1, rBump1, lBump1;
+    private ButtonReader a2, y1, y2, x1, x2, rBump1, lBump1;
 
     public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = .5, firstStoneVal = 0.8, secondStoneVal = 0.7, DownLiftPow = 1;
 
@@ -62,6 +62,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
         a2 = new ButtonReader(driver2, GamepadKeys.Button.A);
         y2 = new ButtonReader(driver2, GamepadKeys.Button.Y);
+        x2 = new ButtonReader(driver2, GamepadKeys.Button.X);
 
     }
 
@@ -72,12 +73,11 @@ public class FieldCentricMecanumDrive extends OpMode {
         rBump1.readValue();
         lBump1.readValue();
         a2.readValue();
+        x2.readValue();
         y2.readValue();
 
         x = driver1.getLeftX();
         y = driver1.getLeftY();
-//        x = gamepad1.left_stick_x;
-//        y = -gamepad1.left_stick_y;
 
         theta = (Math.atan2(y, x) - drive.getExternalHeading() + startingDirection - Math.toRadians(135)) % (2 * Math.PI);
 
@@ -102,7 +102,6 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
         rotation = Math.pow(driver1.getRightX(), 3) * Math.abs(driver1.getRightX());
-//        rotation = Math.pow(gamepad1.right_stick_x, 3) * Math.abs(gamepad1.right_stick_x);
 
 
         motorPowers = new double[]{x + rotation, y + rotation, x - rotation, y - rotation};
@@ -124,7 +123,6 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
         drive.setIntakePower(maxIntakePower * Math.pow(driver2.getLeftY(), 3), maxIntakePower * Math.pow(driver2.getRightY(), 3));
-//        drive.setIntakePower(maxIntakePower * -Math.pow(gamepad2.left_stick_y, 3), maxIntakePower * -Math.pow(gamepad2.right_stick_y, 3));
 
 
         if (rBump1.wasJustPressed()) {
@@ -148,64 +146,23 @@ public class FieldCentricMecanumDrive extends OpMode {
             drive.toggleArm();
         }
 
+        if (x2.wasJustPressed()) {
+            drive.resetLiftTicks();
+        }
+
         if (y2.wasJustPressed()) {
             fActivated = !fActivated;
             drive.toggleFoundation();
         }
 
-//        if (gamepad1.right_bumper) {
-//            rightBumpPressed = true;
-//        } else  if (rightBumpPressed) {
-//
-//            rightBumpPressed = false;
-//        }
-//
-//        if (gamepad1.left_bumper) {
-//            leftBumpPressed = true;
-//        } else  if (leftBumpPressed) {
-//            drive.setArmPos(firstStoneVal, 1 - firstStoneVal);
-//            leftBumpPressed = false;
-//        }
-//
-//        if (gamepad2.a) {
-//            aPressed = true;
-//        } else if (aPressed) {
-//            drive.toggleClaw();
-//            aPressed = false;
-//        }
-//
-//        if (gamepad1.y) {
-//            yPressed = true;
-//        } else if (yPressed) {
-//            drive.resetEveryThing();
-//            isResetting = true;
-//            yPressed = false;
-//        }
-//
-//        if (gamepad1.x) {
-//            xPressed = true;
-//        } else if (xPressed) {
-//            drive.toggleArm();
-//            xPressed = false;
-//        }
-//
-//        if (gamepad2.y) {
-//            y2Pressed = true;
-//        } else if (y2Pressed) {
-//            fActivated = !fActivated;
-//            drive.toggleFoundation();
-//            y2Pressed = false;
-//        }
-//
-//        if (drive.getLiftPos() < 750) {
-//            DownLiftPow = .05 + Math.abs(drive.getLiftPos() / 750.0);
-//        } else {
-//            DownLiftPow = 1;
-//        }
+        if (drive.getLiftPos() < 750) {
+            DownLiftPow = .05 + Math.abs(drive.getLiftPos() / 750.0);
+        } else {
+            DownLiftPow = 1;
+        }
 
         if (!isResetting) {
             drive.setLiftPower(maxLiftPower * (driver1.getTrigger(GamepadKeys.Trigger.RIGHT_TRIGGER) - DownLiftPow * driver1.getTrigger(GamepadKeys.Trigger.LEFT_TRIGGER)));
-//            drive.setLiftPower(maxLiftPower * (gamepad1.right_trigger - DownLiftPow * gamepad1.left_trigger));
         } else {
             if (drive.CheckLiftPos()) {
                 isResetting = false;
