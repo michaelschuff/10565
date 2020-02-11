@@ -109,16 +109,16 @@ public class FieldCentricMecanumDrive extends OpMode {
         if (V4BarOut || fActivated) {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
                 maxPower = GetMaxAbsMotorPower();
-                drive.setMotorPowers(SloMoPower * motorPowers[0] / maxPower, SloMoPower * motorPowers[1] / maxPower, SloMoPower * motorPowers[2] / maxPower, SloMoPower * motorPowers[3] / maxPower);
+                drive.setMotorPowers(adjustPower(SloMoPower * motorPowers[0] / maxPower), adjustPower(SloMoPower * motorPowers[1] / maxPower), adjustPower(SloMoPower * motorPowers[2] / maxPower), adjustPower(SloMoPower * motorPowers[3] / maxPower));
             } else {
-                drive.setMotorPowers(SloMoPower * motorPowers[0], SloMoPower * motorPowers[1], SloMoPower * motorPowers[2], SloMoPower * motorPowers[3]);
+                drive.setMotorPowers(adjustPower(SloMoPower * motorPowers[0]), adjustPower(SloMoPower * motorPowers[1]), adjustPower(SloMoPower * motorPowers[2]), adjustPower(SloMoPower * motorPowers[3]));
             }
         } else {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
                 maxPower = GetMaxAbsMotorPower();
-                drive.setMotorPowers(motorPowers[0] / maxPower, motorPowers[1] / maxPower, motorPowers[2] / maxPower, motorPowers[3] / maxPower);
+                drive.setMotorPowers(adjustPower(motorPowers[0] / maxPower), adjustPower(motorPowers[1] / maxPower), adjustPower(motorPowers[2] / maxPower), adjustPower(motorPowers[3] / maxPower));
             } else {
-                drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
+                drive.setMotorPowers(adjustPower(motorPowers[0]), adjustPower(motorPowers[1]), adjustPower(motorPowers[2]), adjustPower(motorPowers[3]));
             }
         }
 
@@ -175,6 +175,16 @@ public class FieldCentricMecanumDrive extends OpMode {
 
         telemetry.addData("liftpos", drive.getLiftPos());
         telemetry.update();
+    }
+
+    private double adjustPower(double power) {
+        double minPower = 0.15;
+        if (power > 0) {
+            return power * (1 - minPower) + minPower;
+        } else if (power < 0) {
+            return power * (1 - minPower) - minPower;
+        }
+        return 0;
     }
 
     private double GetMaxAbsMotorPower() {

@@ -316,14 +316,14 @@ public class    SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-//        fl.setPower(v);
-//        bl.setPower(v1);
-//        br.setPower(v2);
-//        fr.setPower(v2);
-        fl.setPower(adjustPower(v));
-        bl.setPower(adjustPower(v1));
-        br.setPower(adjustPower(v2));
-        fr.setPower(adjustPower(v3));
+        fl.setPower(v);
+        bl.setPower(v1);
+        br.setPower(v2);
+        fr.setPower(v2);
+//        fl.setPower(adjustPower(v));
+//        bl.setPower(adjustPower(v1));
+//        br.setPower(adjustPower(v2));
+//        fr.setPower(adjustPower(v3));
     }
 
     private double adjustPower(double power) {
