@@ -37,7 +37,7 @@ import org.openftc.revextensions2.RevBulkData;
  * trajectory following performance with moderate additional complexity.
  */
 @Config
-public class    SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
+public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private ExpansionHubEx hub;
     public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     public ExpansionHubMotor fLift, bLift;
@@ -268,6 +268,10 @@ public class    SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         return bLift.getCurrentPosition();
     }
 
+    public double getLiftVel() {
+        return bLift.getVelocity();
+    }
+
     @Override
     public PIDCoefficients getPIDCoefficients(DcMotor.RunMode runMode) {
         PIDFCoefficients coefficients = fl.getPIDFCoefficients(runMode);
@@ -316,14 +320,14 @@ public class    SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public void setMotorPowers(double v, double v1, double v2, double v3) {
-        fl.setPower(v);
-        bl.setPower(v1);
-        br.setPower(v2);
-        fr.setPower(v2);
-//        fl.setPower(adjustPower(v));
-//        bl.setPower(adjustPower(v1));
-//        br.setPower(adjustPower(v2));
-//        fr.setPower(adjustPower(v3));
+//        fl.setPower(v);
+//        bl.setPower(v1);
+//        br.setPower(v2);
+//        fr.setPower(v2);
+        fl.setPower(adjustPower(v));
+        bl.setPower(adjustPower(v1));
+        br.setPower(adjustPower(v2));
+        fr.setPower(adjustPower(v3));
     }
 
     private double adjustPower(double power) {

@@ -26,9 +26,9 @@ public class FieldCentricMecanumDrive extends OpMode {
     private GamepadEx driver1, driver2;
 
     private double[] motorPowers = new double[]{0, 0, 0, 0};
-    private double x, y, rotation, maxPower, theta, cos, sin, tempx, startingDirection = Math.toRadians(-90);
+    private double x, y, rotation, maxPower, theta, startingDirection = Math.toRadians(-90);
 
-    private boolean aPressed = false, yPressed = false, y2Pressed = false, xPressed = false, down = false, up = false, isResetting = false, V4BarOut = false, fActivated = false, rightBumpPressed = false, leftBumpPressed = false;
+    private boolean isResetting = false, V4BarOut = false, fActivated = false;
 
     private ButtonReader a2, y1, y2, x1, x2, rBump1, lBump1;
 
@@ -85,7 +85,7 @@ public class FieldCentricMecanumDrive extends OpMode {
             theta = 2 * Math.PI + theta;
         }
 
-        double mag = Math.pow(Math.sqrt(x*x + y*y), 3);
+        double mag = Math.pow(Math.sqrt(x*x + y*y), 2);
 
         if (3 * Math.PI / 4 >= theta && theta >= Math.PI / 4) {
             y = mag;
@@ -101,7 +101,7 @@ public class FieldCentricMecanumDrive extends OpMode {
             y = x * Math.tan(theta);
         }
 
-        rotation = Math.pow(driver1.getRightX(), 3) * Math.abs(driver1.getRightX());
+        rotation = Math.pow(driver1.getRightX(), 1) * Math.abs(driver1.getRightX());
 
 
         motorPowers = new double[]{x + rotation, y + rotation, x - rotation, y - rotation};
@@ -122,7 +122,7 @@ public class FieldCentricMecanumDrive extends OpMode {
             }
         }
 
-        drive.setIntakePower(maxIntakePower * Math.pow(driver2.getLeftY(), 3), maxIntakePower * Math.pow(driver2.getRightY(), 3));
+        drive.setIntakePower(maxIntakePower * Math.pow(driver2.getLeftY(), 1) * Math.abs(driver2.getLeftY()), maxIntakePower * Math.pow(driver2.getRightY(), 1) * Math.abs(driver2.getRightY()));
 
 
         if (rBump1.wasJustPressed()) {
