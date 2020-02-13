@@ -31,12 +31,12 @@ public class StateMachineAuto extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private PIDFController liftController;
-    private final PIDCoefficients liftCoeffs = new PIDCoefficients(3, 0.05, 0.2);
+    private final PIDCoefficients liftCoeffs = new PIDCoefficients(1.5, 1, 0.25);
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private int SkystonePosition = 1;
 
-    private boolean updateLift = false;
+    private double lIntakeArm = 0.40, rIntakeArm = 0.60, lStoneArm = 0.37, rStoneArm = 0.63;
 
     private enum State {
         Initial,
@@ -50,7 +50,7 @@ public class StateMachineAuto extends LinearOpMode {
     }
 
 
-    public State current;
+    private State current;
 
     @Override
     public void runOpMode() {
@@ -60,14 +60,27 @@ public class StateMachineAuto extends LinearOpMode {
         }
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
         drive.setClawGrabbing(false);
+        drive.setArmPos(lIntakeArm, rIntakeArm);
         drive.setPoseEstimate(new Pose2d(-37.75, 61.75, Math.toRadians(-90)));
         liftController = new PIDFController(liftCoeffs);
-        liftController.setInputBounds(0, 4);
-        liftController.setOutputBounds(-0.75, 0.75);
+        liftController.setInputBounds(0, 4000 / 1000.0);
+        liftController.setOutputBounds(-1, 1);
 
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
 
-        waitForStart();
+        telemetry.addLine("Ready");
+        telemetry.update();
+
+        while(!isStarted()){
+            try {
+//                SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
+                telemetry.addData("Skystone", SkystonePosition);
+                telemetry.update();
+            } catch (NullPointerException e) {
+                telemetry.addData("Java Sux bc", e.getStackTrace());
+            }
+        }
+        telemetry.clear();
 
         if (isStopRequested()) {
             drive.setMotorPowers(0, 0, 0, 0);
@@ -86,20 +99,20 @@ public class StateMachineAuto extends LinearOpMode {
                     if (!drive.isBusy()) {
                         drive.followTrajectory(generateMoveToFoundation1());
                         current = State.StackFirstStone;
+                        drive.toggleClaw();
                     }
                     break;
                 case StackFirstStone:
-                    if (!drive.isBusy() && liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 50 / 1000.0) {
+                    if (!drive.isBusy() && liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 150 / 1000.0) {
                         drive.setArmPos(0.8, 0.2);
-                        sleep(1000);
-                        liftController.setTargetPosition(1 / 1000.0);
-                        updateLift = true;
-                    } else if (!drive.isBusy() && liftController.getTargetPosition() == 1 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        sleep(750);
+                        drive.updateClawGrabbed();
                         drive.toggleClaw();
-                        liftController.setTargetPosition(50 / 1000.0);
-                    } else if (liftController.getTargetPosition() == 50 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        liftController.setTargetPosition(150 / 1000.0);
+                    } else if (!drive.isBusy() && liftController.getTargetPosition() == 150 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        drive.toggleClaw();
                         liftController.setTargetPosition(0);
-                        drive.setArmPos(0.37, 0.63);
+                        drive.setArmPos(lStoneArm, rStoneArm);
                         drive.followTrajectory(generateGrabSecondSkystone());
                         current = State.GrabSecondStone;
                     }
@@ -109,22 +122,23 @@ public class StateMachineAuto extends LinearOpMode {
                         drive.followTrajectory(generateMoveToFoundation2());
                         current = State.StackSecondStone;
                     }
+                    break;
                 case StackSecondStone:
-                    if (!drive.isBusy() && liftController.getTargetPosition() != 200 / 1000.0 && liftController.getTargetPosition() != 250 / 1000.0) {
+                    if (!drive.isBusy() && liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 200 / 1000.0 && liftController.getTargetPosition() != 350 / 1000.0) {
                         liftController.setTargetPosition(200 / 1000.0);
-                        updateLift = true;
                     } else if (liftController.getTargetPosition() == 200 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
                         drive.setArmPos(0.8, 0.2);
-                        sleep(1000);
+                        sleep(750);
                         drive.toggleClaw();
-                        liftController.setTargetPosition(250 / 1000.0);
-                    } else if (liftController.getTargetPosition() == 250 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
-                        drive.setArmPos(0.37, 0.63);
-                        liftController.setTargetPosition(1);
+                        liftController.setTargetPosition(350 / 1000.0);
+                    } else if (liftController.getTargetPosition() == 350 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        drive.setArmPos(lStoneArm, rStoneArm);
+                        liftController.setTargetPosition(1 / 1000.0);
                     } else if (!drive.isBusy() && liftController.getTargetPosition() == 1 / 1000.0) {
                         drive.followTrajectory(generateGrabFoundation());
                         current = State.GrabFoundation;
                     }
+                    break;
                 case GrabFoundation:
                     if (!drive.isBusy()) {
                         drive.followTrajectory(generatePark());
@@ -132,15 +146,17 @@ public class StateMachineAuto extends LinearOpMode {
                     }
             }
 
-            if (updateLift) {
-                drive.setLiftPower(liftController.update(drive.getLiftPos() / 1000.0, drive.getLiftVel() / 1000.0));
+            if (drive.getLiftPos() < 50) {
+                drive.setLiftPower(kStatic(Math.abs(0.75 + drive.getLiftPos() / 200) * liftController.update(Math.abs(drive.getLiftPos()) / 1000.0)));
+            } else {
+                drive.setLiftPower(kStatic(liftController.update(drive.getLiftPos() / 1000.0)));
             }
 
             drive.update();
 
-            telemetry.addData("error", liftController.getLastError());
-            telemetry.addData("target", liftController.getTargetPosition());
-            telemetry.addData("current", drive.getLiftPos() / 1000.0);
+            telemetry.addData("error", liftController.getLastError() * 1000);
+            telemetry.addData("target", liftController.getTargetPosition() * 1000);
+            telemetry.addData("current", drive.getLiftPos());
             telemetry.update();
         }
 
@@ -254,7 +270,6 @@ public class StateMachineAuto extends LinearOpMode {
                 .addMarker(() -> {
                     drive.setIntakePower(0, 0);
                     liftController.setTargetPosition(200);
-                    updateLift = true;
                     return Unit.INSTANCE;
                 })
                 .setReversed(false)
@@ -278,5 +293,14 @@ public class StateMachineAuto extends LinearOpMode {
         return drive.trajectoryBuilder()
                 .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
                 .build();
+    }
+
+    private double kStatic(double pow) {
+        if (pow > 0) {
+            return 0.1 + 0.9 * pow;
+        } else if (pow < 0) {
+            return -0.1 + 0.9 * pow;
+        }
+        return 0;
     }
 }

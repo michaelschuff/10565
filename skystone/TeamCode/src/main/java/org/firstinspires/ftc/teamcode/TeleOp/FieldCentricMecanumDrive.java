@@ -30,7 +30,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     private boolean isResetting = false, V4BarOut = false, fActivated = false;
 
-    private ButtonReader a2, y1, y2, x1, x2, rBump1, lBump1;
+    private ButtonReader a2, y1, y2, x1, x2, rBump1, lBump1, dUp2, dDown2, dLeft2, dRight2;
 
     public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = .5, firstStoneVal = 0.8, secondStoneVal = 0.7, DownLiftPow = 1;
 
@@ -63,6 +63,10 @@ public class FieldCentricMecanumDrive extends OpMode {
         a2 = new ButtonReader(driver2, GamepadKeys.Button.A);
         y2 = new ButtonReader(driver2, GamepadKeys.Button.Y);
         x2 = new ButtonReader(driver2, GamepadKeys.Button.X);
+        dUp2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_UP);
+        dRight2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_RIGHT);
+        dDown2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_DOWN);
+        dLeft2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_LEFT);
 
     }
 
@@ -75,6 +79,10 @@ public class FieldCentricMecanumDrive extends OpMode {
         a2.readValue();
         x2.readValue();
         y2.readValue();
+        dUp2.readValue();
+        dRight2.readValue();
+        dDown2.readValue();
+        dLeft2.readValue();
 
         x = driver1.getLeftX();
         y = driver1.getLeftY();
@@ -155,6 +163,22 @@ public class FieldCentricMecanumDrive extends OpMode {
             drive.toggleFoundation();
         }
 
+        if (dUp2.wasJustPressed()) {
+            startingDirection = Math.toRadians(90) - drive.getRawExternalHeading();
+        }
+
+        if (dRight2.wasJustPressed()) {
+            startingDirection = -drive.getRawExternalHeading();
+        }
+
+        if (dDown2.wasJustPressed()) {
+            startingDirection = -drive.getRawExternalHeading() - Math.toRadians(90);
+        }
+
+        if (dLeft2.wasJustPressed()) {
+            startingDirection = Math.toRadians(180) - drive.getRawExternalHeading();
+        }
+
         if (drive.getLiftPos() < 750) {
             DownLiftPow = .05 + Math.abs(drive.getLiftPos() / 750.0);
         } else {
@@ -173,6 +197,8 @@ public class FieldCentricMecanumDrive extends OpMode {
 
         drive.updateClawGrabbed();
 
+
+        telemetry.addData("startingDirection", startingDirection);
         telemetry.addData("liftpos", drive.getLiftPos());
         telemetry.update();
     }
