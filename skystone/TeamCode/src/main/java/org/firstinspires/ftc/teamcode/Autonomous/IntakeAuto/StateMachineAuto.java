@@ -89,19 +89,17 @@ public class StateMachineAuto extends LinearOpMode {
                     }
                     break;
                 case StackFirstStone:
-                    if (!drive.isBusy() && liftController.getTargetPosition() != 1) {
+                    if (!drive.isBusy() && liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 50 / 1000.0) {
                         drive.setArmPos(0.8, 0.2);
                         sleep(1000);
-                        liftController.setTargetPosition(1);
+                        liftController.setTargetPosition(1 / 1000.0);
                         updateLift = true;
-                    }
-
-                    if (!drive.isBusy() && liftController.getTargetPosition() == 1 && Math.abs(liftController.getLastError()) < 0.001) {
+                    } else if (!drive.isBusy() && liftController.getTargetPosition() == 1 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
                         drive.toggleClaw();
-                        liftController.setTargetPosition(50);
-                        sleep(500);
-                        drive.setArmPos(0.37, 0.63);
+                        liftController.setTargetPosition(50 / 1000.0);
+                    } else if (liftController.getTargetPosition() == 50 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
                         liftController.setTargetPosition(0);
+                        drive.setArmPos(0.37, 0.63);
                         drive.followTrajectory(generateGrabSecondSkystone());
                         current = State.GrabSecondStone;
                     }
@@ -112,14 +110,18 @@ public class StateMachineAuto extends LinearOpMode {
                         current = State.StackSecondStone;
                     }
                 case StackSecondStone:
-                    if (!drive.isBusy() && liftController.getTargetPosition() != 0) {
+                    if (!drive.isBusy() && liftController.getTargetPosition() != 200 / 1000.0 && liftController.getTargetPosition() != 250 / 1000.0) {
+                        liftController.setTargetPosition(200 / 1000.0);
+                        updateLift = true;
+                    } else if (liftController.getTargetPosition() == 200 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
                         drive.setArmPos(0.8, 0.2);
                         sleep(1000);
-                        liftController.setTargetPosition(0);
-                        updateLift = true;
-                    }
-
-                    if (!drive.isBusy() && liftController.getTargetPosition() == 0 && Math.abs(liftController.getLastError()) < 0.05) {
+                        drive.toggleClaw();
+                        liftController.setTargetPosition(250 / 1000.0);
+                    } else if (liftController.getTargetPosition() == 250 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        drive.setArmPos(0.37, 0.63);
+                        liftController.setTargetPosition(1);
+                    } else if (!drive.isBusy() && liftController.getTargetPosition() == 1 / 1000.0) {
                         drive.followTrajectory(generateGrabFoundation());
                         current = State.GrabFoundation;
                     }
@@ -136,8 +138,9 @@ public class StateMachineAuto extends LinearOpMode {
 
             drive.update();
 
-            telemetry.addData("state", current);
-            telemetry.addData("heading", Math.toDegrees(drive.getRawExternalHeading()));
+            telemetry.addData("error", liftController.getLastError());
+            telemetry.addData("target", liftController.getTargetPosition());
+            telemetry.addData("current", drive.getLiftPos() / 1000.0);
             telemetry.update();
         }
 
@@ -210,7 +213,7 @@ public class StateMachineAuto extends LinearOpMode {
     private Trajectory generateGrabSecondSkystone() {
         if (SkystonePosition == 1) {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
                     .lineTo(new Vector2d(-40 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
@@ -221,7 +224,7 @@ public class StateMachineAuto extends LinearOpMode {
                     .build();
         } else if (SkystonePosition == 2) {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
                     .lineTo(new Vector2d(-48 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
@@ -232,7 +235,7 @@ public class StateMachineAuto extends LinearOpMode {
                     .build();
         } else {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
                     .lineTo(new Vector2d(-56 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
@@ -273,7 +276,7 @@ public class StateMachineAuto extends LinearOpMode {
 
     private Trajectory generatePark() {
         return drive.trajectoryBuilder()
-                .splineTo(new Pose2d(0, 36, Math.toRadians(180)))
+                .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
                 .build();
     }
 }
