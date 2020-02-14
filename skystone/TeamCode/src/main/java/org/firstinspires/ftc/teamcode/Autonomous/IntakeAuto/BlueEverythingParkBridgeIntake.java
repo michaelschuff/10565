@@ -140,7 +140,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
             }
 
             if (drive.getLiftPos() < 50) {
-                drive.setLiftPower(kStatic(Math.abs(0.75 + drive.getLiftPos() / 200.0) * liftController.update(Math.abs(drive.getLiftPos()) / 1000.0)));
+                drive.setLiftPower(kStatic(Math.abs(0.75 + drive.getLiftPos() / 200.0) * liftController.update(drive.getLiftPos() / 1000.0)));
             } else {
                 drive.setLiftPower(kStatic(liftController.update(drive.getLiftPos() / 1000.0)));
             }
@@ -167,7 +167,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         drive.setArmPos(lArm, rArm);
         drive.setPoseEstimate(new Pose2d(-37.75, 61.75, Math.toRadians(-90)));
         liftController = new PIDFController(liftCoeffs);
-        liftController.setInputBounds(0, 4000 / 1000.0);
+        liftController.setInputBounds(-100 / 1000.0, 4000 / 1000.0);
         liftController.setOutputBounds(-1, 1);
 
         camera = new VuforiaLib_Skystone();
@@ -296,7 +296,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
     private double kStatic(double pow) {
         if (pow > 0) {
-            return 0.25 + 0.75 * pow;
+            return 0.1 + 0.9 * pow;
         } else if (pow < 0) {
             return pow;
         }

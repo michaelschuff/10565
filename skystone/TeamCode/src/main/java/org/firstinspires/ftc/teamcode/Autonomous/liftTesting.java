@@ -22,7 +22,7 @@ public class liftTesting extends LinearOpMode {
     private VuforiaLib_Skystone camera;
     private PIDFController liftController;
     public static PIDCoefficients liftCoeffs = new PIDCoefficients(1.25, .25, 0);
-    public static double scalar = 1000, maxPow = 1;
+    private static double scalar = 1000, maxPow = 1;
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
     private int SkystonePosition = 1;
@@ -48,7 +48,7 @@ public class liftTesting extends LinearOpMode {
         drive.setArmPos(lIntakeArm, rIntakeArm);
         drive.setPoseEstimate(new Pose2d(-37.75, 61.75, Math.toRadians(-90)));
         liftController = new PIDFController(liftCoeffs);
-        liftController.setInputBounds(0, 4000 / scalar);
+        liftController.setInputBounds(-100.0 / scalar, 4000.0 / scalar);
         liftController.setOutputBounds(-maxPow, maxPow);
 
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
@@ -91,7 +91,7 @@ public class liftTesting extends LinearOpMode {
             }
 
             if (drive.getLiftPos() < 50) {
-                drive.setLiftPower(Math.abs(0.5 + drive.getLiftPos() / 100) * liftController.update(Math.abs(drive.getLiftPos()) / scalar));
+                drive.setLiftPower(Math.abs(0.75 + drive.getLiftPos() / 200.0) * liftController.update(drive.getLiftPos() / scalar));
             } else {
                 drive.setLiftPower(liftController.update(drive.getLiftPos() / scalar));
             }
