@@ -22,7 +22,7 @@ public class IndividualDrivetrainMotors extends OpMode {
     public void init() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
 
-        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
+//        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
         drive.setRunUsingEncoder(false);
     }
 

@@ -46,13 +46,13 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    public static final double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.40 , rArm1 = 0.60, claw1 = 0;
+    public static double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.37 , rArm1 = 0.63, claw1 = 0.75;
 
     //activated servo positions
-    public static final double rFoundation2 = 0.3, lFoundation2 = 0.7, lArm2 = 0.67, rArm2 = 0.33, claw2 = 0.35;
+    public static double rFoundation2 = 0.3, lFoundation2 = 0.7, lArm2 = 0.67, rArm2 = 0.33, claw2 = 0.97;
 
     //inactive servo positions
-    public static final double rFoundation0 = 1, lFoundation0 = 0;
+    public static double rFoundation0 = 1, lFoundation0 = 0;
 
     public boolean isFoundationGrabbed = false, isArmIn = true, isClawGrabbed = false, intaking = false;
 
@@ -146,6 +146,14 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         }
     }
 
+    public void releaseCapStone() {
+        claw.setPosition(0);
+        sleep(1000);
+        setArmPos(0.45, 0.55);
+        sleep(250);
+        setArmPos(0.37, 0.63);
+    }
+
     public void toggleFoundation() {
         isFoundationGrabbed = !isFoundationGrabbed;
         rFoundation.setPosition(isFoundationGrabbed ? rFoundation2 : rFoundation0);
@@ -180,11 +188,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     }
 
     public void toggleClaw() {
-        if(isArmIn){
-            lArm.setPosition(0.37);
-            rArm.setPosition(0.63);
-            sleep(100);
-        }
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
     }
 

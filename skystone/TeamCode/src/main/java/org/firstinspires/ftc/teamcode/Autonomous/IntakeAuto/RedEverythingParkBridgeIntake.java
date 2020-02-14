@@ -1,13 +1,16 @@
 package org.firstinspires.ftc.teamcode.Autonomous.IntakeAuto;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
+import com.acmerobotics.roadrunner.control.PIDCoefficients;
+import com.acmerobotics.roadrunner.control.PIDFController;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
+import com.acmerobotics.roadrunner.path.heading.LinearInterpolator;
+import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 import org.firstinspires.ftc.teamcode.Autonomous.SkyStoneFinder;
 import org.firstinspires.ftc.teamcode.drive.mecanum.SampleMecanumDriveREVOptimized;
@@ -16,424 +19,285 @@ import org.firstinspires.ftc.teamcode.util.VuforiaLib_Skystone;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.util.Timer;
-import java.util.TimerTask;
+
+import kotlin.Unit;
 
 @Config
 @Autonomous(group = "Auto")
 public class RedEverythingParkBridgeIntake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
-    private VectorF vuforiaPosition = null;
-    private float vuforiaHeading;
+    private PIDFController liftController;
+    private final PIDCoefficients liftCoeffs = new PIDCoefficients(1.5, 1, 0.25);
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
+
+    private int SkystonePosition = 1;
+
+    private double lIntakeArm = 0.40, rIntakeArm = 0.60, lStoneArm = 0.37, rStoneArm = 0.63;
+
+    private enum State {
+        Initial,
+        GrabFirstStone,
+        StackFirstStone,
+        GrabSecondStone,
+        StackSecondStone,
+        GrabFoundation,
+        Park
+    }
 
 
-    public static int SkystonePosition = 1;
-
-
-    //field Constants
-    private double tileWidth = 23.5, botWidth = 17.125, botLength = 17.1875;
-
-
-    //starting position
-    private static double startingAngle = 90, startingX = -23.25 * 2 + 17.5 / 2, startingY = -70.5 + 17.5 / 2;
-
-    public static double armPos = .35, liftPower = .5;
-
-
-    public static boolean grabFirst = true, stackFirst = true, grabSecond = false, stackSecond = false, grabFoundation = true;
-
-    public static double strafey = 37, strafex = 0, spliney1 = 40, spliney2 = 40, splinex2 = 35, h = -10;
+    private State current;
 
     @Override
     public void runOpMode() {
-
-        if (isStopRequested()) return;
+        if (isStopRequested()) {
+            drive.setMotorPowers(0, 0, 0, 0);
+            return;
+        }
         initHardware();
-//        drive.lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
         telemetry.addLine("Ready");
         telemetry.update();
+
         while(!isStarted()){
-           SkystonePosition = 3 - SkyStoneFinder.detectSkystone(camera, true);
-           telemetry.addData("Skystone:", SkystonePosition);
-           telemetry.update();
+            try {
+                SkystonePosition = SkyStoneFinder.detectSkystone(camera, false) + 1;
+                telemetry.addData("Skystone", SkystonePosition);
+                telemetry.update();
+            } catch (NullPointerException e) {
+                telemetry.addData("Java Sux bc", e.getStackTrace());
+            }
         }
-        //waitForStart();
         telemetry.clear();
 
-        if (isStopRequested()) return;
-
-
-        if (grabFirst) {
-            grabFirstSkystone();
+        if (isStopRequested()) {
+            drive.setMotorPowers(0, 0, 0, 0);
+            return;
         }
 
-        if (stackFirst) {
-            stackSkystone(false);
+        current = State.Initial;
+
+        while (!isStopRequested()) {
+            switch (current) {
+                case Initial:
+                    drive.followTrajectory(generateGrabFirstSkystone());
+                    current = State.GrabFirstStone;
+                    break;
+                case GrabFirstStone:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectory(generateMoveToFoundation1());
+                        current = State.StackFirstStone;
+                        drive.toggleClaw();
+                    }
+                    break;
+                case StackFirstStone:
+                    if (!drive.isBusy() && liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 150 / 1000.0) {
+                        drive.setArmPos(0.8, 0.2);
+                        sleep(750);
+                        drive.updateClawGrabbed();
+                        drive.toggleClaw();
+                        liftController.setTargetPosition(150 / 1000.0);
+                    } else if (!drive.isBusy() && liftController.getTargetPosition() == 150 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        drive.toggleClaw();
+                        liftController.setTargetPosition(0);
+                        drive.setArmPos(lStoneArm, rStoneArm);
+                        drive.followTrajectory(generateGrabSecondSkystone());
+                        current = State.GrabSecondStone;
+                    }
+                    break;
+                case GrabSecondStone:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectory(generateMoveToFoundation2());
+                        current = State.StackSecondStone;
+                    }
+                    break;
+                case StackSecondStone:
+                    if (!drive.isBusy() && liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 200 / 1000.0 && liftController.getTargetPosition() != 350 / 1000.0) {
+                        liftController.setTargetPosition(200 / 1000.0);
+                    } else if (liftController.getTargetPosition() == 200 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        drive.setArmPos(0.8, 0.2);
+                        sleep(750);
+                        drive.toggleClaw();
+                        liftController.setTargetPosition(350 / 1000.0);
+                    } else if (liftController.getTargetPosition() == 350 / 1000.0 && Math.abs(liftController.getLastError()) < 0.01) {
+                        drive.setArmPos(lStoneArm, rStoneArm);
+                        liftController.setTargetPosition(1 / 1000.0);
+                    } else if (!drive.isBusy() && liftController.getTargetPosition() == 1 / 1000.0) {
+                        drive.followTrajectory(generateGrabFoundation());
+                        current = State.GrabFoundation;
+                    }
+                    break;
+                case GrabFoundation:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectory(generatePark());
+                        current = State.Park;
+                    }
+            }
+
+            if (drive.getLiftPos() < 50) {
+                drive.setLiftPower(kStatic(Math.abs(0.75 + drive.getLiftPos() / 200.0) * liftController.update(Math.abs(drive.getLiftPos()) / 1000.0)));
+            } else {
+                drive.setLiftPower(kStatic(liftController.update(drive.getLiftPos() / 1000.0)));
+            }
+
+            drive.update();
         }
 
-        if (grabFoundation) {
-            grabFoundation();
-        }
-
-
+        drive.setMotorPowers(0, 0, 0, 0);
 
         try {
             File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
-
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(Double.toString(Math.toRadians(180 + startingAngle) - drive.getRawExternalHeading()));
+            fileOut.write(Double.toString(Math.toRadians(-90) - drive.getRawExternalHeading()));
             fileOut.close();
-
         } catch (Exception e) {
-
+            telemetry.addLine("Could not save heading to file");
+            telemetry.update();
         }
-    }
-
-    private void stackSkystone(boolean second) {
-
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .reverse()
-                        .splineTo(new Pose2d(0, -40, Math.toRadians(180)))
-                        .strafeTo(new Vector2d(35, -40))
-                        .build()
-        );
-
-        drive.turnSync(Math.toRadians(90));
-
-//        vuforiaPosition = GetVuforia();
-//        vuforiaHeading = GetVuforiaH();
-//        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
-
-//        drive.turnSync(Math.toRadians(90 - vuforiaHeading));
-        if (second) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(42.5, -37))
-                            .build()
-            );
-        } else {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(42.5, -37))
-                            .build()
-            );
-        }
-
-        if (second) {
-            drive.bLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            drive.fLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-            drive.setArmPos(armPos, 1 - armPos);
-            drive.setLiftPos(500);
-            drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            drive.fLift.setPower(liftPower);
-            drive.bLift.setPower(liftPower);
-            sleep((long) (500));
-            drive.setArmPos(0.8, 0.2);
-            sleep((long) (1500));
-            drive.setClawGrabbing(false);
-            sleep(100);
-            drive.setLiftPos(800);
-            drive.bLift.setPower(liftPower);
-            drive.fLift.setPower(liftPower);
-            sleep(500);
-            drive.setArmPos(armPos, 1 - armPos);
-            drive.setFoundation((short) 2);
-            sleep(100);
-            drive.setLiftPos(0);
-            drive.fLift.setPower(-liftPower);
-            drive.bLift.setPower(-liftPower);
-
-        } else {
-            stackFirst();
-        }
-    }
-
-    private void stackFirst() {
-        drive.setArmPos(0.8, 0.2);
-        sleep(900);
-        drive.setClawGrabbing(false);
-        drive.setLiftPos(500);
-        drive.bLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        drive.fLift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        drive.bLift.setPower(liftPower);
-        drive.fLift.setPower(liftPower);
-        sleep(500);
-        drive.setArmPos(armPos, 1 - armPos);
-        drive.setLiftPos(0);
-        drive.bLift.setPower(-liftPower);
-        drive.fLift.setPower(-liftPower);
-    }
-
-    private VectorF CheckVuforia(int loops) {
-        while(opModeIsActive()) {
-            camera.loop(false);
-            try {
-                VectorF a = camera.getFieldPosition();
-                telemetry.addData("c",loops);
-                telemetry.addData("x", a.get(0));
-                telemetry.addData("y", a.get(1));
-                telemetry.addData("z", a.get(2));
-                telemetry.update();
-                return a;
-            } catch (Exception e) {
-                loops--;
-                if (loops < 0) {
-                    return null;
-                }
-            }
-        }
-        return null;
-    }
-
-    private VectorF GetVuforia() {
-        float maxError = 12;
-        while(!isStopRequested()) {
-            camera.loop(false);
-            try {
-                VectorF a = camera.getFieldPosition();
-                if (a != null) {
-                    return a;
-//                    double b = Math.sqrt(Math.pow(drive.getPoseEstimate().getX() - mmToInches(a.get(0)), 2) + Math.pow(drive.getPoseEstimate().getY() - mmToInches(a.get(1)), 2));
-//
-//                    if (b < maxError) {
-//                    }
-                }
-
-            } catch (Exception e) {
-
-            }
-        }
-        return new VectorF(0, 0, 0);
-    }
-
-    private float GetVuforiaH() {
-        int c = 0;
-        float a = 0f;
-        while(!isStopRequested() && c < 5) {
-            camera.loop(false);
-            try {
-                a += camera.getOrientation().thirdAngle;
-                telemetry.addData("heading", a / c);
-                telemetry.update();
-                c++;
-            } catch (Exception e) {
-
-            }
-        }
-        return a / c;
     }
 
     private void initHardware() {
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
+        drive.setClawGrabbing(false);
+        drive.setArmPos(lIntakeArm, rIntakeArm);
+        drive.setPoseEstimate(new Pose2d(-37.75, 61.75, Math.toRadians(-90)));
+        liftController = new PIDFController(liftCoeffs);
+        liftController.setInputBounds(0, 4000 / 1000.0);
+        liftController.setOutputBounds(-1, 1);
 
         camera = new VuforiaLib_Skystone();
-        camera.init(this, "ARf809H/////AAAAGRswBQwUCUJ5nqfgZxGbDEQ8oO7YP5GdnbReYr8ZHinqQ74OsP7UdOxNZJDmhaF2OeGD20jpSexpr2CcXGSGuHXNB2p9Z6zUNLDTfEggL+yg4ujefoqdkSpCqZf1medpwh3KXcK76FcfSJuqEudik2PC6kQW/cqJXnnHofVrrDTzJmWMnK3hlqTMjig81DEPMAHbRnA5wn7Eu0irnmqqboWyOlQ0xTF+P4LVuxaOUFlQC8zPqkr1Gvzvix45paWtyuLCnS9YDWMvI1jIM4giMrTRCT0lG8F+vkuKMiK647KJp9QIsFdWQ0ecQhau3ODNQ03pcTzprVN72b9VObpv6FNBpjGKRAcA59xlZiM2l6fc");
+        camera.init(this, "");
         camera.start();
 
-        drive.setClawGrabbing(false);
-        drive.setPoseEstimate(new Pose2d(startingX,  startingY, Math.toRadians(startingAngle)));
+        telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
     }
 
-    private void grabFirstSkystone() {
-        drive.setArmPos(armPos, 1 - armPos);
-        drive.setClawGrabbing(false);
-        drive.setIntakePower(-0.9, -0.9);
-        SetIntake timer = new SetIntake(7, 0, 0);
-
+    private Trajectory generateGrabFirstSkystone() {
         if (SkystonePosition == 1) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-39.5, -38))
-                            .build()
-            );
-            drive.turnSync(Math.toRadians(45));
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-39.5, -30))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .forward(3)
-                            .build()
-            );
+            return drive.trajectoryBuilder()
+                    .lineTo(new Vector2d(-40, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                    .addMarker(() -> {
+                        drive.setIntakePower(-1, -1);
+                        return Unit.INSTANCE;
+                    })
+                    .lineTo(new Vector2d(-40, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-42, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build();
         } else if (SkystonePosition == 2) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-48, -37))
-                            .build()
-            );
-            drive.turnSync(Math.toRadians(45));
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-48, -30))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .forward(3)
-                            .build()
-            );
+            return drive.trajectoryBuilder()
+                    .lineTo(new Vector2d(-48, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                    .addMarker(() -> {
+                        drive.setIntakePower(-1, -1);
+                        return Unit.INSTANCE;
+                    })
+                    .lineTo(new Vector2d(-48, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-50, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build();
         } else {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-58, -39))
-                            .build()
-            );
-            drive.turnSync(Math.toRadians(45));
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-58, -28))
-                            .build()
-            );
-            drive.turnSync(Math.toRadians(-h));
-//            drive.followTrajectorySync(
-//                    drive.trajectoryBuilder()
-//                            .forward(3)
-//                            .build()
-//            );
+            return drive.trajectoryBuilder()
+                    .lineTo(new Vector2d(-56, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                    .addMarker(() -> {
+                        drive.setIntakePower(-1, -1);
+                        return Unit.INSTANCE;
+                    })
+                    .lineTo(new Vector2d(-56, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-58, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(-10)))
+                    .build();
         }
-
     }
 
-    private void grabSecondSkystone() {
+    private Trajectory generateMoveToFoundation1() {
+        return drive.trajectoryBuilder()
+                .setReversed(true)
+                .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                .addMarker(() -> {
+                    drive.setIntakePower(0, 0);
+                    return Unit.INSTANCE;
+                })
+                .setReversed(false)
+                .lineTo(new Vector2d(43.5, 33), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+                .addMarker(() -> {
+                    drive.setArmPos(0.8, 0.2);
+                    return Unit.INSTANCE;
+                })
+                .build();
+    }
 
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(35, 36, Math.toRadians(180)))
-//                        .strafeTo(new Vector2d(strafex, strafey))
-                        .build()
-        );
-
-
-//        vuforiaPosition = GetVuforia();
-//        vuforiaHeading = GetVuforiaH();
-
-        drive.setIntakePower(-.75, -.75);
-        SetIntake timer = new SetIntake(6, 0, 0);
-
-//        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
-
+    private Trajectory generateGrabSecondSkystone() {
         if (SkystonePosition == 1) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(-43.5+24, 38, Math.toRadians(235)))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-43.5+24, 32))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .forward(3)
-                            .build()
-            );
+            return drive.trajectoryBuilder()
+                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
+                    .lineTo(new Vector2d(-40 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .addMarker(() -> {
+                        drive.setIntakePower(-1, -1);
+                        return Unit.INSTANCE;
+                    })
+                    .lineTo(new Vector2d(-40 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-42 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build();
         } else if (SkystonePosition == 2) {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(-50.5+24, 38, Math.toRadians(235)))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-50.5+24, 32))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .forward(3)
-                            .build()
-            );
+            return drive.trajectoryBuilder()
+                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
+                    .lineTo(new Vector2d(-48 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .addMarker(() -> {
+                        drive.setIntakePower(-1, -1);
+                        return Unit.INSTANCE;
+                    })
+                    .lineTo(new Vector2d(-48 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-50 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build();
         } else {
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .splineTo(new Pose2d(-57+24, 38, Math.toRadians(235)))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .strafeTo(new Vector2d(-57+24, 32))
-                            .build()
-            );
-            drive.followTrajectorySync(
-                    drive.trajectoryBuilder()
-                            .forward(3)
-                            .build()
-            );
-        }
-
-    }
-
-    private void grabFoundation() {
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(43, -34))
-                        .build()
-        );
-        drive.setFoundation((short) 2);
-        sleep(500);
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(38, -54))
-                        .build()
-        );
-
-//        vuforiaPosition = GetVuforia();
-//        vuforiaHeading = GetVuforiaH();
-//        drive.setPoseEstimate(new Pose2d(mmToInches(vuforiaPosition.get(0)), mmToInches(vuforiaPosition.get(1)), Math.toRadians(vuforiaHeading)));
-
-//        drive.followTrajectorySync(
-//                drive.trajectoryBuilder()
-//                        .splineTo(new Pose2d(20, 5, Math.toRadians(180)))
-//                        .build()
-//        );
-
-        drive.turnSync(Math.toRadians(-135));
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .back(10)
-                        .build()
-        );
-        drive.setFoundation((short) 0);
-        sleep(200);
-
-//        drive.setPoseEstimate(new Pose2d(30, 52, Math.toRadians(180)));
-
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(0, -45, Math.toRadians(180)))
-                        .build()
-        );
-    }
-
-    public class SetIntake {
-        Timer timer;
-        double p1, p2;
-
-        public SetIntake(int seconds, double p1, double p2) {
-            timer = new Timer();
-            timer.schedule(new RemindTask(), seconds*1000);
-            this.p1 = p1;
-            this.p2 = p2;
-        }
-
-        class RemindTask extends TimerTask {
-            public void run() {
-                drive.setIntakePower(p1, p2);
-                drive.setClawGrabbing(true);
-                timer.cancel(); //Terminate the timer thread
-            }
+            return drive.trajectoryBuilder()
+                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
+                    .lineTo(new Vector2d(-56 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .addMarker(() -> {
+                        drive.setIntakePower(-1, -1);
+                        return Unit.INSTANCE;
+                    })
+                    .lineTo(new Vector2d(-56 + 24, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .lineTo(new Vector2d(-58 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .build();
         }
     }
 
-    private double mmToInches(double mm) {
-        return mm / 25.4;
+    private Trajectory generateMoveToFoundation2() {
+        return drive.trajectoryBuilder()
+                .reverse()
+                .splineTo(new Pose2d(0, 40, Math.toRadians(180)))
+                .addMarker(() -> {
+                    drive.setIntakePower(0, 0);
+                    liftController.setTargetPosition(200);
+                    return Unit.INSTANCE;
+                })
+                .setReversed(false)
+                .lineTo(new Vector2d(43.5, 33), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+                .addMarker(() -> {
+                    drive.setArmPos(0.8, 0.2);
+                    return Unit.INSTANCE;
+                })
+                .build();
+    }
+
+    private Trajectory generateGrabFoundation() {
+        return drive.trajectoryBuilder()
+                .lineTo(new Vector2d(43, 32))
+                .lineTo(new Vector2d(38, 54), new LinearInterpolator(Math.toRadians(90), Math.toRadians(135)))
+                .lineTo(new Vector2d(53, 32))
+                .build();
+    }
+
+    private Trajectory generatePark() {
+        return drive.trajectoryBuilder()
+                .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
+                .build();
+    }
+
+    private double kStatic(double pow) {
+        if (pow > 0) {
+            return 0.1 + 0.9 * pow;
+        } else if (pow < 0) {
+            return -0.1 + 0.9 * pow;
+        }
+        return 0;
     }
 }
-

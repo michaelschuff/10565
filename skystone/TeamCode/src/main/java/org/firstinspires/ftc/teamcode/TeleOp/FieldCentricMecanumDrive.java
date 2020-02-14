@@ -42,7 +42,8 @@ public class FieldCentricMecanumDrive extends OpMode {
             startingDirection = Float.parseFloat(sc.nextLine());
             sc.close();
         } catch (Exception e){
-
+            telemetry.addLine("Could not load start heading");
+            telemetry.update();
         }
 
         drive = new SampleMecanumDriveREVOptimized(hardwareMap);
@@ -155,7 +156,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
         if (x2.wasJustPressed()) {
-            drive.resetLiftTicks();
+            drive.releaseCapStone();
         }
 
         if (y2.wasJustPressed()) {
