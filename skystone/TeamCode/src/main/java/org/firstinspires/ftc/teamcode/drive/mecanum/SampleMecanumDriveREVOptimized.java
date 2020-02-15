@@ -46,7 +46,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    public static double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.37 , rArm1 = 0.63, claw1 = 0.75;
+    public static double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.36 , rArm1 = 0.64, claw1 = 0.75;
 
     //activated servo positions
     public static double rFoundation2 = 0.3, lFoundation2 = 0.7, lArm2 = 0.67, rArm2 = 0.33, claw2 = 1.00;
@@ -154,7 +154,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         sleep(1000);
         setArmPos(0.45, 0.55);
         sleep(250);
-        setArmPos(0.37, 0.63);
+        setArmPos(lArm1, rArm1);
     }
 
     public void toggleFoundation() {
@@ -192,6 +192,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public void toggleClaw() {
         claw.setPosition(isClawGrabbed ? claw1 : claw2);
+        updateClawGrabbed();
     }
 
     public boolean getIsArmIn() {
@@ -206,6 +207,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public void setClawGrabbing(boolean grabbed) {
         claw.setPosition(grabbed ? claw2 : claw1);
+        updateClawGrabbed();
     }
 
     public void resetEveryThing() {
