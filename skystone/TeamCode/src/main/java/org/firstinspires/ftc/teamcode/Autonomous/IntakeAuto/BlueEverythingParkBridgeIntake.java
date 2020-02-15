@@ -37,9 +37,13 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 
     private enum State {
         Initial,
-        GrabFirstStone,
+        MoveToFirstStone,
+        InsertBotFirst,
+        GrabStoneFirst,
         StackFirstStone,
-        GrabSecondStone,
+        MoveToSecondStone,
+        InsertBotSecond,
+        GrabStoneSecond,
         StackSecondStone,
         GrabFoundation,
         Park
@@ -80,15 +84,25 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         while (!isStopRequested()) {
             switch (current) {
                 case Initial:
-                    drive.followTrajectory(generateGrabFirstSkystone());
-                    current = State.GrabFirstStone;
+                    drive.followTrajectory(generateMoveToFirstStone());
+                    current = State.MoveToFirstStone;
                     break;
-                case GrabFirstStone:
+                case MoveToFirstStone:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectory(generateGrabFirstStoneInsertBot());
+                        current = State.InsertBotFirst;
+                    }
+                    break;
+                case InsertBotFirst:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectory(generateGrabFirstStoneInsertBot());
+                        current = State.GrabStoneFirst;
+                    }
+                case GrabStoneFirst:
                     if (!drive.isBusy()) {
                         drive.followTrajectory(generateMoveToFoundation1());
                         current = State.StackFirstStone;
                     }
-                    break;
                 case StackFirstStone:
                     if (!drive.isBusy() && liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 150 / 1000.0) {
                         drive.setArmPos(0.8, 0.2);
@@ -101,13 +115,19 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                         liftController.setTargetPosition(0);
                         drive.setArmPos(lArm, rArm);
                         drive.followTrajectory(generateGrabSecondSkystone());
-                        current = State.GrabSecondStone;
+                        current = State.MoveToSecondStone;
                     }
                     break;
-                case GrabSecondStone:
+                case MoveToSecondStone:
                     if (!drive.isBusy()) {
                         drive.followTrajectory(generateMoveToFoundation2());
-                        current = State.StackSecondStone;
+                        current = State.InsertBotSecond;
+                    }
+                    break;
+                case InsertBotSecond:
+                    if (!drive.isBusy()) {
+                        drive.followTrajectory(generateMoveToFoundation2());
+                        current = State.InsertBotSecond;
                         drive.setFoundation((short) 0);
                     }
                     break;
@@ -177,7 +197,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         telemetry = new MultipleTelemetry(telemetry, dashboard.getTelemetry());
     }
 
-    private Trajectory generateGrabFirstSkystone() {
+    private Trajectory generateMoveToFirstStone() {
         if (SkystonePosition == 1) {
             return drive.trajectoryBuilder()
                     .splineTo(new Pose2d(-38, 35, Math.toRadians(-135)))
@@ -185,28 +205,22 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .strafeTo(new Vector2d(-38, 30))
-                    .strafeTo(new Vector2d(-42, 28))
                     .build();
         } else if (SkystonePosition == 2) {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(-48, 38, Math.toRadians(-135)))
+                    .splineTo(new Pose2d(-46, 35, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .strafeTo(new Vector2d(-48, 30))
-                    .strafeTo(new Vector2d(-50, 28))
                     .build();
         } else {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(-56, 38, Math.toRadians(-135)))
+                    .splineTo(new Pose2d(-54, 35, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .strafeTo(new Vector2d(-56, 30))
-                    .strafeTo(new Vector2d(-58, 28))
                     .build();
         }
     }
@@ -223,43 +237,37 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
 //                .setReversed(false)
 //                .lineTo(new Vector2d(43.5, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
 //                .lineTo(new Vector2d(43.5, 36), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
-                .splineTo(new Pose2d(43.5, 36, Math.toRadians(90)))
+                .splineTo(new Pose2d(43.5, 33, Math.toRadians(90)))
                 .build();
     }
 
     private Trajectory generateGrabSecondSkystone() {
         if (SkystonePosition == 1) {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
-                    .lineTo(new Vector2d(-40 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .splineTo(new Pose2d(0, 36, Math.toRadians(180)))
+                    .splineTo(new Pose2d(-38 + 24, 35, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .lineTo(new Vector2d(-40 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                    .lineTo(new Vector2d(-44 + 24, 26), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
                     .build();
         } else if (SkystonePosition == 2) {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
-                    .lineTo(new Vector2d(-48 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .splineTo(new Pose2d(0, 36, Math.toRadians(180)))
+                    .splineTo(new Pose2d(-46 + 24, 35, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .lineTo(new Vector2d(-48 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                    .lineTo(new Vector2d(-52 + 24, 26), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
                     .build();
         } else {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, 42, Math.toRadians(180)))
-                    .lineTo(new Vector2d(-56 + 24, 38), new LinearInterpolator(Math.toRadians(180), Math.toRadians(45)))
+                    .splineTo(new Pose2d(0, 36, Math.toRadians(180)))
+                    .splineTo(new Pose2d(-54 + 24, 35, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .lineTo(new Vector2d(-56 + 24, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                    .lineTo(new Vector2d(-60 + 24, 26), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
                     .build();
         }
     }
@@ -290,6 +298,41 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                     return Unit.INSTANCE;
                 })
                 .build();
+    }
+
+    private Trajectory generateGrabFirstStoneInsertBot() {
+        if (SkystonePosition == 1) {
+            return drive.trajectoryBuilder()
+                    .strafeTo(new Vector2d(-38, 30))
+                    .strafeTo(new Vector2d(-42, 28))
+                    .build();
+        } else if (SkystonePosition == 2) {
+            return drive.trajectoryBuilder()
+                    .strafeTo(new Vector2d(-48, 30))
+                    .strafeTo(new Vector2d(-50, 28))
+                    .build();
+        } else {
+            return drive.trajectoryBuilder()
+                    .strafeTo(new Vector2d(-56, 30))
+                    .strafeTo(new Vector2d(-58, 28))
+                    .build();
+        }
+    }
+
+    private Trajectory generateGrabFirstStone() {
+        if (SkystonePosition == 1) {
+            return drive.trajectoryBuilder()
+                    .strafeTo(new Vector2d(-42, 28))
+                    .build();
+        } else if (SkystonePosition == 2) {
+            return drive.trajectoryBuilder()
+                    .strafeTo(new Vector2d(-50, 28))
+                    .build();
+        } else {
+            return drive.trajectoryBuilder()
+                    .strafeTo(new Vector2d(-58, 28))
+                    .build();
+        }
     }
 
     private Trajectory generatePark() {
