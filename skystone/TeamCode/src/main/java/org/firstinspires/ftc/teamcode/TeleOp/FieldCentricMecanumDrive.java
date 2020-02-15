@@ -188,7 +188,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
         if (drive.getLiftPos() < 750) {
-            DownLiftPow = .05 + Math.abs(drive.getLiftPos() / 750.0);
+            DownLiftPow = .5 + .5 * Math.abs(drive.getLiftPos() / 750.0);
         } else {
             DownLiftPow = 1;
         }
