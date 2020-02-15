@@ -191,7 +191,7 @@ public class FieldCentricMecanumDrive extends OpMode {
             startingDirection = Math.toRadians(180) - drive.getRawExternalHeading();
         }
 
-        if (drive.getLiftPos() < 750) {
+        if (drive.getLiftPos() < 750 && false) {
             DownLiftPow = .05 + Math.abs(drive.getLiftPos() / 750.0);
         } else {
             DownLiftPow = 1;
