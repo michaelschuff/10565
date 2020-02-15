@@ -153,7 +153,7 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         try {
             File file = new File(AppUtil.ROOT_FOLDER + "/StartingDirection.txt");
             BufferedWriter fileOut = new BufferedWriter(new FileWriter(file));
-            fileOut.write(Double.toString(Math.toRadians(180 - 90) - drive.getRawExternalHeading()));
+            fileOut.write(Double.toString(Math.toRadians(-90) - drive.getRawExternalHeading()));
             fileOut.close();
         } catch (Exception e) {
             telemetry.addLine("Could not save heading to file");
@@ -180,33 +180,33 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private Trajectory generateGrabFirstSkystone() {
         if (SkystonePosition == 1) {
             return drive.trajectoryBuilder()
-                    .lineTo(new Vector2d(-40, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                    .splineTo(new Pose2d(-38, 35, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .lineTo(new Vector2d(-40, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                    .lineTo(new Vector2d(-42, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .strafeTo(new Vector2d(-38, 30))
+                    .strafeTo(new Vector2d(-42, 28))
                     .build();
         } else if (SkystonePosition == 2) {
             return drive.trajectoryBuilder()
-                    .lineTo(new Vector2d(-48, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                    .splineTo(new Pose2d(-48, 38, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .lineTo(new Vector2d(-48, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                    .lineTo(new Vector2d(-50, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
+                    .strafeTo(new Vector2d(-48, 30))
+                    .strafeTo(new Vector2d(-50, 28))
                     .build();
         } else {
             return drive.trajectoryBuilder()
-                    .lineTo(new Vector2d(-56, 38), new LinearInterpolator(Math.toRadians(-90), Math.toRadians(-45)))
+                    .splineTo(new Pose2d(-56, 38, Math.toRadians(-135)))
                     .addMarker(() -> {
                         drive.setIntakePower(-1, -1);
                         return Unit.INSTANCE;
                     })
-                    .lineTo(new Vector2d(-56, 30), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(0)))
-                    .lineTo(new Vector2d(-58, 28), new LinearInterpolator(Math.toRadians(-135), Math.toRadians(-10)))
+                    .strafeTo(new Vector2d(-56, 30))
+                    .strafeTo(new Vector2d(-58, 28))
                     .build();
         }
     }
@@ -220,10 +220,10 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                     drive.toggleClaw();
                     return Unit.INSTANCE;
                 })
-                .setReversed(false)
-                .lineTo(new Vector2d(43.5, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
-                .lineTo(new Vector2d(43.5, 36), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
-//                .splineTo(new Pose2d(43.5, 36, Math.toRadians(90)))
+//                .setReversed(false)
+//                .lineTo(new Vector2d(43.5, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+//                .lineTo(new Vector2d(43.5, 36), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
+                .splineTo(new Pose2d(43.5, 36, Math.toRadians(90)))
                 .build();
     }
 
@@ -274,10 +274,10 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                     drive.toggleClaw();
                     return Unit.INSTANCE;
                 })
-                .setReversed(false)
-                .lineTo(new Vector2d(43.5, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
-                .lineTo(new Vector2d(43.5, 36), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
-//                .splineTo(new Pose2d(43.5, 36, Math.toRadians(90)))
+//                .setReversed(false)
+//                .lineTo(new Vector2d(43.5, 40), new LinearInterpolator(Math.toRadians(180), Math.toRadians(-90)))
+//                .lineTo(new Vector2d(43.5, 36), new LinearInterpolator(Math.toRadians(90), Math.toRadians(0)))
+                .splineTo(new Pose2d(43.5, 36, Math.toRadians(90)))
                 .build();
     }
 
@@ -285,6 +285,10 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
         return drive.trajectoryBuilder()
                 .forward(20)
                 .splineTo(new Pose2d(drive.getPoseEstimate().getX() - 10, drive.getPoseEstimate().getY() + 10, Math.toRadians(180)))
+                .addMarker(() -> {
+                    drive.setFoundation((short) 1);
+                    return Unit.INSTANCE;
+                })
                 .build();
     }
 

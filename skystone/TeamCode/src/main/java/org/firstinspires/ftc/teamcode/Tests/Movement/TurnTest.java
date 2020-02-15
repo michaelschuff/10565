@@ -19,7 +19,6 @@ import java.io.FileWriter;
  * This is a simple routine to test turning capabilities.
  */
 
-@Disabled
 @Config
 @Autonomous(group = "MovementTests")
 public class TurnTest extends LinearOpMode {

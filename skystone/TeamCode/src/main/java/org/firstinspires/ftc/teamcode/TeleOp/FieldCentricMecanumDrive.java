@@ -1,6 +1,8 @@
 package org.firstinspires.ftc.teamcode.TeleOp;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.config.Config;
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.control.PIDCoefficients;
 import com.acmerobotics.roadrunner.control.PIDFController;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
@@ -23,6 +25,7 @@ import java.util.Scanner;
 public class FieldCentricMecanumDrive extends OpMode {
     private SampleMecanumDriveREVOptimized drive;
 
+    private FtcDashboard dashboard = FtcDashboard.getInstance();
     private GamepadEx driver1, driver2;
 
     private double[] motorPowers = new double[]{0, 0, 0, 0};
@@ -30,10 +33,10 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     private boolean isResetting = false, V4BarOut = false, fActivated = false;
 
-    private ButtonReader a2, y1, y2, x1, x2, rBump1, lBump1, dUp2, dDown2, dLeft2, dRight2;
+    private ButtonReader a2, y1, y2, x1, x2, b2, rBump1, lBump1, dUp2, dDown2, dLeft2, dRight2;
 
     public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = .5, firstStoneVal = 0.8, secondStoneVal = 0.7, DownLiftPow = 1;
-
+    TelemetryPacket telem;
     @Override
     public void init() {
         try {
@@ -64,11 +67,13 @@ public class FieldCentricMecanumDrive extends OpMode {
         a2 = new ButtonReader(driver2, GamepadKeys.Button.A);
         y2 = new ButtonReader(driver2, GamepadKeys.Button.Y);
         x2 = new ButtonReader(driver2, GamepadKeys.Button.X);
+        b2 = new ButtonReader(driver2, GamepadKeys.Button.B);
         dUp2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_UP);
         dRight2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_RIGHT);
         dDown2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_DOWN);
         dLeft2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_LEFT);
 
+        telem = new TelemetryPacket();
     }
 
     @Override
@@ -80,6 +85,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         a2.readValue();
         x2.readValue();
         y2.readValue();
+        b2.readValue();
         dUp2.readValue();
         dRight2.readValue();
         dDown2.readValue();
@@ -118,18 +124,19 @@ public class FieldCentricMecanumDrive extends OpMode {
         if (V4BarOut || fActivated) {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
                 maxPower = GetMaxAbsMotorPower();
-                drive.setMotorPowers(adjustPower(SloMoPower * motorPowers[0] / maxPower), adjustPower(SloMoPower * motorPowers[1] / maxPower), adjustPower(SloMoPower * motorPowers[2] / maxPower), adjustPower(SloMoPower * motorPowers[3] / maxPower));
+                motorPowers = new double[]{adjustPower(SloMoPower * motorPowers[0] / maxPower), adjustPower(SloMoPower * motorPowers[1] / maxPower), adjustPower(SloMoPower * motorPowers[2] / maxPower), adjustPower(SloMoPower * motorPowers[3] / maxPower)};
             } else {
-                drive.setMotorPowers(adjustPower(SloMoPower * motorPowers[0]), adjustPower(SloMoPower * motorPowers[1]), adjustPower(SloMoPower * motorPowers[2]), adjustPower(SloMoPower * motorPowers[3]));
+                motorPowers = new double[]{adjustPower(SloMoPower * motorPowers[0]), adjustPower(SloMoPower * motorPowers[1]), adjustPower(SloMoPower * motorPowers[2]), adjustPower(SloMoPower * motorPowers[3])};
             }
         } else {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
                 maxPower = GetMaxAbsMotorPower();
-                drive.setMotorPowers(adjustPower(motorPowers[0] / maxPower), adjustPower(motorPowers[1] / maxPower), adjustPower(motorPowers[2] / maxPower), adjustPower(motorPowers[3] / maxPower));
+                motorPowers = new double[]{adjustPower(motorPowers[0] / maxPower), adjustPower(motorPowers[1] / maxPower), adjustPower(motorPowers[2] / maxPower), adjustPower(motorPowers[3] / maxPower)};
             } else {
-                drive.setMotorPowers(adjustPower(motorPowers[0]), adjustPower(motorPowers[1]), adjustPower(motorPowers[2]), adjustPower(motorPowers[3]));
+                motorPowers = new double[]{adjustPower(motorPowers[0]), adjustPower(motorPowers[1]), adjustPower(motorPowers[2]), adjustPower(motorPowers[3])};
             }
         }
+        drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
 
         drive.setIntakePower(maxIntakePower * Math.pow(driver2.getLeftY(), 1) * Math.abs(driver2.getLeftY()), maxIntakePower * Math.pow(driver2.getRightY(), 1) * Math.abs(driver2.getRightY()));
 
@@ -162,6 +169,10 @@ public class FieldCentricMecanumDrive extends OpMode {
         if (y2.wasJustPressed()) {
             fActivated = !fActivated;
             drive.toggleFoundation();
+        }
+
+        if (b2.wasJustPressed()) {
+            drive.resetLiftTicks();
         }
 
         if (dUp2.wasJustPressed()) {
@@ -199,9 +210,16 @@ public class FieldCentricMecanumDrive extends OpMode {
         drive.updateClawGrabbed();
 
 
-        telemetry.addData("startingDirection", startingDirection);
-        telemetry.addData("liftpos", drive.getLiftPos());
-        telemetry.update();
+        telem.put("fl", motorPowers[0]);
+        telem.put("bl", motorPowers[1]);
+        telem.put("br", motorPowers[2]);
+        telem.put("fr", motorPowers[3]);
+        telem.put("left X", driver1.getLeftX());
+        telem.put("left Y", driver1.getLeftY());
+        telem.put("right X", driver1.getRightX());
+        dashboard.sendTelemetryPacket(telem);
+
+
     }
 
     private double adjustPower(double power) {

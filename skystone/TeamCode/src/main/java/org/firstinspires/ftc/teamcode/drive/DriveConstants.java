@@ -36,7 +36,7 @@ public class DriveConstants {
      */
     public static final boolean RUN_USING_ENCODER = true;
 //    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(70, 1.15, 20);
-    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(46, 12, 15);
+    public static final PIDCoefficients MOTOR_VELO_PID = new PIDCoefficients(50, 15, 16);
 //    public static final boolean RUN_USING_ENCODER = false;
 //    public static final PIDCoefficients MOTOR_VELO_PID = null;
 
@@ -58,7 +58,7 @@ public class DriveConstants {
      * motor encoders or have elected not to use them for velocity control, these values should be
      * empirically tuned.
      */
-    public static double kV = 1.0 / rpmToVelocity(300);
+    public static double kV = 1.0 / rpmToVelocity(274);
     public static double kA = 0;
     public static double kStatic = 0;
 

@@ -38,7 +38,7 @@ import org.openftc.revextensions2.RevBulkData;
  */
 @Config
 public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
-    private ExpansionHubEx hub;
+    private ExpansionHubEx hub1;
     public ExpansionHubMotor fl, bl, br, fr, lIntake, rIntake;
     public ExpansionHubMotor fLift, bLift;
     private Servo rFoundation, lFoundation, rArm, lArm, claw;
@@ -61,7 +61,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         LynxModuleUtil.ensureMinimumFirmwareVersion(hardwareMap);
 
-        hub = hardwareMap.get(ExpansionHubEx.class, "hub 1");
+        hub1 = hardwareMap.get(ExpansionHubEx.class, "hub 1");
 
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
@@ -89,6 +89,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         bLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         for (ExpansionHubMotor motor : motors) {
             if (RUN_USING_ENCODER) {
+                motor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 motor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
             motor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -104,6 +105,8 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
+        fr.setDirection(DcMotorSimple.Direction.FORWARD);
+        br.setDirection(DcMotorSimple.Direction.FORWARD);
         rIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         bLift.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -299,7 +302,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     @NonNull
     @Override
     public List<Double> getWheelPositions() {
-        RevBulkData bulkData = hub.getBulkInputData();
+        RevBulkData bulkData = hub1.getBulkInputData();
 
         if (bulkData == null) {
             return Arrays.asList(0.0, 0.0, 0.0, 0.0);
@@ -314,7 +317,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     @Override
     public List<Double> getWheelVelocities() {
-        RevBulkData bulkData = hub.getBulkInputData();
+        RevBulkData bulkData = hub1.getBulkInputData();
 
         if (bulkData == null) {
             return Arrays.asList(0.0, 0.0, 0.0, 0.0);
