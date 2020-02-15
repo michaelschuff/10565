@@ -35,8 +35,7 @@ public class FieldCentricMecanumDrive extends OpMode {
 
     private ButtonReader a2, y1, y2, x1, x2, b2, rBump1, lBump1, dUp2, dDown2, dLeft2, dRight2;
 
-    public static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = .5, firstStoneVal = 0.8, secondStoneVal = 0.7, DownLiftPow = 1;
-    TelemetryPacket telem;
+    private static double maxLiftPower = 1, maxIntakePower = 1, SloMoPower = .5, firstStoneVal = 0.8, secondStoneVal = 0.7, DownLiftPow = 1;
     @Override
     public void init() {
         try {
@@ -72,8 +71,6 @@ public class FieldCentricMecanumDrive extends OpMode {
         dRight2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_RIGHT);
         dDown2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_DOWN);
         dLeft2 = new ButtonReader(driver2, GamepadKeys.Button.DPAD_LEFT);
-
-        telem = new TelemetryPacket();
     }
 
     @Override
@@ -124,19 +121,18 @@ public class FieldCentricMecanumDrive extends OpMode {
         if (V4BarOut || fActivated) {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
                 maxPower = GetMaxAbsMotorPower();
-                motorPowers = new double[]{adjustPower(SloMoPower * motorPowers[0] / maxPower), adjustPower(SloMoPower * motorPowers[1] / maxPower), adjustPower(SloMoPower * motorPowers[2] / maxPower), adjustPower(SloMoPower * motorPowers[3] / maxPower)};
+                drive.setMotorPowers(adjustPower(SloMoPower * motorPowers[0] / maxPower), adjustPower(SloMoPower * motorPowers[1] / maxPower), adjustPower(SloMoPower * motorPowers[2] / maxPower), adjustPower(SloMoPower * motorPowers[3] / maxPower));
             } else {
-                motorPowers = new double[]{adjustPower(SloMoPower * motorPowers[0]), adjustPower(SloMoPower * motorPowers[1]), adjustPower(SloMoPower * motorPowers[2]), adjustPower(SloMoPower * motorPowers[3])};
+                drive.setMotorPowers(adjustPower(SloMoPower * motorPowers[0]), adjustPower(SloMoPower * motorPowers[1]), adjustPower(SloMoPower * motorPowers[2]), adjustPower(SloMoPower * motorPowers[3]));
             }
         } else {
             if (Math.abs(motorPowers[0]) > 1 || Math.abs(motorPowers[1]) > 1 || Math.abs(motorPowers[2]) > 1 || Math.abs(motorPowers[3]) > 1) {
                 maxPower = GetMaxAbsMotorPower();
-                motorPowers = new double[]{adjustPower(motorPowers[0] / maxPower), adjustPower(motorPowers[1] / maxPower), adjustPower(motorPowers[2] / maxPower), adjustPower(motorPowers[3] / maxPower)};
+                drive.setMotorPowers(adjustPower(motorPowers[0] / maxPower), adjustPower(motorPowers[1] / maxPower), adjustPower(motorPowers[2] / maxPower), adjustPower(motorPowers[3] / maxPower));
             } else {
-                motorPowers = new double[]{adjustPower(motorPowers[0]), adjustPower(motorPowers[1]), adjustPower(motorPowers[2]), adjustPower(motorPowers[3])};
+                drive.setMotorPowers(adjustPower(motorPowers[0]), adjustPower(motorPowers[1]), adjustPower(motorPowers[2]), adjustPower(motorPowers[3]));
             }
         }
-        drive.setMotorPowers(motorPowers[0], motorPowers[1], motorPowers[2], motorPowers[3]);
 
         drive.setIntakePower(maxIntakePower * Math.pow(driver2.getLeftY(), 1) * Math.abs(driver2.getLeftY()), maxIntakePower * Math.pow(driver2.getRightY(), 1) * Math.abs(driver2.getRightY()));
 
@@ -208,16 +204,6 @@ public class FieldCentricMecanumDrive extends OpMode {
         V4BarOut = !drive.getIsArmIn();
 
         drive.updateClawGrabbed();
-
-
-        telem.put("fl", motorPowers[0]);
-        telem.put("bl", motorPowers[1]);
-        telem.put("br", motorPowers[2]);
-        telem.put("fr", motorPowers[3]);
-        telem.put("left X", driver1.getLeftX());
-        telem.put("left Y", driver1.getLeftY());
-        telem.put("right X", driver1.getRightX());
-        dashboard.sendTelemetryPacket(telem);
 
 
     }
