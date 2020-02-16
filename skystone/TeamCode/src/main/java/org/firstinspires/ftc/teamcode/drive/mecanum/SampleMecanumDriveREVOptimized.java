@@ -24,6 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.teamcode.drive.localizer.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.drive.localizer.TwoWheelLocalizer;
 import org.firstinspires.ftc.teamcode.util.AxesSigns;
 import org.firstinspires.ftc.teamcode.util.BNO055IMUUtil;
@@ -46,13 +47,13 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     private BNO055IMU imu;
 
     //idle servo positions
-    public static double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.36 , rArm1 = 0.64, claw1 = 0.75;
+    public static double rFoundation1 = 0.5, lFoundation1 = 0.5, lArm1 = 0.37 , rArm1 = 0.63, claw1 = 0.75;
 
     //activated servo positions
     public static double rFoundation2 = 0.3, lFoundation2 = 0.7, lArm2 = 0.67, rArm2 = 0.33, claw2 = 1.00;
 
     //inactive servo positions
-    public static double rFoundation0 = 1, lFoundation0 = 0;
+    public static double rFoundation0 = 0.85, lFoundation0 = 0.15;
 
     public boolean isFoundationGrabbed = false, isArmIn = true, isClawGrabbed = false, intaking = false;
 
@@ -111,9 +112,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         bLift.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-        setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
+//        setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
 //        setLocalizer(new MecanumLocalizer(this, true));
-//        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
 
     public void setIntakePower(double leftPower, double rightPower) {
@@ -150,11 +151,18 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     }
 
     public void releaseCapStone() {
-        claw.setPosition(0);
-        sleep(1000);
+        if (claw.getPosition() == claw2) {
+            claw.setPosition(0);
+            sleep(1200);
+        } else {
+            claw.setPosition(0);
+            sleep(1000);
+        }
         setArmPos(0.45, 0.55);
         sleep(250);
         setArmPos(lArm1, rArm1);
+        setClawGrabbing(true);
+        updateClawGrabbed();
     }
 
     public void toggleFoundation() {
@@ -182,6 +190,10 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
     public void setArmPos(double val1, double val2) {
         lArm.setPosition(val1);
         rArm.setPosition(val2);
+    }
+
+    public double getImuHeading() {
+        return imu.getAngularOrientation().firstAngle;
     }
 
     public void setArmIn(boolean isIn) {

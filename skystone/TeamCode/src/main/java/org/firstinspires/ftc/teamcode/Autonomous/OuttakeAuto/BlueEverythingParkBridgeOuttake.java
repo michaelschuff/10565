@@ -4,6 +4,7 @@ package org.firstinspires.ftc.teamcode.Autonomous.OuttakeAuto;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.constraints.DriveConstraints;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
@@ -15,6 +16,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
+@Disabled
 @Autonomous(group = "Auto", name = "BlueEverythingParkBridgeOuttake")
 public class BlueEverythingParkBridgeOuttake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;

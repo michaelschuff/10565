@@ -33,7 +33,14 @@ public class SkyStoneFinder {
                 }
             }
             stoneThreeAvg /= (height * 100 / 900) * (width * 150 / 1600);
-        }else{
+            if (stoneOneAvg < stoneTwoAvg && stoneOneAvg < stoneThreeAvg) {
+                skyStone = 2;
+            } else if (stoneTwoAvg < stoneOneAvg && stoneTwoAvg < stoneThreeAvg) {
+                skyStone = 1;
+            } else {
+                skyStone = 0;
+            }
+        } else {
             for (int i = height * 410 / 900; i < height * 510 / 900; i++) {
                 for (int j = width * 400 / 1600; j < width * 550 / 1600; j++) {
                     stoneOneAvg += (inArray[j + i * width] >> 16) & 0xFF;
@@ -52,14 +59,15 @@ public class SkyStoneFinder {
                 }
             }
             stoneThreeAvg /= (height * 100 / 900) * (width * 150 / 1600);
+            if (stoneOneAvg < stoneTwoAvg && stoneOneAvg < stoneThreeAvg) {
+                skyStone = 0;
+            } else if (stoneTwoAvg < stoneOneAvg && stoneTwoAvg < stoneThreeAvg) {
+                skyStone = 1;
+            } else {
+                skyStone = 2;
+            }
         }
-        if(stoneOneAvg < stoneTwoAvg && stoneOneAvg < stoneThreeAvg){
-            skyStone = 2;
-        }else if(stoneTwoAvg < stoneOneAvg && stoneTwoAvg < stoneThreeAvg){
-            skyStone = 1;
-        }else{
-            skyStone = 0;
-        }
+
         return skyStone;
     }
 

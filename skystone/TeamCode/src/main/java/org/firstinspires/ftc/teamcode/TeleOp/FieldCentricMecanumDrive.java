@@ -91,7 +91,7 @@ public class FieldCentricMecanumDrive extends OpMode {
         x = driver1.getLeftX();
         y = driver1.getLeftY();
 
-        theta = (Math.atan2(y, x) - drive.getExternalHeading() + startingDirection - Math.toRadians(135)) % (2 * Math.PI);
+        theta = (Math.atan2(y, x) - drive.getImuHeading() + startingDirection - Math.toRadians(135)) % (2 * Math.PI);
 
         if (theta < 0) {
             theta = 2 * Math.PI + theta;
@@ -172,19 +172,19 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
         if (dUp2.wasJustPressed()) {
-            startingDirection = Math.toRadians(90) - drive.getRawExternalHeading();
+            startingDirection = Math.toRadians(90 + 90) - drive.getImuHeading();
         }
 
         if (dRight2.wasJustPressed()) {
-            startingDirection = -drive.getRawExternalHeading();
+            startingDirection = Math.toRadians(90 + 0) - drive.getImuHeading();
         }
 
         if (dDown2.wasJustPressed()) {
-            startingDirection = -drive.getRawExternalHeading() - Math.toRadians(90);
+            startingDirection = Math.toRadians(90 - 90) - drive.getImuHeading();
         }
 
         if (dLeft2.wasJustPressed()) {
-            startingDirection = Math.toRadians(180) - drive.getRawExternalHeading();
+            startingDirection = Math.toRadians(90 + 180) - drive.getImuHeading();
         }
 
 
@@ -207,6 +207,8 @@ public class FieldCentricMecanumDrive extends OpMode {
         drive.updateClawGrabbed();
 
 
+        telemetry.addData("liftpos", drive.getLiftPos());
+        telemetry.update();
     }
 
     private double adjustPower(double power) {

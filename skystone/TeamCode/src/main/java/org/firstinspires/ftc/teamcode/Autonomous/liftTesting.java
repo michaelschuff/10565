@@ -21,7 +21,8 @@ public class liftTesting extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private PIDFController liftController;
-    public static PIDCoefficients liftCoeffs = new PIDCoefficients(1.25, .25, 0);
+    public static PIDCoefficients liftCoeffs = new PIDCoefficients(3, 0.3, 0.1);
+    public static double kV = .1;
     private static double scalar = 1000, maxPow = 1;
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
@@ -47,7 +48,7 @@ public class liftTesting extends LinearOpMode {
         drive.setClawGrabbing(false);
         drive.setArmPos(lIntakeArm, rIntakeArm);
         drive.setPoseEstimate(new Pose2d(-37.75, 61.75, Math.toRadians(-90)));
-        liftController = new PIDFController(liftCoeffs);
+        liftController = new PIDFController(liftCoeffs, kV);
         liftController.setInputBounds(-100.0 / scalar, 4000.0 / scalar);
         liftController.setOutputBounds(-maxPow, maxPow);
 
@@ -90,11 +91,11 @@ public class liftTesting extends LinearOpMode {
                 }
             }
 
-            if (drive.getLiftPos() < 50) {
-                drive.setLiftPower(Math.abs(0.75 + drive.getLiftPos() / 200.0) * liftController.update(drive.getLiftPos() / scalar));
-            } else {
-                drive.setLiftPower(liftController.update(drive.getLiftPos() / scalar));
-            }
+//            if (drive.getLiftPos() < 50) {
+//                drive.setLiftPower(Math.abs(0.75 + drive.getLiftPos() / 200.0) * liftController.update(drive.getLiftPos() / scalar));
+//            } else {
+//                drive.setLiftPower(liftController.update(drive.getLiftPos() / scalar));
+//            }
 
 //            drive.setLiftPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
