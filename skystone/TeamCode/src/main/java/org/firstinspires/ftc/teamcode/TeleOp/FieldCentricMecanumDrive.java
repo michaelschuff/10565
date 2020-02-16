@@ -172,19 +172,19 @@ public class FieldCentricMecanumDrive extends OpMode {
         }
 
         if (dUp2.wasJustPressed()) {
-            startingDirection = Math.toRadians(90 + 90) - drive.getImuHeading();
+            startingDirection += Math.toRadians(90);
         }
 
         if (dRight2.wasJustPressed()) {
-            startingDirection = Math.toRadians(90 + 0) - drive.getImuHeading();
+            startingDirection += Math.toRadians(0);
         }
 
         if (dDown2.wasJustPressed()) {
-            startingDirection = Math.toRadians(90 - 90) - drive.getImuHeading();
+            startingDirection += Math.toRadians(-90);
         }
 
         if (dLeft2.wasJustPressed()) {
-            startingDirection = Math.toRadians(90 + 180) - drive.getImuHeading();
+            startingDirection = Math.toRadians(180);
         }
 
 

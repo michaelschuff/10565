@@ -99,7 +99,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         bLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         fLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-
         if (RUN_USING_ENCODER && MOTOR_VELO_PID != null) {
             setPIDCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, MOTOR_VELO_PID);
         }
@@ -112,9 +111,9 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         bLift.setDirection(DcMotorSimple.Direction.REVERSE);
 
 
-//        setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
+        setLocalizer(new TwoWheelLocalizer(hardwareMap, imu));
 //        setLocalizer(new MecanumLocalizer(this, true));
-        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+//        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
     }
 
     public void setIntakePower(double leftPower, double rightPower) {

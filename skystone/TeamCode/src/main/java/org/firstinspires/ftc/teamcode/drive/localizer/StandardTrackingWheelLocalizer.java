@@ -36,8 +36,8 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
     public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(0, 7.5, Math.toRadians(180)), // left
-                new Pose2d(0, -7.5, Math.toRadians(90)), // right
-                new Pose2d(-1.25, 0, Math.toRadians(0)) // front
+                new Pose2d(0, -7.5, Math.toRadians(0)), // right
+                new Pose2d(-1.25, 0, Math.toRadians(90)) // front
         ));
 
         leftEncoder = hardwareMap.dcMotor.get("lIntake");

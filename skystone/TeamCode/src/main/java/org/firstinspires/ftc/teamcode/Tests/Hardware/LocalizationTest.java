@@ -40,6 +40,11 @@ public class LocalizationTest extends LinearOpMode {
         drive.setPoseEstimate(new Pose2d(startingX, startingY, Math.toRadians(startingHeading)));
 
         leftEncoder = hardwareMap.get(DcMotor.class, "lIntake");
+        try {
+            rightEncoder = hardwareMap.get(DcMotor.class, "rIntake");
+        } catch (Exception E) {
+            rightEncoder = hardwareMap.get(DcMotor.class, "lIntake");
+        }
         frontEncoder = hardwareMap.get(DcMotor.class, "fLift");
 
         frontEncoder.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -72,6 +77,7 @@ public class LocalizationTest extends LinearOpMode {
             fasttelem.put("y", poseEstimate.getY());
             fasttelem.put("heading", Math.toDegrees(poseEstimate.getHeading()));
             fasttelem.put("leftCount", leftEncoder.getCurrentPosition());
+            fasttelem.put("rightCount", rightEncoder.getCurrentPosition());
             fasttelem.put("frontCount", frontEncoder.getCurrentPosition());
             dashboard.sendTelemetryPacket(fasttelem);
 
