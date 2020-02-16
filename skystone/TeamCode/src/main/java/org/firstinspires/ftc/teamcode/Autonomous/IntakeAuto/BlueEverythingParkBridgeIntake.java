@@ -30,6 +30,8 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
     private final PIDCoefficients liftCoeffs = new PIDCoefficients(3, 0.3, 0.1);
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
+    public static double firstLiftPos = 0, secondLiftPos = 200, liftOffAddition = 150;
+
     private int SkystonePosition = 1;
 
     private double lArm = 0.37, rArm = 0.63;
@@ -113,8 +115,8 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                             drive.setArmPos(0.8, 0.2);
                             sleep(1500);
                             drive.setClawGrabbing(false);
-                            liftController.setTargetPosition(150 / 1000.0);
-                        } else if (liftController.getTargetPosition() == 150 / 1000.0 && Math.abs(liftController.getLastError()) < 0.02) {
+                            liftController.setTargetPosition(liftOffAddition / 1000.0);
+                        } else if (liftController.getTargetPosition() == liftOffAddition / 1000.0 && Math.abs(liftController.getLastError()) < 0.02) {
                             liftController.setTargetPosition(0);
                             drive.setArmPos(lArm, rArm);
                             drive.followTrajectory(generateMoveToSecondStone());
@@ -145,14 +147,14 @@ public class BlueEverythingParkBridgeIntake extends LinearOpMode {
                 case StackSecondStone:
                     if (!drive.isBusy()) {
                         drive.setFoundation((short) 2);
-                        if (liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != 200 / 1000.0 && liftController.getTargetPosition() != 350 / 1000.0) {
-                            liftController.setTargetPosition(200 / 1000.0);
-                        } else if (liftController.getTargetPosition() == 200 / 1000.0 && Math.abs(liftController.getLastError()) < 0.02) {
+                        if (liftController.getTargetPosition() != 1 / 1000.0 && liftController.getTargetPosition() != secondLiftPos / 1000.0 && liftController.getTargetPosition() != (secondLiftPos + liftOffAddition) / 1000.0) {
+                            liftController.setTargetPosition(secondLiftPos / 1000.0);
+                        } else if (liftController.getTargetPosition() == secondLiftPos / 1000.0 && Math.abs(liftController.getLastError()) < 0.02) {
                             drive.setArmPos(0.8, 0.2);
                             sleep(1500);
                             drive.setClawGrabbing(false);
-                            liftController.setTargetPosition(350 / 1000.0);
-                        } else if (liftController.getTargetPosition() == 350 / 1000.0 && Math.abs(liftController.getLastError()) < 0.02) {
+                            liftController.setTargetPosition((secondLiftPos + liftOffAddition) / 1000.0);
+                        } else if (liftController.getTargetPosition() == (secondLiftPos + liftOffAddition) / 1000.0 && Math.abs(liftController.getLastError()) < 0.02) {
                             drive.setArmPos(lArm, rArm);
                             liftController.setTargetPosition(1 / 1000.0);
                         } else if (liftController.getTargetPosition() == 1 / 1000.0) {
