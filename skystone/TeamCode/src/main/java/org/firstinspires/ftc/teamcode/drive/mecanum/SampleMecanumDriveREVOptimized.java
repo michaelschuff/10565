@@ -22,6 +22,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Timer;
 import java.util.TimerTask;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -108,6 +109,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
         fr.setDirection(DcMotorSimple.Direction.FORWARD);
         br.setDirection(DcMotorSimple.Direction.FORWARD);
+
         rIntake.setDirection(DcMotorSimple.Direction.REVERSE);
         bLift.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -148,21 +150,6 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
                 break;
 
         }
-    }
-
-    public void releaseCapStone() {
-        if (claw.getPosition() == claw2) {
-            claw.setPosition(0);
-            sleep(1200);
-        } else {
-            claw.setPosition(0);
-            sleep(1000);
-        }
-        setArmPos(0.45, 0.55);
-        sleep(250);
-        setArmPos(lArm1, rArm1);
-        setClawGrabbing(true);
-        updateClawGrabbed();
     }
 
     public void toggleFoundation() {
@@ -235,7 +222,7 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public boolean CheckLiftPos() {
         int pos = bLift.getCurrentPosition();
-        if (bLift.getVelocity() < 0.01 && pos < 100) {
+        if (bLift.getVelocity() < 0.1 && pos < 100) {
             bLift.setPower(0);
             fLift.setPower(0);
             bLift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -377,6 +364,57 @@ public class SampleMecanumDriveREVOptimized extends SampleMecanumDriveBase {
 
     public double getMaxMotorVelocity(){
         return fl.getVelocity() > fr.getVelocity() ? bl.getVelocity() > br.getVelocity() ? fl.getVelocity() > bl.getVelocity() ? fl.getVelocity() : bl.getVelocity() : fl.getVelocity() > br.getVelocity() ? fl.getVelocity() : bl.getVelocity() : bl.getVelocity() > br.getVelocity() ? fr.getVelocity() > bl.getVelocity() ? fr.getVelocity() : bl.getVelocity() : fr.getVelocity() > br.getVelocity() ? fr.getVelocity(): br.getVelocity();
+    }
+
+    public void releaseCapStone() {
+        if (claw.getPosition() == claw2) {
+            claw.setPosition(0);
+            SetArm setArm = new SetArm(1200);
+        } else {
+            claw.setPosition(0);
+            sleep(1000);
+        }
+    }
+
+    public class SetArm {
+        Timer timer;
+        double p1, p2;
+
+        public SetArm(int millisecs) {
+            timer = new Timer();
+            timer.schedule(new RemindTask(), millisecs);
+            this.p1 = p1;
+            this.p2 = p2;
+        }
+
+        class RemindTask extends TimerTask {
+            public void run() {
+
+                setArmPos(0.45, 0.55);
+                SetCapstone setCapstone = new SetCapstone(250);
+
+            }
+        }
+    }
+    public class SetCapstone {
+        Timer timer;
+        double p1, p2;
+
+        public SetCapstone(int millisecs) {
+            timer = new Timer();
+            timer.schedule(new RemindTask(), (int) millisecs);
+            this.p1 = p1;
+            this.p2 = p2;
+        }
+
+        class RemindTask extends TimerTask {
+            public void run() {
+                setArmPos(lArm1, rArm1);
+                setClawGrabbing(true);
+                updateClawGrabbed();
+                timer.cancel(); //Terminate the timer thread
+            }
+        }
     }
 
 

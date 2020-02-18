@@ -13,6 +13,8 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 
+import kotlin.Unit;
+
 @Config
 @Autonomous(group="Auto")
 public class RedFoundationPark extends LinearOpMode {
@@ -28,7 +30,7 @@ public class RedFoundationPark extends LinearOpMode {
         if (isStopRequested()) return;
 
         waitForStart();
-        sleep(15000);
+        sleep(20000);
         drive.followTrajectorySync(
                 drive.trajectoryBuilder()
                         .strafeTo(new Vector2d(42.5, -38))
@@ -50,30 +52,16 @@ public class RedFoundationPark extends LinearOpMode {
 
     private void grabFoundation() {
         drive.setFoundation((short) 2);
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(43, -33))
-                        .build()
-        );
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .strafeTo(new Vector2d(38, -54))
-                        .build()
-        );
-
-        drive.turnSync(Math.toRadians(-135));
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .back(20)
-                        .build()
-        );
-        drive.setFoundation((short) 0);
-        sleep(200);
-
-        drive.followTrajectorySync(
-                drive.trajectoryBuilder()
-                        .splineTo(new Pose2d(0, -60, Math.toRadians(180)))
-                        .build()
-        );
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .forward(10)
+                .splineTo(new Pose2d(drive.getPoseEstimate().getX() - 20, drive.getPoseEstimate().getY() + 30, Math.toRadians(180)))
+                .addMarker(() -> {
+                    drive.setFoundation((short) 1);
+                    return Unit.INSTANCE;
+                })
+                .build());
+        drive.followTrajectorySync(drive.trajectoryBuilder()
+                .splineTo(new Pose2d(0, -38, Math.toRadians(180)))
+                .build());
     }
 }

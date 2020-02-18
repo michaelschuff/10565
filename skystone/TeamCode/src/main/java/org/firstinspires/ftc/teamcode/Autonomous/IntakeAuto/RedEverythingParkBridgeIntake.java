@@ -27,10 +27,10 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
     private SampleMecanumDriveREVOptimized drive;
     private VuforiaLib_Skystone camera;
     private PIDFController liftController;
-    private final PIDCoefficients liftCoeffs = new PIDCoefficients(4, 0.3, 0.1);
+    private final PIDCoefficients liftCoeffs = new PIDCoefficients(4, 0.4, 0.1);
     private FtcDashboard dashboard = FtcDashboard.getInstance();
 
-    public static double firstLiftPos = 0, secondLiftPos = 200, liftOffAddition = 150;
+    public static double firstLiftPos = 0, secondLiftPos = 300, liftOffAddition = 300;
 
     private int SkystonePosition = 1;
 
@@ -156,6 +156,7 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
                             liftController.setTargetPosition((secondLiftPos + liftOffAddition) / 1000.0);
                         } else if (liftController.getTargetPosition() == (secondLiftPos + liftOffAddition) / 1000.0 && Math.abs(liftController.getLastError()) < 0.02) {
                             drive.setArmPos(lArm, rArm);
+                            sleep(500);
                             liftController.setTargetPosition(1 / 1000.0);
                         } else if (liftController.getTargetPosition() == 1 / 1000.0) {
                             drive.followTrajectory(generateGrabFoundation());
@@ -230,15 +231,15 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
     private Trajectory generateInsertBotFirst() {
         if (SkystonePosition == 1) {
             return drive.trajectoryBuilder()
-                    .strafeTo(new Vector2d(-40, -27))
+                    .strafeTo(new Vector2d(-40, -29))
                     .build();
         } else if (SkystonePosition == 2) {
             return drive.trajectoryBuilder()
-                    .strafeTo(new Vector2d(-47, -27))
+                    .strafeTo(new Vector2d(-47, -29))
                     .build();
         } else {
             return drive.trajectoryBuilder()
-                    .strafeTo(new Vector2d(-55, -27))
+                    .strafeTo(new Vector2d(-55, -29))
                     .build();
         }
     }
@@ -249,8 +250,6 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
                 .build();
     }
 
-
-
     private Trajectory generateMoveToFoundation1() {
         return drive.trajectoryBuilder()
                 .setReversed(true)
@@ -260,7 +259,7 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
                     drive.setClawGrabbing(true);
                     return Unit.INSTANCE;
                 })
-                .splineTo(new Pose2d(43.5, -34, Math.toRadians(-90)))
+                .splineTo(new Pose2d(50, -36, Math.toRadians(-90)))
                 .build();
     }
 
@@ -272,12 +271,12 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
                     .build();
         } else if (SkystonePosition == 2) {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, -39, Math.toRadians(180)))
+                    .splineTo(new Pose2d(0, -41, Math.toRadians(180)))
                     .splineTo(new Pose2d(-43 + 24, -35, Math.toRadians(135)))
                     .build();
         } else {
             return drive.trajectoryBuilder()
-                    .splineTo(new Pose2d(0, -39, Math.toRadians(180)))
+                    .splineTo(new Pose2d(0, -41, Math.toRadians(180)))
                     .splineTo(new Pose2d(-51 + 24, -35, Math.toRadians(135)))
                     .build();
         }
@@ -286,15 +285,15 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
     private Trajectory generateInsertBotSecond() {
         if (SkystonePosition == 1) {
             return drive.trajectoryBuilder()
-                    .strafeTo(new Vector2d(-36 + 24, -25))
+                    .strafeTo(new Vector2d(-36 + 24, -28))
                     .build();
         } else if (SkystonePosition == 2) {
             return drive.trajectoryBuilder()
-                    .strafeTo(new Vector2d(-43 + 24, -25))
+                    .strafeTo(new Vector2d(-43 + 24, -28))
                     .build();
         } else {
             return drive.trajectoryBuilder()
-                    .strafeTo(new Vector2d(-51 + 24, -25))
+                    .strafeTo(new Vector2d(-51 + 24, -28))
                     .build();
         }
     }
@@ -308,20 +307,20 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
     private Trajectory generateMoveToFoundation2() {
         return drive.trajectoryBuilder()
                 .reverse()
-                .splineTo(new Pose2d(0, -36, Math.toRadians(180)))
+                .splineTo(new Pose2d(0, -38, Math.toRadians(180)))
                 .addMarker(1.5, () -> {
                     drive.setIntakePower(0, 0);
                     drive.setClawGrabbing(true);
                     return Unit.INSTANCE;
                 })
-                .splineTo(new Pose2d(43.5, -34, Math.toRadians(-90)))
+                .splineTo(new Pose2d(50, -32, Math.toRadians(-90)))
                 .build();
     }
 
     private Trajectory generateGrabFoundation() {
         return drive.trajectoryBuilder()
-//                .forward(20)
-                .splineTo(new Pose2d(drive.getPoseEstimate().getX() - 10, drive.getPoseEstimate().getY() - 20, Math.toRadians(180)))
+                .forward(10)
+                .splineTo(new Pose2d(drive.getPoseEstimate().getX() - 20, drive.getPoseEstimate().getY() - 30, Math.toRadians(180)))
                 .addMarker(() -> {
                     drive.setFoundation((short) 1);
                     return Unit.INSTANCE;
@@ -331,6 +330,7 @@ public class RedEverythingParkBridgeIntake extends LinearOpMode {
 
     private Trajectory generatePark() {
         return drive.trajectoryBuilder()
+                .back(10)
                 .splineTo(new Pose2d(0, -38, Math.toRadians(180)))
                 .build();
     }

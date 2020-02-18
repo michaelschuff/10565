@@ -79,25 +79,16 @@ public class liftTesting extends LinearOpMode {
 
             if (a.wasJustPressed()) {
                 state--;
-                if (state > 0) {
-                    liftController.setTargetPosition(state * 200 / scalar);
-                }
+                liftController.setTargetPosition(state * 200 / scalar);
             }
 
             if (y.wasJustPressed()) {
                 state++;
-                if (state < 10) {
-                    liftController.setTargetPosition(state * 200 / scalar);
-                }
+                liftController.setTargetPosition(state * 200 / scalar);
             }
 
-            if (drive.getLiftPos() < 50) {
-                drive.setLiftPower(Math.abs(0.75 + drive.getLiftPos() / 200.0) * liftController.update(drive.getLiftPos() / scalar));
-            } else {
-                drive.setLiftPower(liftController.update(drive.getLiftPos() / scalar));
-            }
-
-            drive.setLiftPower(gamepad1.right_trigger - gamepad1.left_trigger);
+            drive.setLiftPower(liftController.update(drive.getLiftPos() / scalar));
+//            drive.setLiftPower(gamepad1.right_trigger - gamepad1.left_trigger);
 
 
 
